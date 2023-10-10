@@ -34,10 +34,7 @@ class MyApp extends StatelessWidget {
         '/edit-producto': (context) => const ProductoAddEdit(),
         '/home': (context) => const Menu(),
         '/registro': (context) => RegisterScreen(),
-        '/login': (context) => Scaffold(
-            appBar: AppBar(
-              title: Text('Inicio de Sesión'), // Título de la pantalla de inicio de sesión
-            ),
+        '/login': (context) => const Scaffold(
             body: MyStatefulWidget(), // El contenido de tu pantalla de inicio de sesión
           ),
         '/registro': (context) => RegisterScreen(),

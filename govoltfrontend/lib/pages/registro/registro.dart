@@ -41,6 +41,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
+    if (phoneNumber?.phoneNumber == null) {
+      showSnackbar("Número de teléfono requerido.");
+      return;
+    }
+
     if (password != confirmPassword) {
       showSnackbar("Las contraseñas no coinciden");
       return;
@@ -53,8 +58,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       "username": usernameController.text,
       "password": passwordController.text,
       "email": emailController.text,
-      "phone": phoneController.text,
+      "phone": phoneNumber?.phoneNumber ?? "",
     };
+
+    print(userData);
 
     final response = await http.post(
       url,
@@ -66,10 +73,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       // Registro exitoso, redirige a la pantalla de inicio de sesión
       Navigator.pushNamed(context, '/login');
     } else {
-      print(response);
       // Error en el registro, muestra un mensaje de error
       final data = jsonDecode(response.body);
-      print(data);
       final errorMessage = data['message'];
       showSnackbar(errorMessage);
     }
@@ -108,7 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: const Text(
                     'Crear cuenta',
                     style: TextStyle(
-                      fontSize: 18, 
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -126,7 +131,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
             Container(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+              padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
               child: TextField(
                 controller: usernameController,
                 decoration: const InputDecoration(
@@ -136,7 +141,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
             Container(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+              padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
               child: TextField(
                 obscureText: true,
                 controller: passwordController,
@@ -147,7 +152,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
             Container(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+              padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
               child: TextField(
                 obscureText: true,
                 controller: confirmPasswordController,
@@ -158,17 +163,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
             Container(
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+              padding: const EdgeInsets.fromLTRB(20, 5, 10, 0),
               child: InternationalPhoneNumberInput(
                 onInputChanged: (PhoneNumber number) {
                   phoneNumber = number;
                 },
-                selectorConfig: SelectorConfig(
+                selectorConfig: const SelectorConfig(
                   selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
                 ),
                 ignoreBlank: false,
                 autoValidateMode: AutovalidateMode.disabled,
-                inputDecoration: InputDecoration(
+                inputDecoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Número de Teléfono',
                 ),
