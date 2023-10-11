@@ -3,11 +3,14 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:govoltfrontend/config.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
+
 
 class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController usernameController = TextEditingController();
@@ -20,7 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> register() async {
     final password = passwordController.text;
     final confirmPassword = confirmPasswordController.text;
-
+    
     if (emailController.text.isEmpty) {
       showSnackbar("Email requerido.");
       return;
@@ -77,6 +80,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
       final data = jsonDecode(response.body);
       final errorMessage = data['message'];
       showSnackbar(errorMessage);
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      
+      if (googleUser == null) return;
+      
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      final UserCredential authResult = await FirebaseAuth.instance.signInWithCredential(credential);
+      final User? user = authResult.user;
+
+      // Realiza acciones adicionales después de iniciar sesión con Google
+    } catch (e) {
+      // Maneja errores si ocurren durante el proceso de autenticación
     }
   }
 
@@ -254,6 +277,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ElevatedButton.icon(
                     onPressed: () {
                       // Iniciar sesión con Google
+                      signInWithGoogle();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,

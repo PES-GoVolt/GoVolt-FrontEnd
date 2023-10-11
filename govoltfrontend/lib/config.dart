@@ -3,6 +3,7 @@ class Config {
   static const String apiURL = '192.168.122.1'; // api de cada ordenador
   static const productosAPI = "api/producto";
   static const clientesAPI = "api/cliente";
+  static const puntosCargaAPI = "api/puntocarga";
   static const loginAPI = "api/login/";
   static const obtenertokenAPI = "api/api-token-auth/";
   static const registroAPI = "api/registro/";

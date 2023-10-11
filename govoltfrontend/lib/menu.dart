@@ -18,7 +18,7 @@ class MenuState extends State<Menu> {
   getDrawerItemWidget(int pos) {
     switch (pos) {
       case 0:
-        return const inicio();
+        return inicio();
       case 1:
         return const ClientesList();
       case 2:

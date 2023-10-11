@@ -10,20 +10,33 @@ import 'package:govoltfrontend/pages/producto/producto_list.dart';
 import 'package:govoltfrontend/pages/registro/registro.dart';
 import 'package:govoltfrontend/config.dart';
 
-void main() => runApp(const MyApp());
+import 'package:firebase_auth/firebase_auth.dart';  // Agrega esta importación
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
+
+void main() async {  // Cambia la función main para inicializar Firebase
+  WidgetsFlutterBinding.ensureInitialized();
+  print("hola1");
+  await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+  );
+  print("hola2");
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   static const String _title = Config.appName;
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: _title,
-      home: Scaffold(
-        body: const MyStatefulWidget(),
+      home: const Scaffold(
+        body: MyStatefulWidget(),
       ),
       routes: {
         '/list-cliente': (context) => const ClientesList(),
@@ -51,6 +64,9 @@ class MyStatefulWidget extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -197,7 +213,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   const SizedBox(height: 10),
                   ElevatedButton.icon(
                     onPressed: () {
-                      // Iniciar sesión con Google
+                      _signInWithGoogle();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
@@ -214,6 +230,33 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             ),
           ],
         )));
+  }
+
+  // Función para iniciar sesión con Google
+  Future<void> _signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
+      if (googleSignInAccount == null) {
+        return;
+      }
+
+      final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
+
+      await _auth.signInWithCredential(credential);
+      
+      // Redirige a la pantalla de inicio, o realiza cualquier otra acción necesaria.
+      Navigator.pushNamed(
+        context,
+        '/home',
+      );
+    } catch (error) {
+      print(error);
+      showSnackbar("Error al iniciar sesión con Google.");
+    }
   }
 
   void showSnackbar(String msg) {
@@ -245,6 +288,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         headers: headers, body: jsonEncode(datosdelposibleusuario));
     //final data = Map.from(jsonDecode(res.body));
 
+    print(res);
+    
     if (res.statusCode == 400) {
       showSnackbar("Hay un error.");
       return;
