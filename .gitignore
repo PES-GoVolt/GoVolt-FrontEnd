@@ -1,0 +1,34 @@
+.gitig
+
+# Archivos y directorios generados automáticamente por Android Studio y el proceso de construcción
+build/
+app/build/
+captures/
+.gradle/
+local.properties
+*.iml
+.gradle
+
+# Archivos de configuración de Android Studio
+.idea/
+
+# Archivos generados por herramientas de construcción
+.gradle/
+
+# Archivos de respaldo
+*~
+
+# Archivos binarios
+*.apk
+*.ap_
+*.class
+
+# Archivos de firma
+keystore.jks
+keystore.properties
+
+# Dependencias de construcción
+.navigation/
+
+# Excluir el archivo strings.xml específico
+govoltfrontend/android/app/src/main/res/values/strings.xml
