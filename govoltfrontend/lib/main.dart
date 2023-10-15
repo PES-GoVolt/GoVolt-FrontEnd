@@ -12,8 +12,12 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late GoogleMapController mapController;
-
   final LatLng _center = const LatLng(41.303110065444294, 2.0025687347671783);
+  static const Marker _myLocMArker = Marker(
+      markerId: MarkerId('_myLocMArker'),
+      infoWindow: InfoWindow(title: "TEST"),
+      icon: BitmapDescriptor.defaultMarker,
+      position: LatLng(41.303110065444294, 2.0025687347671783));
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -33,6 +37,7 @@ class _MyAppState extends State<MyApp> {
         ),
         body: GoogleMap(
           onMapCreated: _onMapCreated,
+          markers: {_myLocMArker},
           initialCameraPosition: CameraPosition(
             target: _center,
             zoom: 15.0,
