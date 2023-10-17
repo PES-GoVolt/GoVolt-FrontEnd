@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'screens/mapa.dart';
+import 'pages/mapa/mapa.dart';
+import 'pages/mapa/utils/locate_position.dart';
 
 void main() => runApp(const MyApp());
 
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         colorSchemeSeed: Colors.green[700],
       ),
-      home: const MapScreen(),
+      home: const MyWidgetScreen(),
     );
   }
 }
