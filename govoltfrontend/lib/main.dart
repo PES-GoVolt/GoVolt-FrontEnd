@@ -1,20 +1,32 @@
 import 'package:flutter/material.dart';
-import 'pages/mapa/mapa.dart';
-import 'pages/mapa/utils/locate_position.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:govoltfrontend/pages/mapa/mapa.dart';
+import 'package:govoltfrontend/services/geolocator_service.dart';
+import 'package:provider/provider.dart';
 
-void main() => runApp(const MyApp());
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
+
+  final GeolocatiorService geolocatiorService = GeolocatiorService();
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return FutureProvider(
+      create: (context) => geolocatiorService.getInitialLocation(),
+      initialData: null,
+      child: MaterialApp(
       theme: ThemeData(
         useMaterial3: true,
         colorSchemeSeed: Colors.green[700],
       ),
-      home: const MyWidgetScreen(),
-    );
+      home: Consumer<Position>(builder: (context, position, widget){
+          // ignore: unnecessary_null_comparison
+          return (position != null) ? 
+          Mapa(initialPosition: position,) : 
+          const Center(child: CircularProgressIndicator());
+      },),
+    ));
   }
 }
