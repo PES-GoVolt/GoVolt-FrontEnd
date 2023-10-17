@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         colorSchemeSeed: Colors.green[700],
       ),
-      home: Consumer<Position>(builder: (context, position, widget){
+      home: Consumer<Position?>(builder: (context, position, widget){
           // ignore: unnecessary_null_comparison
           return (position != null) ? 
           Mapa(initialPosition: position,) : 

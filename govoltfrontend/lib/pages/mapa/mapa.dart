@@ -29,9 +29,10 @@ class _MapaState extends State<Mapa> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(child: GoogleMap(
+        mapType: MapType.satellite,
         initialCameraPosition: CameraPosition(
           target: LatLng(widget.initialPosition.latitude, widget.initialPosition.longitude)
-          , zoom: 22.0),
+          , zoom: 19.0),
           myLocationEnabled: true,
           onMapCreated: (GoogleMapController controller) {
              _controller.complete(controller);
@@ -44,7 +45,7 @@ class _MapaState extends State<Mapa> {
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
       target: LatLng(position.latitude, position.longitude),
-      zoom: 22.0,
+      zoom: 19.0,
     )));
   }
 }

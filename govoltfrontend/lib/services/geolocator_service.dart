@@ -4,7 +4,7 @@ class GeolocatiorService {
 
   Stream<Position> getCurrentLocation(){
     var locationOptions = const LocationSettings(
-      accuracy: LocationAccuracy.high, 
+      accuracy: LocationAccuracy.best, 
       distanceFilter: 2);
       return Geolocator.getPositionStream(locationSettings: locationOptions);
   }
