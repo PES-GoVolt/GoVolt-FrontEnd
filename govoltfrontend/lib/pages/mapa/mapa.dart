@@ -30,7 +30,7 @@ class MapScreenState extends State<MapScreen> {
   void valueChanged(var value) async {
     await applicationBloc.searchPlaces(value);
     searchResults = applicationBloc.searchResults;
-    setState((){});
+    setState(() {});
   }
 
   @override
@@ -43,9 +43,9 @@ class MapScreenState extends State<MapScreen> {
             child: TextField(
               decoration: const InputDecoration(
                   hintText: 'Search Location', suffixIcon: Icon(Icons.search)),
-              onChanged: (value) { 
+              onChanged: (value) {
                 valueChanged(value);
-                },
+              },
             ),
           ),
           Stack(
@@ -60,7 +60,8 @@ class MapScreenState extends State<MapScreen> {
                       zoom: 15.0,
                     ),
                   )),
-              if (applicationBloc.searchResults != null && applicationBloc.searchResults!.isNotEmpty)
+              if (applicationBloc.searchResults != null &&
+                  applicationBloc.searchResults!.isNotEmpty)
                 Container(
                   height: 300,
                   width: double.infinity,
@@ -80,18 +81,17 @@ class MapScreenState extends State<MapScreen> {
     );
   }
 
-ListView printListView() {
-  return ListView.builder(
-          key: UniqueKey(),
-          itemCount: searchResults?.length ?? 0,
-          itemBuilder: (context, index) {
-            return ListTile(
-                title: Text(
-              applicationBloc.searchResults![index].description,
-              style: const TextStyle(color: Colors.white),
-            ));
-          },
+  ListView printListView() {
+    return ListView.builder(
+      key: UniqueKey(),
+      itemCount: searchResults?.length ?? 0,
+      itemBuilder: (context, index) {
+        return ListTile(
+            title: Text(
+          applicationBloc.searchResults![index].description,
+          style: const TextStyle(color: Colors.white),
+        ));
+      },
     );
-}
-
+  }
 }

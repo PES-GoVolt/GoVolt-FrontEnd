@@ -5,21 +5,15 @@ import 'dart:convert' as convert;
 
 class PlacesService {
 
-Future<String?> getApiKey() async {
-    try {
-      final String apiKey = await rootBundle.loadString('android/app/src/main/res/values/strings.xml');
-      return apiKey;
-    } catch (e) {
-      return null; // Maneja el error de alguna manera
-    }
-  }
+Future<String> loadJsonData() async {
+  String jsonString = await rootBundle.loadString('lib/services/api.json');
+  Map<String, dynamic> jsonData = convert.jsonDecode(jsonString);
+  // Ahora tienes acceso a los datos en jsonData
+  return jsonData['apiKey'];
+}
 
   Future<List<PlaceSearch>> getAutoComplete(String search) async {
-    final apiKey = await getApiKey();
-    if (apiKey == null) {
-      // Maneja la falta de apiKey
-      return [];
-    }
+    final apiKey = await loadJsonData();
     Uri url = Uri.parse('https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$search&types=(cities)&key=$apiKey');
     var response = await http.get(url);
     var json = convert.jsonDecode(response.body);
