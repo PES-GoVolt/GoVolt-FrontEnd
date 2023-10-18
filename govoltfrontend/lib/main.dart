@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/mapa.dart';
+import 'pages/mapa/mapa.dart';
 
 void main() => runApp(const MyApp());
 
