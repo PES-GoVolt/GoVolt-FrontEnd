@@ -13,7 +13,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late GoogleMapController mapController;
-  final LatLng _center = const LatLng(41.303110065444294, 2.0025687347671783);
+  final LatLng _center = const LatLng(41.386058, 2.116819);
   Set<Marker> _markers = {}; // Conjunto de marcadores vacío al principio
 
   void _onMapCreated(GoogleMapController controller) {
@@ -21,7 +21,7 @@ class _MyAppState extends State<MyApp> {
     cargarMarcadores();
   }
 
-  final chargersService = ChargersService("http://127.0.0.1:8000/api/bikestations"); // Corrige la URL
+  final chargersService = ChargersService("http://127.0.0.1:0080/api"); // Corrige la URL
 
   Future<void> cargarMarcadores() async {
     try {
@@ -29,18 +29,23 @@ class _MyAppState extends State<MyApp> {
       final puntosDeCarga = await chargersService.obtenerPuntosDeCarga();
       
       // Itera a través de los puntos de carga y crea marcadores
+      print("hola1");
       final nuevosMarcadores = puntosDeCarga.map((punto) {
+        print("hola2");
         return Marker(
           markerId: MarkerId(punto.chargerId), // Debe ser único para cada marcador
-          position: LatLng(punto.latitud, punto.longitud),
+          position: LatLng(punto.longitud, punto.latitud),
           infoWindow: InfoWindow(title: 'Cargador ID: ${punto.chargerId}'),
         );
+  
       }).toSet(); // Convierte la lista de marcadores en un conjunto de marcadores
-      
+      print("hola3");    
       // Actualiza el conjunto de marcadores
       setState(() {
+        print(nuevosMarcadores);
         _markers = nuevosMarcadores;
       });
+      print("hola4");
     } catch (e) {
       print('Error al cargar marcadores: $e');
     }

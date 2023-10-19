@@ -8,17 +8,16 @@ class ChargersService {
 
   Future<List<Coordenada>> obtenerPuntosDeCarga() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/chargers'));
-          print("hola");
+      String url = "http://10.0.2.2:80/api/chargers";
+      final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
-        print("hola");
         final List<dynamic> data = json.decode(response.body);
         List<Coordenada> puntosDeCarga = [];
-
+        
         for (var punto in data) {
+          //el problema esta aki makinon
           puntosDeCarga.add(Coordenada.fromJson(punto));
         }
-
         return puntosDeCarga;
       } else {
         throw Exception('Error al obtener los puntos de carga');
@@ -37,9 +36,10 @@ class Coordenada {
   Coordenada(this.latitud, this.longitud, this.chargerId);
 
   factory Coordenada.fromJson(Map<String, dynamic> json) {
+
     return Coordenada(
-      json['latitud'] as double,
-      json['longitud'] as double,
+      json['latitude'] as double,
+      json['longitude'] as double,
       json['charger_id'] as String, // Asegúrate de que el nombre coincida con el JSON
     );
   }
