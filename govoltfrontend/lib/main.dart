@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pages/mapa/mapa.dart';
+import 'pages/main_page.dart';
 
 void main() => runApp(const MyApp());
 
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         colorSchemeSeed: Colors.green[700],
       ),
-      home: const MapScreen(),
+      home: const MainPage(),
     );
   }
 }
