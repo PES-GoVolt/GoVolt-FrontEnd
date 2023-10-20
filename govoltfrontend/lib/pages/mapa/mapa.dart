@@ -1,22 +1,23 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'dart:async';
-
+// ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:govoltfrontend/services/geolocator_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/mapa/place.dart';
 import 'package:govoltfrontend/models/place_search.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({Key? key}) : super(key: key);
+  MapScreen();
 
   @override
-  MapScreenState createState() => MapScreenState();
+  State<StatefulWidget> createState() => _MapaState();
 }
 
-class MapScreenState extends State<MapScreen> {
+class _MapaState extends State<MapScreen> {
+  final GeolocatiorService geolocatiorService = GeolocatiorService();
   final Completer<GoogleMapController> _mapController = Completer();
   final LatLng _center = const LatLng(41.303110065444294, 2.0025687347671783);
   final applicationBloc = AplicationBloc();
@@ -51,6 +52,22 @@ class MapScreenState extends State<MapScreen> {
   void dispose() {
     locationSubscription.cancel();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    geolocatiorService.getCurrentLocation().listen((position) {
+      centerScreen(position);
+    });
+    super.initState();
+  }
+
+  Future<void> centerScreen(Position position) async {
+    final GoogleMapController controller = await _mapController.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+      target: LatLng(position.latitude, position.longitude),
+      zoom: 19.0,
+    )));
   }
 
   @override
@@ -201,6 +218,7 @@ class MapScreenState extends State<MapScreen> {
       onMapCreated: (GoogleMapController controller) {
         _mapController.complete(controller);
       },
+      myLocationEnabled: true,
       markers: _myLocMarker,
       initialCameraPosition: CameraPosition(
         target: _center,
