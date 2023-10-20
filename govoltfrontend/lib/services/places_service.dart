@@ -10,7 +10,6 @@ class PlacesService {
   Future<void> loadJsonData() async {
     String jsonString = await rootBundle.loadString('lib/services/api.json');
     Map<String, dynamic> jsonData = convert.jsonDecode(jsonString);
-    // Ahora tienes acceso a los datos en jsonData
     apiKey = jsonData['apiKey'];
   }
 
@@ -129,7 +128,8 @@ class PlacesService {
         }
       ],
       "status": "OK"
-    };*/
+    };
+    */
     var jsonResults = json['predictions'] as List;
     return jsonResults.map((place) => PlaceSearch.fromJson(place)).toList();
   }
@@ -279,6 +279,7 @@ class PlacesService {
       },
       "status": "OK"
     };
+
     */
     var jsonResult = json['result'] as Map<String, dynamic>;
     return Place.fromJson(jsonResult);
