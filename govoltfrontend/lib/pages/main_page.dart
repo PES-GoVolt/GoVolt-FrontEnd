@@ -17,6 +17,6 @@ class MainPageState extends State<MainPage> {
           title: const Text(''),
           backgroundColor: const Color.fromRGBO(125, 193, 165, 1),
         ),
-        body: const MapScreen());
+        body: MapScreen());
   }
 }

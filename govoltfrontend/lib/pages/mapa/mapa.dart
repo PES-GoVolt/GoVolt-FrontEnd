@@ -1,4 +1,3 @@
-
 import 'dart:async';
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
@@ -10,18 +9,14 @@ import 'package:govoltfrontend/models/mapa/place.dart';
 import 'package:govoltfrontend/models/place_search.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
-class Mapa extends StatefulWidget {
-  Mapa({required this.initialPosition});
-
-  final Position initialPosition;
+class MapScreen extends StatefulWidget {
+  MapScreen();
 
   @override
   State<StatefulWidget> createState() => _MapaState();
 }
 
-class _MapaState extends State<Mapa> {
-  
+class _MapaState extends State<MapScreen> {
   final GeolocatiorService geolocatiorService = GeolocatiorService();
   final Completer<GoogleMapController> _mapController = Completer();
   final LatLng _center = const LatLng(41.303110065444294, 2.0025687347671783);
@@ -66,9 +61,9 @@ class _MapaState extends State<Mapa> {
     });
     super.initState();
   }
-  
+
   Future<void> centerScreen(Position position) async {
-    final GoogleMapController controller = await _controller.future;
+    final GoogleMapController controller = await _mapController.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
       target: LatLng(position.latitude, position.longitude),
       zoom: 19.0,
