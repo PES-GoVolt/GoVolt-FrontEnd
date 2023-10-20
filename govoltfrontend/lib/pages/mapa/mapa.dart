@@ -4,7 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:govoltfrontend/services/geolocator_service.dart';
 
-class Mapa extends StatefulWidget{
+class Mapa extends StatefulWidget {
   Mapa({required this.initialPosition});
 
   final Position initialPosition;
@@ -16,29 +16,35 @@ class Mapa extends StatefulWidget{
 class _MapaState extends State<Mapa> {
   final GeolocatiorService geolocatiorService = GeolocatiorService();
   final Completer<GoogleMapController> _controller = Completer();
-  
+  late GoogleMapController mapController;
+  final LatLng _center = const LatLng(41.303110065444294, 2.0025687347671783);
+
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
+
   @override
   void initState() {
-    geolocatiorService.getCurrentLocation().listen((position){
-        centerScreen(position);
-    }); 
+    geolocatiorService.getCurrentLocation().listen((position) {
+      centerScreen(position);
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: GoogleMap(
-        mapType: MapType.satellite,
-        initialCameraPosition: CameraPosition(
-          target: LatLng(widget.initialPosition.latitude, widget.initialPosition.longitude)
-          , zoom: 19.0),
+        body: Center(
+      child: GoogleMap(
+          initialCameraPosition: CameraPosition(
+              target: LatLng(widget.initialPosition.latitude,
+                  widget.initialPosition.longitude),
+              zoom: 19.0),
           myLocationEnabled: true,
           onMapCreated: (GoogleMapController controller) {
-             _controller.complete(controller);
+            _controller.complete(controller);
           }),
-        )
-      );
+    ));
   }
 
   Future<void> centerScreen(Position position) async {
