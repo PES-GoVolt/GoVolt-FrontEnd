@@ -15,7 +15,6 @@ class ChargersService {
         List<Coordenada> puntosDeCarga = [];
         
         for (var punto in data) {
-          //el problema esta aki makinon
           puntosDeCarga.add(Coordenada.fromJson(punto));
         }
         return puntosDeCarga;

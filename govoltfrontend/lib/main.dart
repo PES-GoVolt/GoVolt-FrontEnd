@@ -29,9 +29,7 @@ class _MyAppState extends State<MyApp> {
       final puntosDeCarga = await chargersService.obtenerPuntosDeCarga();
       
       // Itera a través de los puntos de carga y crea marcadores
-      print("hola1");
       final nuevosMarcadores = puntosDeCarga.map((punto) {
-        print("hola2");
         return Marker(
           markerId: MarkerId(punto.chargerId), // Debe ser único para cada marcador
           position: LatLng(punto.longitud, punto.latitud),
@@ -39,13 +37,10 @@ class _MyAppState extends State<MyApp> {
         );
   
       }).toSet(); // Convierte la lista de marcadores en un conjunto de marcadores
-      print("hola3");    
       // Actualiza el conjunto de marcadores
       setState(() {
-        print(nuevosMarcadores);
         _markers = nuevosMarcadores;
       });
-      print("hola4");
     } catch (e) {
       print('Error al cargar marcadores: $e');
     }
