@@ -43,6 +43,7 @@ dependencies:
   provider: ^6.0.5
   google_maps_routes: ^1.1.2
   url_launcher: ^6.1.14
+  sensors_plus: ^3.1.0
  
 
 dev_dependencies:

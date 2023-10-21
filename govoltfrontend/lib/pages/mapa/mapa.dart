@@ -65,9 +65,9 @@ class _MapaState extends State<MapScreen> {
   Future<void> centerScreen(Position position) async {
     final GoogleMapController controller = await _mapController.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-      target: LatLng(position.latitude, position.longitude),
-      zoom: 19.0,
-    )));
+        target: LatLng(position.latitude, position.longitude),
+        zoom: 19.0,
+        bearing: position.heading)));
   }
 
   @override
@@ -220,10 +220,8 @@ class _MapaState extends State<MapScreen> {
       },
       myLocationEnabled: true,
       markers: _myLocMarker,
-      initialCameraPosition: CameraPosition(
-        target: _center,
-        zoom: 15.0,
-      ),
+      initialCameraPosition:
+          CameraPosition(target: _center, zoom: 15.0, bearing: 90),
     );
   }
 
