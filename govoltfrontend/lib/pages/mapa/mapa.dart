@@ -7,6 +7,7 @@ import 'package:govoltfrontend/services/geolocator_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/mapa/place.dart';
 import 'package:govoltfrontend/models/place_search.dart';
+import 'package:govoltfrontend/services/puntos_carga_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MapScreen extends StatefulWidget {
@@ -24,10 +25,13 @@ class _MapaState extends State<MapScreen> {
   List<PlaceSearch>? searchResults;
   late StreamSubscription locationSubscription;
   bool placeIsSelected = false;
+  final chargersService = ChargersService("http://127.0.0.1:0080/api");
 
   List<Marker> myMarkers = [];
 
   Set<Marker> _myLocMarker = {};
+
+  Set<Marker> _chargers = {};
 
   void valueChanged(var value) async {
     await applicationBloc.searchPlaces(value);
@@ -46,6 +50,29 @@ class _MapaState extends State<MapScreen> {
             applicationBloc.place!.geometry.location.lng)));
     _myLocMarker = myMarkers.toSet();
     setState(() {});
+  }
+
+  Future<void> cargarMarcadores() async {
+    try {
+      // Llama al servicio para obtener los puntos de carga
+      final puntosDeCarga = await chargersService.obtenerPuntosDeCarga();
+
+      // Itera a través de los puntos de carga y crea marcadores
+      final nuevosMarcadores = puntosDeCarga.map((punto) {
+        return Marker(
+          markerId:
+              MarkerId(punto.chargerId), // Debe ser único para cada marcador
+          position: LatLng(punto.longitud, punto.latitud),
+          infoWindow: InfoWindow(title: 'Cargador ID: ${punto.chargerId}'),
+        );
+      }).toSet(); // Convierte la lista de marcadores en un conjunto de marcadores
+      // Actualiza el conjunto de marcadores
+      setState(() {
+        _chargers = nuevosMarcadores;
+      });
+    } catch (e) {
+      print('Error al cargar marcadores: $e');
+    }
   }
 
   @override
@@ -217,9 +244,10 @@ class _MapaState extends State<MapScreen> {
     return GoogleMap(
       onMapCreated: (GoogleMapController controller) {
         _mapController.complete(controller);
+        cargarMarcadores();
       },
       myLocationEnabled: true,
-      markers: _myLocMarker,
+      markers: {..._myLocMarker, ..._chargers},
       initialCameraPosition: CameraPosition(
         target: _center,
         zoom: 15.0,
