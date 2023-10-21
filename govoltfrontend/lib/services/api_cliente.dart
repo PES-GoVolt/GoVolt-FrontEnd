@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+/*import 'package:flutter/foundation.dart';
 import 'package:govoltfrontend/models/cliente_model.dart';
 import 'package:http/http.dart' as http;
 import '../../config.dart';
@@ -94,4 +94,4 @@ class APICliente {
       return false;
     }
   }
-}
+}*/

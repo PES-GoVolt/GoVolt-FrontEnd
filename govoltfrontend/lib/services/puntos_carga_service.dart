@@ -8,12 +8,12 @@ class ChargersService {
 
   Future<List<Coordenada>> obtenerPuntosDeCarga() async {
     try {
-      String url = "http://10.0.2.2:80/api/chargers";
+      String url = "http://10.0.2.2:8000/api/chargers";
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         List<Coordenada> puntosDeCarga = [];
-        
+
         for (var punto in data) {
           puntosDeCarga.add(Coordenada.fromJson(punto));
         }
@@ -35,12 +35,11 @@ class Coordenada {
   Coordenada(this.latitud, this.longitud, this.chargerId);
 
   factory Coordenada.fromJson(Map<String, dynamic> json) {
-
     return Coordenada(
       json['latitude'] as double,
       json['longitude'] as double,
-      json['charger_id'] as String, // Asegúrate de que el nombre coincida con el JSON
+      json['charger_id']
+          as String, // Asegúrate de que el nombre coincida con el JSON
     );
   }
 }
-
