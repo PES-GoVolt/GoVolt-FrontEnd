@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'pages/mapa/mapa.dart';
+import 'package:govoltfrontend/services/geolocator_service.dart';
+import 'pages/main_page.dart';
 
-void main() => runApp(const MyApp());
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
+
+  final GeolocatiorService geolocatiorService = GeolocatiorService();
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +16,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         colorSchemeSeed: Colors.green[700],
       ),
-      home: const MapScreen(),
+      home: const MainPage(),
     );
   }
 }
