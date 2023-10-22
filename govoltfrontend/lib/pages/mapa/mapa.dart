@@ -7,6 +7,7 @@ import 'package:govoltfrontend/services/geolocator_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/mapa/place.dart';
 import 'package:govoltfrontend/models/place_search.dart';
+import 'package:govoltfrontend/services/puntos_bici_service.dart';
 import 'package:govoltfrontend/services/puntos_carga_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -25,7 +26,9 @@ class _MapaState extends State<MapScreen> {
   List<PlaceSearch>? searchResults;
   late StreamSubscription locationSubscription;
   bool placeIsSelected = false;
+  
   final chargersService = ChargersService("http://127.0.0.1:0080/api");
+  final bikeService = BikeStationsService("http://127.0.0.1:0080/api");
 
   List<Marker> myMarkers = [];
 
@@ -33,11 +36,24 @@ class _MapaState extends State<MapScreen> {
 
   Set<Marker> _chargers = {};
 
+  Set<Marker> _bikeStations = {};
+
+  
+  
   void valueChanged(var value) async {
     await applicationBloc.searchPlaces(value);
     searchResults = applicationBloc.searchResults;
     setState(() {});
   }
+
+/*
+  Future<BitmapDescriptor> createCustomMarkerIcon() async {
+  return BitmapDescriptor.fromAssetImage(
+    ImageConfiguration(size: Size(1000, 1000)),
+    'assets/images/bike_icon.png', 
+  );
+}
+*/
 
   void placeSelected(var idPlace) async {
     await applicationBloc.searchPlace(idPlace);
@@ -75,11 +91,38 @@ class _MapaState extends State<MapScreen> {
     }
   }
 
+  late BitmapDescriptor bikeStationIcon;
+
+
+  Future<void> cargarBicis() async {
+  try {
+    // Call the service to get bike stations
+    final bikeStations = await bikeService.getBikeStations();
+
+    // Iterate through the bike stations and create markers
+    final newMarkers = bikeStations.map((station) {
+      return Marker(
+        markerId: MarkerId(station.stationId), // Must be unique for each marker
+        position: LatLng(station.latitude, station.longitude),
+        // icon: bikeStationIcon,
+        infoWindow: InfoWindow(title: 'Station ID: ${station.stationId}'),
+      );
+    }).toSet(); // Convert the list of markers into a set of markers
+    // Update the set of markers
+    setState(() {
+      _bikeStations = newMarkers;
+    });
+  } catch (e) {
+    print('Error loading markers: $e');
+  }
+}
+
   @override
   void dispose() {
     locationSubscription.cancel();
     super.dispose();
   }
+
 
   @override
   void initState() {
@@ -87,6 +130,10 @@ class _MapaState extends State<MapScreen> {
       centerScreen(position);
     });
     super.initState();
+    /*
+    createCustomMarkerIcon().then((icon) {
+    bikeStationIcon = icon;
+  });*/
   }
 
   Future<void> centerScreen(Position position) async {
@@ -245,9 +292,10 @@ class _MapaState extends State<MapScreen> {
       onMapCreated: (GoogleMapController controller) {
         _mapController.complete(controller);
         cargarMarcadores();
+        cargarBicis();
       },
       myLocationEnabled: true,
-      markers: {..._myLocMarker, ..._chargers},
+      markers: {..._myLocMarker, ..._chargers, ..._bikeStations},
       initialCameraPosition: CameraPosition(
         target: _center,
         zoom: 15.0,
