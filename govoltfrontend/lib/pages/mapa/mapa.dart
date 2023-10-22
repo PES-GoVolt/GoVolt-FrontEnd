@@ -1,5 +1,4 @@
 import 'dart:async';
-// ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -9,9 +8,6 @@ import 'package:govoltfrontend/models/mapa/place.dart';
 import 'package:govoltfrontend/models/place_search.dart';
 import 'package:govoltfrontend/services/puntos_carga_service.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:google_maps_routes/google_maps_routes.dart';
-import 'package:govoltfrontend/blocs/application_bloc.dart';
-
 
 class MapScreen extends StatefulWidget {
   MapScreen();
@@ -29,7 +25,7 @@ class _MapaState extends State<MapScreen> {
   late StreamSubscription locationSubscription;
   bool placeIsSelected = false;
   final chargersService = ChargersService("http://127.0.0.1:0080/api");
-  
+
   List<Marker> myMarkers = [];
 
   Set<Marker> _myLocMarker = {};
@@ -109,13 +105,9 @@ class _MapaState extends State<MapScreen> {
   String routeDistance = '0';
 
   Widget buildRouteDetailsContainer() {
-  return Stack(
-    children: [
-      Positioned(
-        top: 35,
-        left: 10,
-        right: 10,
-        child: Container(
+    return Stack(
+      children: [
+        Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -142,87 +134,86 @@ class _MapaState extends State<MapScreen> {
             ],
           ),
         ),
+        buildRouteCloseButton(),
+      ],
+    );
+  }
+
+  Widget buildRouteModeButtonsRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        buildRouteModeButton(Icons.directions_car, "Car", 0),
+        buildRouteModeButton(Icons.directions_bike, "Bicycle", 1),
+        buildRouteModeButton(Icons.directions_walk, "Walking", 2),
+      ],
+    );
+  }
+
+  Widget buildRouteModeButton(IconData icon, String label, int mode) {
+    return ElevatedButton(
+      onPressed: () async {
+        await applicationBloc.changePointer(mode);
+        setState(() {});
+      },
+      child: Row(
+        children: [
+          Icon(icon),
+          const SizedBox(width: 8),
+          Text(label),
+        ],
       ),
-      buildRouteCloseButton(),
-    ],
-  );
-}
+    );
+  }
 
-Widget buildRouteModeButtonsRow() {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      buildRouteModeButton(Icons.directions_car, "Car", 0),
-      buildRouteModeButton(Icons.directions_bike, "Bicycle", 1),
-      buildRouteModeButton(Icons.directions_walk, "Walking", 2),
-    ],
-  );
-}
-
-Widget buildRouteModeButton(IconData icon, String label, int mode) {
-  return ElevatedButton(
-    onPressed: () async {
-      await aplicationBloc.changePointer(mode);
-      setState(() {});
-    },
-    child: Row(
+  Widget buildRouteLocationRow(IconData icon, String labelText) {
+    return Row(
       children: [
         Icon(icon),
         const SizedBox(width: 8),
-        Text(label),
-      ],
-    ),
-  );
-}
-
-Widget buildRouteLocationRow(IconData icon, String labelText) {
-  return Row(
-    children: [
-      Icon(icon),
-      const SizedBox(width: 8),
-      Expanded(
-        child: InputDecorator(
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-          ),
-          child: Text(
-            labelText,
-            style: const TextStyle(fontSize: 16),
+        Expanded(
+          child: InputDecorator(
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+            ),
+            child: Text(
+              labelText,
+              style: const TextStyle(fontSize: 16),
+            ),
           ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 
-Widget buildRouteDistanceText() {
-  return Container(
-    alignment: Alignment.centerRight,
-    child: Text(
-      "Distancia: ${routeDistance.toString()}",
-      style: const TextStyle(
-        color: Color.fromRGBO(96, 151, 128, 1),
-        fontSize: 16,
+  Widget buildRouteDistanceText() {
+    return Container(
+      alignment: Alignment.centerRight,
+      child: Text(
+        "Distancia: ${routeDistance.toString()}",
+        style: const TextStyle(
+          color: Color.fromRGBO(96, 151, 128, 1),
+          fontSize: 16,
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-Widget buildRouteCloseButton() {
-  return Positioned(
-    top: 30,
-    right: 10,
-    child: IconButton(
-      icon: const Icon(Icons.close),
-      onPressed: () {
-        setState(() {
-          showRouteDetails = false;
-          aplicationBloc.cleanRoute();
-        });
-      },
-    ),
-  );
-}
+  Widget buildRouteCloseButton() {
+    return Positioned(
+      top: 30,
+      right: 10,
+      child: IconButton(
+        icon: const Icon(Icons.close),
+        onPressed: () {
+          setState(() {
+            showRouteDetails = false;
+            applicationBloc.cleanRoute();
+          });
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -236,7 +227,9 @@ Widget buildRouteCloseButton() {
               Expanded(
                   child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: printSearchBar(),
+                child: !showRouteDetails
+                    ? printSearchBar()
+                    : buildRouteDetailsContainer(),
               ))
             ],
           ),
@@ -290,8 +283,13 @@ Widget buildRouteCloseButton() {
                   ),
                 ),
                 ElevatedButton.icon(
-                  onPressed: () {
-                    // Agrega la lógica para el botón aquí
+                  onPressed: () async {
+                    await applicationBloc.calculateRoute(points);
+                    placeIsSelected = false;
+                    showRouteDetails = true;
+                    routeDistance =
+                        applicationBloc.calculateRouteDistance(points);
+                    setState(() {});
                   },
                   icon: Icon(
                     Icons
@@ -379,34 +377,11 @@ Widget buildRouteCloseButton() {
         target: _center,
         zoom: 15.0,
       ),
-      polylines: aplicationBloc.routevolt.routeList[aplicationBloc.routevolt.i].routes.isNotEmpty
-                ? aplicationBloc.routevolt.routeList[aplicationBloc.routevolt.i].routes
-                : emptyRoute,
-          ),
-      if (showRouteDetails) buildRouteDetailsContainer(),
-      Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              margin: EdgeInsets.only(bottom: 20),
-              child: FloatingActionButton(
-                backgroundColor: Color.fromRGBO(77, 94, 107, 1),
-                onPressed: () async {
-                  await aplicationBloc.calculateRoute( points);
-                  setState(() {
-                    showRouteDetails = true;
-                    routeDistance = aplicationBloc.calculateRouteDistance(points);
-                  });
-                },
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
-          ),
-        ],
-      ),
+      polylines: applicationBloc.routevolt
+              .routeList[applicationBloc.routevolt.i].routes.isNotEmpty
+          ? applicationBloc
+              .routevolt.routeList[applicationBloc.routevolt.i].routes
+          : emptyRoute,
     );
   }
 
