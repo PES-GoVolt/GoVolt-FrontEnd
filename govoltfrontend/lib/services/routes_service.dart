@@ -12,10 +12,10 @@ class RouteService {
     apiKey = jsonData['apiKey'];
   }
 
-  Future<void> getRoute(List<LatLng> points, MapsRoutes route) async {
+  Future<void> getRoute(List<LatLng> points, MapsRoutes route, TravelModes mode) async {
     if (apiKey == null) await loadJsonData();
     await route.drawRoute(points, 'Test routes',
               Color.fromRGBO(125, 193, 165, 1), apiKey!,
-              travelMode: TravelModes.driving);
+              travelMode: mode);
   }
 }
