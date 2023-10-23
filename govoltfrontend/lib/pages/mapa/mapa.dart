@@ -6,6 +6,8 @@ import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/mapa/place.dart';
 import 'package:govoltfrontend/models/place_search.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:govoltfrontend/models/mapa/geometry.dart';
+import 'package:govoltfrontend/models/mapa/location.dart';
 
 class MapScreen extends StatefulWidget {
   MapScreen();
@@ -68,6 +70,27 @@ class _MapaState extends State<MapScreen> {
             applicationBloc.place!.geometry.location.lng)));
     _myLocMarker = myMarkers.toSet();
     setState(() {});
+  }
+
+  void placeRandomSelected(double lat, double lng) {
+    placeIsSelected = true;
+    Location location = Location(lat: lat, lng: lng);
+    Geometry geo = Geometry(location: location);
+    String latLong = "$lat, $lng";
+    applicationBloc.place =
+        Place(geometry: geo, address: latLong, name: "", uri: null);
+    _goToRandomPlace(lat, lng);
+    myMarkers.clear();
+    myMarkers
+        .add(Marker(markerId: const MarkerId('1'), position: LatLng(lat, lng)));
+    _myLocMarker = myMarkers.toSet();
+    setState(() {});
+  }
+
+  Future<void> _goToRandomPlace(double lat, double lng) async {
+    final GoogleMapController controller = await _mapController.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(target: LatLng(lat, lng), zoom: 17)));
   }
 
   Future<void> cargarMarcadores() async {
@@ -426,6 +449,9 @@ class _MapaState extends State<MapScreen> {
 
   GoogleMap mapWidget() {
     return GoogleMap(
+      onLongPress: (LatLng latLng) {
+        placeRandomSelected(latLng.latitude, latLng.longitude);
+      },
       onMapCreated: (GoogleMapController controller) {
         _mapController.complete(controller);
         cargarMarcadores();
