@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:govoltfrontend/pages/inicio/inicio.dart';
 import 'package:govoltfrontend/config.dart';
+import 'package:govoltfrontend/pages/mapa/mapa.dart';
 
 class Menu extends StatefulWidget {
   const Menu({super.key});
@@ -16,7 +16,7 @@ class MenuState extends State<Menu> {
   getDrawerItemWidget(int pos) {
     switch (pos) {
       case 0:
-        return inicio();
+        return MapScreen();
     }
   }
 
@@ -31,7 +31,8 @@ class MenuState extends State<Menu> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(Config.appName),
+        backgroundColor: const Color.fromRGBO(125, 193, 165, 1),
+        title: const Text(""),
       ),
       drawer: Drawer(
         child: ListView(

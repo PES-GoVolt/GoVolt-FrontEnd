@@ -1,6 +1,6 @@
 class Config {
   static const String appName = "Go Volt";
-  static const String apiURL = '192.168.122.1'; // api de cada ordenador
+  static const String apiURL = '10.0.2.2:8000'; // api de cada ordenador
   static const productosAPI = "api/producto";
   static const clientesAPI = "api/cliente";
   static const puntosCargaAPI = "api/puntocarga";

@@ -16,7 +16,7 @@ class RouteService {
       List<LatLng> points, MapsRoutes route, TravelModes mode) async {
     if (apiKey == null) await loadJsonData();
     await route.drawRoute(
-        points, 'Test routes', Color.fromRGBO(125, 193, 165, 1), apiKey!,
+        points, 'Test routes', Color.fromRGBO(185, 15, 219, 0.612), apiKey!,
         travelMode: mode);
   }
 }
