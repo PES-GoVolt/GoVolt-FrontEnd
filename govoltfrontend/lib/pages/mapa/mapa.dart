@@ -5,7 +5,6 @@ import 'package:govoltfrontend/services/geolocator_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/mapa/place.dart';
 import 'package:govoltfrontend/models/place_search.dart';
-import 'package:govoltfrontend/services/puntos_carga_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MapScreen extends StatefulWidget {
@@ -20,7 +19,6 @@ class _MapaState extends State<MapScreen> {
   final Completer<GoogleMapController> _mapController = Completer();
   final applicationBloc = AplicationBloc();
   late StreamSubscription locationSubscription;
-  final chargersService = ChargersService("http://127.0.0.1:0080/api");
 
   LatLng userPosition = const LatLng(41.303110065444294, 2.0025687347671783);
   double directionUser = 0;
@@ -28,6 +26,7 @@ class _MapaState extends State<MapScreen> {
   bool showRouteDetails = false;
   bool routeStarted = false;
   double zoomMap = 19.0;
+  bool goToNearestChargerEnable = false;
 
   List<PlaceSearch>? searchResults;
   List<Marker> myMarkers = [];
@@ -73,7 +72,7 @@ class _MapaState extends State<MapScreen> {
 
   Future<void> cargarMarcadores() async {
     try {
-      final puntosDeCarga = await chargersService.obtenerPuntosDeCarga();
+      final puntosDeCarga = await applicationBloc.getChargers();
 
       final nuevosMarcadores = puntosDeCarga.map((punto) {
         return Marker(
@@ -110,7 +109,7 @@ class _MapaState extends State<MapScreen> {
         zoom: 17)));
   }
 
-  Future<void> _changeCameraToRouteAeroView() async {
+  Future<void> _changeCameraToRoutePreview() async {
     placeIsSelected = false;
     showRouteDetails = true;
     routeStarted = false;
@@ -140,6 +139,19 @@ class _MapaState extends State<MapScreen> {
         target: LatLng(userPosition.latitude, userPosition.longitude),
         zoom: 19,
         bearing: directionUser)));
+  }
+
+  Future<void> _goToNearestCharger() async {
+    LatLng coord = LatLng(userPosition.latitude, userPosition.longitude);
+    applicationBloc.changePointer(3);
+    LatLng nearestCharger = await applicationBloc.searchNearestCharger(coord);
+    List<LatLng> points = [
+      userPosition,
+      LatLng(nearestCharger.latitude, nearestCharger.longitude)
+    ];
+    await applicationBloc.calculateRouteToCharger(points);
+
+    setState(() {});
   }
 
   Widget buildRouteDetailsContainer() {
@@ -258,7 +270,7 @@ class _MapaState extends State<MapScreen> {
                 ElevatedButton.icon(
                   onPressed: () async {
                     await _calculateRoute();
-                    await _changeCameraToRouteAeroView();
+                    await _changeCameraToRoutePreview();
                     setState(() {});
                   },
                   icon: const Icon(
@@ -469,7 +481,7 @@ class _MapaState extends State<MapScreen> {
     );
   }
 
-  Widget _chooseWidgetToShow() {
+  Widget _chooseSearchBarOrRouteDetails() {
     if (!showRouteDetails) return printSearchBar();
 
     return buildRouteDetailsContainer();
@@ -488,6 +500,10 @@ class _MapaState extends State<MapScreen> {
               children: [
                 ElevatedButton.icon(
                   onPressed: () async {
+                    goToNearestChargerEnable
+                        ? applicationBloc.changePointer(0)
+                        : await _goToNearestCharger();
+                    goToNearestChargerEnable = !goToNearestChargerEnable;
                     setState(() {});
                   },
                   icon: const Icon(
@@ -495,13 +511,21 @@ class _MapaState extends State<MapScreen> {
                         .directions, // Icono de dirección similar al de Google Maps
                     color: Colors.white, // Color del icono
                   ),
-                  label: const Text(
-                    'Buscar cargador cercano', // Texto del botón
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
-                  ),
+                  label: !goToNearestChargerEnable
+                      ? const Text(
+                          'Buscar cargador cercano', // Texto del botón
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text(
+                          'Volver a destino original', // Texto del botón
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.blue, // Color del texto en el botón
@@ -513,7 +537,7 @@ class _MapaState extends State<MapScreen> {
                       backgroundColor:
                           MaterialStateProperty.all<Color>(Colors.red)),
                   onPressed: () async {
-                    await _changeCameraToRouteAeroView();
+                    await _changeCameraToRoutePreview();
                     setState(() {});
                   },
                   child: const Text('Salir',
@@ -541,7 +565,7 @@ class _MapaState extends State<MapScreen> {
               Expanded(
                   child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: !routeStarted ? _chooseWidgetToShow() : null,
+                child: !routeStarted ? _chooseSearchBarOrRouteDetails() : null,
               ))
             ],
           ),

@@ -4,12 +4,14 @@ import 'package:govoltfrontend/models/place_search.dart';
 import 'package:govoltfrontend/services/places_service.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_routes/google_maps_routes.dart';
+import 'package:govoltfrontend/services/puntos_carga_service.dart';
 import 'package:govoltfrontend/services/routes_service.dart';
 import 'package:govoltfrontend/models/route.dart';
 
 class AplicationBloc with ChangeNotifier {
   final placesService = PlacesService();
   final routeService = RouteService();
+  final chargersService = ChargersService("http://127.0.0.1:0080/api");
   RouteVolt routevolt = RouteVolt();
   DistanceCalculator distanceCalculator = DistanceCalculator();
   List<PlaceSearch>? searchResults;
@@ -22,6 +24,16 @@ class AplicationBloc with ChangeNotifier {
       searchResults = await placesService.getAutoComplete(searchTerm, lat, lng);
     }
     notifyListeners();
+  }
+
+  Future<List<Coordenada>> getChargers() async {
+    return await chargersService.obtenerPuntosDeCarga();
+  }
+
+  searchNearestCharger(LatLng coord) async {
+    Coordenada chargerCoords =
+        await chargersService.obtenerPuntoDeCargaMasCercano(coord);
+    return LatLng(chargerCoords.latitud, chargerCoords.longitud);
   }
 
   searchPlace(String placeId) async {
@@ -37,6 +49,11 @@ class AplicationBloc with ChangeNotifier {
         points, routevolt.bicycleRoute, TravelModes.bicycling);
     await routeService.getRoute(
         points, routevolt.walkingRoute, TravelModes.walking);
+  }
+
+  calculateRouteToCharger(List<LatLng> points) async {
+    await routeService.getRoute(
+        points, routevolt.tempRouteToCharger, TravelModes.driving);
   }
 
   String calculateRouteDistance(List<LatLng> points) {
