@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
 class ChargersService {
@@ -8,7 +9,7 @@ class ChargersService {
 
   Future<List<Coordenada>> obtenerPuntosDeCarga() async {
     try {
-      String url = "http://10.0.2.2:8000/api/chargers";
+      String url = "http://10.0.2.2:8000/api/chargers/all";
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
@@ -21,6 +22,26 @@ class ChargersService {
       } else {
         throw Exception('Error al obtener los puntos de carga');
       }
+    } catch (e) {
+      throw Exception('Error de red: $e');
+    }
+  }
+
+  Future<Coordenada> obtenerPuntoDeCargaMasCercano(LatLng coordenada) async {
+    Map<String, dynamic> data = {
+      "longitud": coordenada.longitude,
+      "latitud": coordenada.latitude,
+    };
+    String url = "http://10.0.2.2:8000/api/chargers/nearest";
+    String jsonData = json.encode(data);
+    try {
+      final response = await http.post(Uri.parse(url),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonData);
+      final jsonResponse = json.decode(response.body);
+      return Coordenada.fromJson(jsonResponse);
     } catch (e) {
       throw Exception('Error de red: $e');
     }
