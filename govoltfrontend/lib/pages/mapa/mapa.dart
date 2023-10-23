@@ -23,22 +23,24 @@ class _MapaState extends State<MapScreen> {
   final Completer<GoogleMapController> _mapController = Completer();
   final applicationBloc = AplicationBloc();
   late StreamSubscription locationSubscription;
+  final chargersService = ChargersService("http://127.0.0.1:0080/api");
+  final bikeService = BikeStationsService("http://127.0.0.1:0080/api");
 
   LatLng userPosition = const LatLng(41.303110065444294, 2.0025687347671783);
   double directionUser = 0;
   bool placeIsSelected = false;
-  final chargersService = ChargersService("http://127.0.0.1:0080/api");
-  final bikeService = BikeStationsService("http://127.0.0.1:0080/api");
   bool showRouteDetails = false;
   bool routeStarted = false;
   double zoomMap = 19.0;
   bool goToNearestChargerEnable = false;
+  late BitmapDescriptor bikeStationIcon;
 
   List<PlaceSearch>? searchResults;
   List<Marker> myMarkers = [];
   Set<Marker> _myLocMarker = {};
   Set<Marker> _chargers = {};
   Set<Polyline> emptyRoute = {};
+  Set<Marker> _bikeStations = {};
 
   @override
   void initState() {
@@ -56,17 +58,6 @@ class _MapaState extends State<MapScreen> {
     super.dispose();
   }
 
-  Set<Marker> _bikeStations = {};
-
-  
-  
-  void valueChanged(var value) async {
-    await applicationBloc.searchPlaces(
-        value, userPosition.latitude, userPosition.longitude);
-    searchResults = applicationBloc.searchResults;
-    setState(() {});
-  }
-
 /*
   Future<BitmapDescriptor> createCustomMarkerIcon() async {
   return BitmapDescriptor.fromAssetImage(
@@ -75,6 +66,13 @@ class _MapaState extends State<MapScreen> {
   );
 }
 */
+
+  void valueChanged(var value) async {
+    await applicationBloc.searchPlaces(
+        value, userPosition.latitude, userPosition.longitude);
+    searchResults = applicationBloc.searchResults;
+    setState(() {});
+  }
 
   void placeSelected(var idPlace) async {
     await applicationBloc.searchPlace(idPlace);
@@ -118,7 +116,8 @@ class _MapaState extends State<MapScreen> {
         return Marker(
           markerId: MarkerId(punto.chargerId),
           position: LatLng(punto.longitud, punto.latitud),
-          icon:BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen), 
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
           infoWindow: InfoWindow(title: 'Cargador ID: ${punto.chargerId}'),
         );
       }).toSet();
@@ -130,50 +129,30 @@ class _MapaState extends State<MapScreen> {
     }
   }
 
-  late BitmapDescriptor bikeStationIcon;
-
-
   Future<void> cargarBicis() async {
-  try {
-    // Call the service to get bike stations
-    final bikeStations = await bikeService.getBikeStations();
+    try {
+      // Call the service to get bike stations
+      final bikeStations = await bikeService.getBikeStations();
 
-    // Iterate through the bike stations and create markers
-    final newMarkers = bikeStations.map((station) {
-      return Marker(
-        markerId: MarkerId(station.stationId), // Must be unique for each marker
-        position: LatLng(station.latitude, station.longitude),
-        icon:BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue), 
-        infoWindow: InfoWindow(title: 'Station ID: ${station.stationId}'),
-      );
-    }).toSet(); // Convert the list of markers into a set of markers
-    // Update the set of markers
-    setState(() {
-      _bikeStations = newMarkers;
-    });
-  } catch (e) {
-    print('Error loading markers: $e');
-  }
-}
-
-  @override
-  void dispose() {
-    locationSubscription.cancel();
-    super.dispose();
+      // Iterate through the bike stations and create markers
+      final newMarkers = bikeStations.map((station) {
+        return Marker(
+          markerId:
+              MarkerId(station.stationId), // Must be unique for each marker
+          position: LatLng(station.latitude, station.longitude),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+          infoWindow: InfoWindow(title: 'Station ID: ${station.stationId}'),
+        );
+      }).toSet(); // Convert the list of markers into a set of markers
+      // Update the set of markers
+      setState(() {
+        _bikeStations = newMarkers;
+      });
+    } catch (e) {
+      print('Error loading markers: $e');
+    }
   }
 
-
-  @override
-  void initState() {
-    geolocatiorService.getCurrentLocation().listen((position) {
-      centerScreen(position);
-    });
-    super.initState();
-    /*
-    createCustomMarkerIcon().then((icon) {
-    bikeStationIcon = icon;
-  });*/
-    
   Future<void> centerScreen() async {
     final GoogleMapController controller = await _mapController.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
@@ -520,7 +499,7 @@ class _MapaState extends State<MapScreen> {
         cargarBicis();
       },
       myLocationEnabled: true,
-      markers: {..._myLocMarker, ..._chargers,  ..._bikeStations},
+      markers: {..._myLocMarker, ..._chargers, ..._bikeStations},
       initialCameraPosition: CameraPosition(target: userPosition, zoom: 15.0),
       polylines: applicationBloc.routevolt
               .routeList[applicationBloc.routevolt.i].routes.isNotEmpty
