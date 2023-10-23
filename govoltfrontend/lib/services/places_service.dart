@@ -13,11 +13,13 @@ class PlacesService {
     apiKey = jsonData['apiKey'];
   }
 
-  Future<List<PlaceSearch>> getAutoComplete(String search) async {
+  Future<List<PlaceSearch>> getAutoComplete(
+      String search, double lat, double lng) async {
     if (apiKey == null) await loadJsonData();
     Uri url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$search&key=$apiKey');
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$search&key=$apiKey&location=$lat%2C$lng&radius=5000&origin=$lng%2C$lng');
     var response = await http.get(url);
+    print("hola2");
     var json = convert.jsonDecode(response.body);
     /*Map<String, dynamic> json = {
       "predictions": [
@@ -140,6 +142,7 @@ class PlacesService {
         'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$apiKey');
     var response = await http.get(url);
     var json = convert.jsonDecode(response.body);
+    print("hola3");
     /*Map<String, dynamic> json = {
       "html_attributions": [],
       "result": {

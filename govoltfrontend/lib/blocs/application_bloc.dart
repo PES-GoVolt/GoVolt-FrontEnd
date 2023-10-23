@@ -15,11 +15,11 @@ class AplicationBloc with ChangeNotifier {
   List<PlaceSearch>? searchResults;
   Place? place;
 
-  searchPlaces(String searchTerm) async {
+  searchPlaces(String searchTerm, double lat, double lng) async {
     if (searchTerm == "") {
       searchResults!.clear();
     } else {
-      searchResults = await placesService.getAutoComplete(searchTerm);
+      searchResults = await placesService.getAutoComplete(searchTerm, lat, lng);
     }
     notifyListeners();
   }
@@ -29,22 +29,25 @@ class AplicationBloc with ChangeNotifier {
     searchResults!.clear();
     notifyListeners();
   }
-  
+
   calculateRoute(List<LatLng> points) async {
-    await routeService.getRoute(points, routevolt.carRoute, TravelModes.driving);
-    await routeService.getRoute(points, routevolt.bicycleRoute, TravelModes.bicycling);
-    await routeService.getRoute(points, routevolt.walkingRoute, TravelModes.walking);
+    await routeService.getRoute(
+        points, routevolt.carRoute, TravelModes.driving);
+    await routeService.getRoute(
+        points, routevolt.bicycleRoute, TravelModes.bicycling);
+    await routeService.getRoute(
+        points, routevolt.walkingRoute, TravelModes.walking);
   }
 
-  String calculateRouteDistance(List<LatLng> points){
+  String calculateRouteDistance(List<LatLng> points) {
     return distanceCalculator.calculateRouteDistance(points, decimals: 1);
   }
 
-  changePointer(int mode){
+  changePointer(int mode) {
     routevolt.i = mode;
   }
 
-  cleanRoute(){
+  cleanRoute() {
     routevolt.bicycleRoute.routes.clear();
     routevolt.walkingRoute.routes.clear();
     routevolt.carRoute.routes.clear();

@@ -6,6 +6,7 @@ class RouteVolt {
   MapsRoutes walkingRoute = MapsRoutes();
   List<MapsRoutes> routeList = [];
   int i = 0;
+  String distance = "0";
 
   RouteVolt() {
     routeList = [carRoute, bicycleRoute, walkingRoute];

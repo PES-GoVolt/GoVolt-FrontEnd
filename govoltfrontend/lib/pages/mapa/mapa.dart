@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:govoltfrontend/services/geolocator_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
@@ -19,21 +18,42 @@ class MapScreen extends StatefulWidget {
 class _MapaState extends State<MapScreen> {
   final GeolocatiorService geolocatiorService = GeolocatiorService();
   final Completer<GoogleMapController> _mapController = Completer();
-  final LatLng _center = const LatLng(41.303110065444294, 2.0025687347671783);
   final applicationBloc = AplicationBloc();
-  List<PlaceSearch>? searchResults;
   late StreamSubscription locationSubscription;
-  bool placeIsSelected = false;
   final chargersService = ChargersService("http://127.0.0.1:0080/api");
 
+  LatLng userPosition = const LatLng(41.303110065444294, 2.0025687347671783);
+  double directionUser = 0;
+  bool placeIsSelected = false;
+  bool showRouteDetails = false;
+  bool routeStarted = false;
+  double zoomMap = 19.0;
+
+  List<PlaceSearch>? searchResults;
   List<Marker> myMarkers = [];
-
   Set<Marker> _myLocMarker = {};
-
   Set<Marker> _chargers = {};
+  Set<Polyline> emptyRoute = {};
+
+  @override
+  void initState() {
+    geolocatiorService.getCurrentLocation().listen((position) {
+      userPosition = LatLng(position.latitude, position.longitude);
+      directionUser = position.heading;
+      centerScreen();
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    locationSubscription.cancel();
+    super.dispose();
+  }
 
   void valueChanged(var value) async {
-    await applicationBloc.searchPlaces(value);
+    await applicationBloc.searchPlaces(
+        value, userPosition.latitude, userPosition.longitude);
     searchResults = applicationBloc.searchResults;
     setState(() {});
   }
@@ -53,19 +73,15 @@ class _MapaState extends State<MapScreen> {
 
   Future<void> cargarMarcadores() async {
     try {
-      // Llama al servicio para obtener los puntos de carga
       final puntosDeCarga = await chargersService.obtenerPuntosDeCarga();
 
-      // Itera a través de los puntos de carga y crea marcadores
       final nuevosMarcadores = puntosDeCarga.map((punto) {
         return Marker(
-          markerId:
-              MarkerId(punto.chargerId), // Debe ser único para cada marcador
+          markerId: MarkerId(punto.chargerId),
           position: LatLng(punto.longitud, punto.latitud),
           infoWindow: InfoWindow(title: 'Cargador ID: ${punto.chargerId}'),
         );
-      }).toSet(); // Convierte la lista de marcadores en un conjunto de marcadores
-      // Actualiza el conjunto de marcadores
+      }).toSet();
       setState(() {
         _chargers = nuevosMarcadores;
       });
@@ -74,35 +90,57 @@ class _MapaState extends State<MapScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    locationSubscription.cancel();
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    geolocatiorService.getCurrentLocation().listen((position) {
-      centerScreen(position);
-    });
-    super.initState();
-  }
-
-  Future<void> centerScreen(Position position) async {
+  Future<void> centerScreen() async {
     final GoogleMapController controller = await _mapController.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target: LatLng(position.latitude, position.longitude),
-        zoom: 19.0,
-        bearing: position.heading)));
+        target: (placeIsSelected || showRouteDetails)
+            ? LatLng(applicationBloc.place!.geometry.location.lat,
+                applicationBloc.place!.geometry.location.lng)
+            : LatLng(userPosition.latitude, userPosition.longitude),
+        zoom: zoomMap,
+        bearing: routeStarted ? directionUser : 0.0)));
   }
 
-  List<LatLng> points = [
-    LatLng(41.38745590006128, 2.172276141806381),
-    LatLng(41.30282101632336, 2.002613484100842)
-  ];
-  Set<Polyline> emptyRoute = {};
-  bool showRouteDetails = false;
-  String routeDistance = '0';
+  Future<void> _goToPlace(Place place) async {
+    final GoogleMapController controller = await _mapController.future;
+    zoomMap = 17;
+    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        target:
+            LatLng(place.geometry.location.lat, place.geometry.location.lng),
+        zoom: 17)));
+  }
+
+  Future<void> _changeCameraToRouteAeroView() async {
+    placeIsSelected = false;
+    showRouteDetails = true;
+    routeStarted = false;
+    zoomMap = 14;
+    final GoogleMapController controller = await _mapController.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        target: LatLng(applicationBloc.place!.geometry.location.lat,
+            applicationBloc.place!.geometry.location.lng),
+        zoom: 14)));
+  }
+
+  Future<void> _calculateRoute() async {
+    List<LatLng> points = [
+      userPosition,
+      LatLng(applicationBloc.place!.geometry.location.lat,
+          applicationBloc.place!.geometry.location.lng)
+    ];
+    await applicationBloc.calculateRoute(points);
+    applicationBloc.routevolt.distance =
+        applicationBloc.calculateRouteDistance(points);
+  }
+
+  Future<void> _changeCameraToRouteMode() async {
+    final GoogleMapController controller = await _mapController.future;
+    zoomMap = 19;
+    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        target: LatLng(userPosition.latitude, userPosition.longitude),
+        zoom: 19,
+        bearing: directionUser)));
+  }
 
   Widget buildRouteDetailsContainer() {
     return Stack(
@@ -123,18 +161,14 @@ class _MapaState extends State<MapScreen> {
           ),
           child: Column(
             children: [
-              const SizedBox(height: 25),
               buildRouteModeButtonsRow(),
               const SizedBox(height: 10),
               buildRouteLocationRow(Icons.location_searching, "Your ubication"),
               const SizedBox(height: 10),
               buildRouteLocationRow(Icons.location_on, "Coordenadas Buscadas"),
-              const SizedBox(height: 10),
-              buildRouteDistanceText(),
             ],
           ),
         ),
-        buildRouteCloseButton(),
       ],
     );
   }
@@ -186,73 +220,12 @@ class _MapaState extends State<MapScreen> {
     );
   }
 
-  Widget buildRouteDistanceText() {
-    return Container(
-      alignment: Alignment.centerRight,
-      child: Text(
-        "Distancia: ${routeDistance.toString()}",
-        style: const TextStyle(
-          color: Color.fromRGBO(96, 151, 128, 1),
-          fontSize: 16,
-        ),
-      ),
-    );
-  }
+  Container bottomSheetInfo() {
+    if (placeIsSelected) return _showPlaceInfo();
 
-  Widget buildRouteCloseButton() {
-    return Positioned(
-      top: 30,
-      right: 10,
-      child: IconButton(
-        icon: const Icon(Icons.close),
-        onPressed: () {
-          setState(() {
-            showRouteDetails = false;
-            applicationBloc.cleanRoute();
-          });
-        },
-      ),
-    );
-  }
+    if (routeStarted == true) return bottomSheetDisplayedDuringRoute();
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      bottomSheet: placeIsSelected ? _showPlaceInfo() : null,
-      resizeToAvoidBottomInset: false,
-      body: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                  child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: !showRouteDetails
-                    ? printSearchBar()
-                    : buildRouteDetailsContainer(),
-              ))
-            ],
-          ),
-          Expanded(
-              child: Stack(
-            children: [
-              SizedBox(
-                  height: MediaQuery.of(context).size.height - 100,
-                  child: mapWidget()),
-              if (applicationBloc.searchResults != null &&
-                  applicationBloc.searchResults!.isNotEmpty)
-                blackPageForSearch(),
-              if (applicationBloc.searchResults != null &&
-                  searchResults!.isNotEmpty)
-                SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  child: printListView(),
-                ),
-            ],
-          )),
-        ],
-      ),
-    );
+    return _routeInfo();
   }
 
   Container _showPlaceInfo() {
@@ -284,19 +257,16 @@ class _MapaState extends State<MapScreen> {
                 ),
                 ElevatedButton.icon(
                   onPressed: () async {
-                    await applicationBloc.calculateRoute(points);
-                    placeIsSelected = false;
-                    showRouteDetails = true;
-                    routeDistance =
-                        applicationBloc.calculateRouteDistance(points);
+                    await _calculateRoute();
+                    await _changeCameraToRouteAeroView();
                     setState(() {});
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons
                         .directions, // Icono de dirección similar al de Google Maps
                     color: Colors.white, // Color del icono
                   ),
-                  label: Text(
+                  label: const Text(
                     'Ruta', // Texto del botón
                     style: TextStyle(
                       fontSize: 16,
@@ -308,12 +278,17 @@ class _MapaState extends State<MapScreen> {
                     backgroundColor: Colors.blue, // Color del texto en el botón
                   ),
                 ),
+                const SizedBox(width: 10),
                 ElevatedButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.red)),
                   onPressed: () {
                     placeIsSelected = false;
                     setState(() {});
                   },
-                  child: const Text('X'),
+                  child: const Text('Salir',
+                      style: TextStyle(color: Colors.black, fontSize: 16)),
                 ),
               ],
             ),
@@ -328,9 +303,9 @@ class _MapaState extends State<MapScreen> {
                   Uri url = Uri.parse(applicationBloc.place!.uri!);
                   launchUrl(url);
                 },
-                child: Text(
+                child: const Text(
                   'Web Page',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     color: Colors.blue,
                     decoration: TextDecoration.underline,
@@ -357,12 +332,84 @@ class _MapaState extends State<MapScreen> {
     );
   }
 
-  Future<void> _goToPlace(Place place) async {
-    final GoogleMapController controller = await _mapController.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target:
-            LatLng(place.geometry.location.lat, place.geometry.location.lng),
-        zoom: 17)));
+  Container _routeInfo() {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.15,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.0),
+        border: Border.all(
+          color: const Color.fromRGBO(77, 94, 107, 1),
+          width: 2.0,
+        ),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              children: [
+                const Expanded(
+                  child: Text(
+                    "TIEMPO",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    routeStarted = true;
+                    showRouteDetails = false;
+                    await _changeCameraToRouteMode();
+                    setState(() {});
+                  },
+                  icon: const Icon(
+                    Icons
+                        .directions, // Icono de dirección similar al de Google Maps
+                    color: Colors.white, // Color del icono
+                  ),
+                  label: const Text(
+                    'Iniciar Ruta', // Texto del botón
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.blue, // Color del texto en el botón
+                  ),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.red)),
+                  onPressed: () {
+                    placeIsSelected = false;
+                    setState(() {
+                      showRouteDetails = false;
+                      placeIsSelected = true;
+                      applicationBloc.cleanRoute();
+                      centerScreen();
+                    });
+                  },
+                  child: const Text('Salir',
+                      style: TextStyle(color: Colors.black, fontSize: 16)),
+                ),
+              ],
+            ),
+            Text(
+              applicationBloc.routevolt.distance,
+              style: const TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   GoogleMap mapWidget() {
@@ -373,10 +420,7 @@ class _MapaState extends State<MapScreen> {
       },
       myLocationEnabled: true,
       markers: {..._myLocMarker, ..._chargers},
-      initialCameraPosition: CameraPosition(
-        target: _center,
-        zoom: 15.0,
-      ),
+      initialCameraPosition: CameraPosition(target: userPosition, zoom: 15.0),
       polylines: applicationBloc.routevolt
               .routeList[applicationBloc.routevolt.i].routes.isNotEmpty
           ? applicationBloc
@@ -422,6 +466,104 @@ class _MapaState extends State<MapScreen> {
               style: const TextStyle(color: Colors.white),
             ));
       },
+    );
+  }
+
+  Widget _chooseWidgetToShow() {
+    if (!showRouteDetails) return printSearchBar();
+
+    return buildRouteDetailsContainer();
+  }
+
+  Container bottomSheetDisplayedDuringRoute() {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.1,
+      padding: const EdgeInsets.all(16),
+      color: Colors.blue.withOpacity(0.0),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    setState(() {});
+                  },
+                  icon: const Icon(
+                    Icons
+                        .directions, // Icono de dirección similar al de Google Maps
+                    color: Colors.white, // Color del icono
+                  ),
+                  label: const Text(
+                    'Buscar cargador cercano', // Texto del botón
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.blue, // Color del texto en el botón
+                  ),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.red)),
+                  onPressed: () async {
+                    await _changeCameraToRouteAeroView();
+                    setState(() {});
+                  },
+                  child: const Text('Salir',
+                      style: TextStyle(color: Colors.black, fontSize: 16)),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      bottomSheet: (placeIsSelected || showRouteDetails || routeStarted)
+          ? bottomSheetInfo()
+          : null,
+      resizeToAvoidBottomInset: false,
+      body: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                  child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: !routeStarted ? _chooseWidgetToShow() : null,
+              ))
+            ],
+          ),
+          Expanded(
+              child: Stack(
+            children: [
+              SizedBox(
+                  height: MediaQuery.of(context).size.height - 100,
+                  child: mapWidget()),
+              if (applicationBloc.searchResults != null &&
+                  applicationBloc.searchResults!.isNotEmpty)
+                blackPageForSearch(),
+              if (applicationBloc.searchResults != null &&
+                  searchResults!.isNotEmpty)
+                SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  child: printListView(),
+                ),
+            ],
+          )),
+        ],
+      ),
     );
   }
 }
