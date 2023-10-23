@@ -104,7 +104,7 @@ class _MapaState extends State<MapScreen> {
       return Marker(
         markerId: MarkerId(station.stationId), // Must be unique for each marker
         position: LatLng(station.latitude, station.longitude),
-        // icon: bikeStationIcon,
+        icon:BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange), 
         infoWindow: InfoWindow(title: 'Station ID: ${station.stationId}'),
       );
     }).toSet(); // Convert the list of markers into a set of markers

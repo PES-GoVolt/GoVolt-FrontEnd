@@ -8,7 +8,7 @@ class ChargersService {
 
   Future<List<Coordenada>> obtenerPuntosDeCarga() async {
     try {
-      String url = "http://10.0.2.2:8000/api/chargers/all";
+      String url = "http://10.0.2.2:8000/api/chargers";
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
