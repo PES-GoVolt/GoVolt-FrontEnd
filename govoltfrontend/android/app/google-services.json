@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "986011320631",
+    "project_id": "govolt-5dd50",
+    "storage_bucket": "govolt-5dd50.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:986011320631:android:457057d920d7e00c049ab2",
+        "android_client_info": {
+          "package_name": "com.example.govoltfrontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkSE_5o-GKTQnb8K76wI1sPlHfKHhgr9g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
