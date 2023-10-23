@@ -3,10 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:govoltfrontend/usuario.dart';
 import 'package:govoltfrontend/menu.dart';
-import 'package:govoltfrontend/pages/cliente/cliente_add_edit.dart';
-import 'package:govoltfrontend/pages/cliente/cliente_list.dart';
-import 'package:govoltfrontend/pages/producto/producto_add_edit.dart';
-import 'package:govoltfrontend/pages/producto/producto_list.dart';
 import 'package:govoltfrontend/pages/registro/registro.dart';
 import 'package:govoltfrontend/config.dart';
 
@@ -15,14 +11,11 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-
 void main() async {  // Cambia la función main para inicializar Firebase
   WidgetsFlutterBinding.ensureInitialized();
-  print("hola1");
   await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
   );
-  print("hola2");
   runApp(const MyApp());
 }
 
@@ -39,18 +32,11 @@ class MyApp extends StatelessWidget {
         body: MyStatefulWidget(),
       ),
       routes: {
-        '/list-cliente': (context) => const ClientesList(),
-        '/add-cliente': (context) => const ClienteAddEdit(),
-        '/edit-cliente': (context) => const ClienteAddEdit(),
-        '/list-producto': (context) => const ProductosList(),
-        '/add-producto': (context) => const ProductoAddEdit(),
-        '/edit-producto': (context) => const ProductoAddEdit(),
         '/home': (context) => const Menu(),
         '/registro': (context) => RegisterScreen(),
         '/login': (context) => const Scaffold(
             body: MyStatefulWidget(), // El contenido de tu pantalla de inicio de sesión
           ),
-        '/registro': (context) => RegisterScreen(),
       },
     );
   }
@@ -67,7 +53,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
   //final urllogin = Uri.parse("http://192.168.1.108/api/login/");
@@ -96,10 +82,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             Container(
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
               child: TextField(
-                controller: nameController,
+                controller: emailController,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Nombre de Usuario',
+                  labelText: 'Email',
                 ),
               ),
             ),
@@ -270,8 +256,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   }
 
   Future<void> login() async {
-    if (nameController.text.isEmpty) {
-      showSnackbar("Usuario requerido.");
+    
+    if (emailController.text.isEmpty) {
+      showSnackbar("Email requerido.");
       return;
     }
 
@@ -281,41 +268,28 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     }
 
     final datosdelposibleusuario = {
-      "username": nameController.text,
+      "email": emailController.text,
       "password": passwordController.text
     };
-    final res = await http.post(urllogin,
-        headers: headers, body: jsonEncode(datosdelposibleusuario));
+    final res = await http.post(
+      urllogin,
+      headers: headers, 
+      body: jsonEncode(datosdelposibleusuario)
+    );
     //final data = Map.from(jsonDecode(res.body));
 
-    print(res);
+    print(res.body);
+    print(res.reasonPhrase);
+    print(res.request);
     
-    if (res.statusCode == 400) {
-      showSnackbar("Hay un error.");
-      return;
-    }
     if (res.statusCode != 200) {
-      showSnackbar("El usuario y la contraseña no existen.");
+      // final errorMessage = responseData['error']['message'];
+      showSnackbar("El email y la contraseña no existen.");
       return;
     }
-    final res2 = await http.post(urlobtenertoken,
-        headers: headers, body: jsonEncode(datosdelposibleusuario));
-    final data2 = Map.from(jsonDecode(res2.body));
-    if (res2.statusCode == 400) {
-      showSnackbar("error");
-      return;
-    }
-    if (res2.statusCode != 200) {
-      showSnackbar("Ups. Ha habido un error al obtener el token.");
-    }
-    final token = data2["token"];
-    final user = Usuario(
-        username: nameController.text,
-        password: passwordController.text,
-        token: token);
-    // ignore: use_build_context_synchronously
     //Navigator.push(context,MaterialPageRoute(builder: (context) => Home()),);
     // ignore: use_build_context_synchronously
+    await Future.delayed(Duration.zero);
     Navigator.pushNamed(
       context,
       '/home',

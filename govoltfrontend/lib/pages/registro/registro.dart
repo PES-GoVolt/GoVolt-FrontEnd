@@ -6,6 +6,8 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+final FirebaseAuth _auth = FirebaseAuth.instance;
+
 class RegisterScreen extends StatefulWidget {
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
@@ -13,7 +15,6 @@ class RegisterScreen extends StatefulWidget {
 
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -26,11 +27,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     
     if (emailController.text.isEmpty) {
       showSnackbar("Email requerido.");
-      return;
-    }
-
-    if (usernameController.text.isEmpty) {
-      showSnackbar("Usuario requerido.");
       return;
     }
 
@@ -53,18 +49,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
       showSnackbar("Las contraseñas no coinciden");
       return;
     }
-    
+
     final url = Uri.http(Config.apiURL, Config.registroAPI);
     final headers = {"Content-Type": "application/json;charset=UTF-8"};
 
     final userData = {
-      "username": usernameController.text,
       "password": passwordController.text,
       "email": emailController.text,
       "phone": phoneNumber?.phoneNumber ?? "",
     };
-
-    print(userData);
 
     final response = await http.post(
       url,
@@ -72,8 +65,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: jsonEncode(userData),
     );
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       // Registro exitoso, redirige a la pantalla de inicio de sesión
+      await Future.delayed(Duration.zero);
       Navigator.pushNamed(context, '/login');
     } else {
       // Error en el registro, muestra un mensaje de error
@@ -150,16 +144,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Email',
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-              child: TextField(
-                controller: usernameController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Nombre de Usuario',
                 ),
               ),
             ),

@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:govoltfrontend/pages/cliente/cliente_list.dart';
-import 'package:govoltfrontend/pages/producto/producto_list.dart';
 import 'package:govoltfrontend/pages/inicio/inicio.dart';
 import 'package:govoltfrontend/config.dart';
 
@@ -19,10 +17,6 @@ class MenuState extends State<Menu> {
     switch (pos) {
       case 0:
         return inicio();
-      case 1:
-        return const ClientesList();
-      case 2:
-        return const ProductosList();
     }
   }
 
