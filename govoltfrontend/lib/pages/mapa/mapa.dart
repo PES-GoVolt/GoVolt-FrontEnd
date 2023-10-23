@@ -79,6 +79,7 @@ class _MapaState extends State<MapScreen> {
           markerId:
               MarkerId(punto.chargerId), // Debe ser único para cada marcador
           position: LatLng(punto.longitud, punto.latitud),
+          icon:BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen), 
           infoWindow: InfoWindow(title: 'Cargador ID: ${punto.chargerId}'),
         );
       }).toSet(); // Convierte la lista de marcadores en un conjunto de marcadores
@@ -104,7 +105,7 @@ class _MapaState extends State<MapScreen> {
       return Marker(
         markerId: MarkerId(station.stationId), // Must be unique for each marker
         position: LatLng(station.latitude, station.longitude),
-        icon:BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange), 
+        icon:BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue), 
         infoWindow: InfoWindow(title: 'Station ID: ${station.stationId}'),
       );
     }).toSet(); // Convert the list of markers into a set of markers

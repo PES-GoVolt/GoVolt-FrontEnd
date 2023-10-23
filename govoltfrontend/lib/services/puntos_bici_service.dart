@@ -8,7 +8,7 @@ class BikeStationsService {
 
   Future<List<BikeStation>> getBikeStations() async {
     try {
-      String url = 'http://10.0.2.2:8000/api/bikestations'; // Update the URL for bike stations
+      String url = 'http://10.0.2.2:8000/api/bikestations/all'; // Update the URL for bike stations
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
