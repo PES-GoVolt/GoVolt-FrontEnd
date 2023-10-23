@@ -1,5 +1,4 @@
 import 'dart:async';
-// ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -7,6 +6,7 @@ import 'package:govoltfrontend/services/geolocator_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/mapa/place.dart';
 import 'package:govoltfrontend/models/place_search.dart';
+import 'package:govoltfrontend/services/puntos_carga_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MapScreen extends StatefulWidget {
@@ -24,10 +24,13 @@ class _MapaState extends State<MapScreen> {
   List<PlaceSearch>? searchResults;
   late StreamSubscription locationSubscription;
   bool placeIsSelected = false;
+  final chargersService = ChargersService("http://127.0.0.1:0080/api");
 
   List<Marker> myMarkers = [];
 
   Set<Marker> _myLocMarker = {};
+
+  Set<Marker> _chargers = {};
 
   void valueChanged(var value) async {
     await applicationBloc.searchPlaces(value);
@@ -46,6 +49,29 @@ class _MapaState extends State<MapScreen> {
             applicationBloc.place!.geometry.location.lng)));
     _myLocMarker = myMarkers.toSet();
     setState(() {});
+  }
+
+  Future<void> cargarMarcadores() async {
+    try {
+      // Llama al servicio para obtener los puntos de carga
+      final puntosDeCarga = await chargersService.obtenerPuntosDeCarga();
+
+      // Itera a través de los puntos de carga y crea marcadores
+      final nuevosMarcadores = puntosDeCarga.map((punto) {
+        return Marker(
+          markerId:
+              MarkerId(punto.chargerId), // Debe ser único para cada marcador
+          position: LatLng(punto.longitud, punto.latitud),
+          infoWindow: InfoWindow(title: 'Cargador ID: ${punto.chargerId}'),
+        );
+      }).toSet(); // Convierte la lista de marcadores en un conjunto de marcadores
+      // Actualiza el conjunto de marcadores
+      setState(() {
+        _chargers = nuevosMarcadores;
+      });
+    } catch (e) {
+      print('Error al cargar marcadores: $e');
+    }
   }
 
   @override
@@ -70,6 +96,125 @@ class _MapaState extends State<MapScreen> {
         bearing: position.heading)));
   }
 
+  List<LatLng> points = [
+    LatLng(41.38745590006128, 2.172276141806381),
+    LatLng(41.30282101632336, 2.002613484100842)
+  ];
+  Set<Polyline> emptyRoute = {};
+  bool showRouteDetails = false;
+  String routeDistance = '0';
+
+  Widget buildRouteDetailsContainer() {
+    return Stack(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 5,
+                blurRadius: 7,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              const SizedBox(height: 25),
+              buildRouteModeButtonsRow(),
+              const SizedBox(height: 10),
+              buildRouteLocationRow(Icons.location_searching, "Your ubication"),
+              const SizedBox(height: 10),
+              buildRouteLocationRow(Icons.location_on, "Coordenadas Buscadas"),
+              const SizedBox(height: 10),
+              buildRouteDistanceText(),
+            ],
+          ),
+        ),
+        buildRouteCloseButton(),
+      ],
+    );
+  }
+
+  Widget buildRouteModeButtonsRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        buildRouteModeButton(Icons.directions_car, "Car", 0),
+        buildRouteModeButton(Icons.directions_bike, "Bicycle", 1),
+        buildRouteModeButton(Icons.directions_walk, "Walking", 2),
+      ],
+    );
+  }
+
+  Widget buildRouteModeButton(IconData icon, String label, int mode) {
+    return ElevatedButton(
+      onPressed: () async {
+        await applicationBloc.changePointer(mode);
+        setState(() {});
+      },
+      child: Row(
+        children: [
+          Icon(icon),
+          const SizedBox(width: 8),
+          Text(label),
+        ],
+      ),
+    );
+  }
+
+  Widget buildRouteLocationRow(IconData icon, String labelText) {
+    return Row(
+      children: [
+        Icon(icon),
+        const SizedBox(width: 8),
+        Expanded(
+          child: InputDecorator(
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+            ),
+            child: Text(
+              labelText,
+              style: const TextStyle(fontSize: 16),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildRouteDistanceText() {
+    return Container(
+      alignment: Alignment.centerRight,
+      child: Text(
+        "Distancia: ${routeDistance.toString()}",
+        style: const TextStyle(
+          color: Color.fromRGBO(96, 151, 128, 1),
+          fontSize: 16,
+        ),
+      ),
+    );
+  }
+
+  Widget buildRouteCloseButton() {
+    return Positioned(
+      top: 30,
+      right: 10,
+      child: IconButton(
+        icon: const Icon(Icons.close),
+        onPressed: () {
+          setState(() {
+            showRouteDetails = false;
+            applicationBloc.cleanRoute();
+          });
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,7 +227,9 @@ class _MapaState extends State<MapScreen> {
               Expanded(
                   child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: printSearchBar(),
+                child: !showRouteDetails
+                    ? printSearchBar()
+                    : buildRouteDetailsContainer(),
               ))
             ],
           ),
@@ -136,8 +283,13 @@ class _MapaState extends State<MapScreen> {
                   ),
                 ),
                 ElevatedButton.icon(
-                  onPressed: () {
-                    // Agrega la lógica para el botón aquí
+                  onPressed: () async {
+                    await applicationBloc.calculateRoute(points);
+                    placeIsSelected = false;
+                    showRouteDetails = true;
+                    routeDistance =
+                        applicationBloc.calculateRouteDistance(points);
+                    setState(() {});
                   },
                   icon: Icon(
                     Icons
@@ -217,11 +369,19 @@ class _MapaState extends State<MapScreen> {
     return GoogleMap(
       onMapCreated: (GoogleMapController controller) {
         _mapController.complete(controller);
+        cargarMarcadores();
       },
       myLocationEnabled: true,
-      markers: _myLocMarker,
-      initialCameraPosition:
-          CameraPosition(target: _center, zoom: 15.0, bearing: 90),
+      markers: {..._myLocMarker, ..._chargers},
+      initialCameraPosition: CameraPosition(
+        target: _center,
+        zoom: 15.0,
+      ),
+      polylines: applicationBloc.routevolt
+              .routeList[applicationBloc.routevolt.i].routes.isNotEmpty
+          ? applicationBloc
+              .routevolt.routeList[applicationBloc.routevolt.i].routes
+          : emptyRoute,
     );
   }
 
