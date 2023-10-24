@@ -220,12 +220,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   Future<User?> signInWithGoogle() async {
     try {
-      print("aqui 1");
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
         return null; // El usuario canceló la autenticación
       }
-      print("aqui tb");
 
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
@@ -233,13 +231,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         idToken: googleAuth.idToken,
       );
 
-      print("aqui 2");
       final UserCredential authResult = await _auth.signInWithCredential(credential);
       final User? user = authResult.user;
       return user;
     } catch (error) {
-      print(error);
-      print("error");
       return null;
     }
   }
