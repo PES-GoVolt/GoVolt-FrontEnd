@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:govoltfrontend/config.dart';
 
 class BikeStationsService {
   String baseUrl;
@@ -8,8 +9,8 @@ class BikeStationsService {
 
   Future<List<BikeStation>> getBikeStations() async {
     try {
-      String url = 'http://10.0.2.2:8000/api/bikestations/all'; // Update the URL for bike stations
-      final response = await http.get(Uri.parse(url));
+      final url = Uri.http(Config.apiURL, Config.allBikeStations);
+      final response = await http.get(url);
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         List<BikeStation> bikeStations = [];

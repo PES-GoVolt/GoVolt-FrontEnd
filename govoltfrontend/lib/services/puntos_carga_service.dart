@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:govoltfrontend/config.dart';
 
 class ChargersService {
   String baseUrl;
@@ -9,8 +10,8 @@ class ChargersService {
 
   Future<List<Coordenada>> obtenerPuntosDeCarga() async {
     try {
-      String url = "http://10.0.2.2:8000/api/chargers/all";
-      final response = await http.get(Uri.parse(url));
+      final url = Uri.http(Config.apiURL, Config.allChargers);
+      final response = await http.get(url);
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         List<Coordenada> puntosDeCarga = [];
@@ -32,10 +33,12 @@ class ChargersService {
       "longitud": coordenada.longitude,
       "latitud": coordenada.latitude,
     };
-    String url = "http://10.0.2.2:8000/api/chargers/nearest";
+
+    final url = Uri.http(Config.apiURL, Config.chargersNearest);
+
     String jsonData = json.encode(data);
     try {
-      final response = await http.post(Uri.parse(url),
+      final response = await http.post(url,
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
           },
