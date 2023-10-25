@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:govoltfrontend/usuario.dart';
 import 'package:govoltfrontend/menu.dart';
 import 'package:govoltfrontend/pages/registro/registro.dart';
 import 'package:govoltfrontend/config.dart';
@@ -110,7 +109,11 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                     style: TextStyle(color: Color(0xff4d5e6b), decoration: TextDecoration.underline),
                   ),
                   onPressed: () {
-                    //signup screen
+                    //signup screen change later(this is a instalogin)
+                    Navigator.pushNamed(
+                      context,
+                      '/home',
+                    );
                   },
                 )
               ],

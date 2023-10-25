@@ -16,8 +16,9 @@ class PlacesService {
   Future<List<PlaceSearch>> getAutoComplete(
       String search, double lat, double lng) async {
     if (apiKey == null) await loadJsonData();
+    const region = "es";
     Uri url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$search&key=$apiKey&location=$lat%2C$lng&radius=5000&origin=$lng%2C$lng');
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$search&key=$apiKey&location=$lat%2C$lng&radius=5000&origin=$lat%2C$lng&region=$region');
     var response = await http.get(url);
     print("hola2");
     var json = convert.jsonDecode(response.body);

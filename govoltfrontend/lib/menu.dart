@@ -34,6 +34,7 @@ class MenuState extends State<Menu> {
         backgroundColor: const Color.fromRGBO(125, 193, 165, 1),
         title: const Text(""),
       ),
+      resizeToAvoidBottomInset: false,
       drawer: Drawer(
         child: ListView(
           children: <Widget>[

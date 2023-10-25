@@ -523,7 +523,6 @@ class _MapaState extends State<MapScreen> {
     return TextField(
       decoration: const InputDecoration(
           hintText: 'Busca tu trayecto ...',
-          suffixIcon: Icon(Icons.person),
           prefixIcon: Icon(Icons.location_on)),
       onChanged: (value) {
         valueChanged(value);
