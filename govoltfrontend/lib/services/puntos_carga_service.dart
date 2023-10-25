@@ -34,7 +34,7 @@ class ChargersService {
       "latitud": coordenada.latitude,
     };
 
-    final url = Uri.http(Config.apiURL, Config.chargersNearest);
+    final url = Uri.https(Config.apiURL, Config.chargersNearest);
 
     String jsonData = json.encode(data);
     try {
