@@ -499,7 +499,7 @@ class _MapaState extends State<MapScreen> {
         cargarBicis();
       },
       myLocationEnabled: true,
-      markers: {..._myLocMarker, ..._chargers, ..._bikeStations},
+      markers: {..._chargers, ..._bikeStations,..._myLocMarker, },
       initialCameraPosition: CameraPosition(target: userPosition, zoom: 15.0),
       polylines: applicationBloc.routevolt
               .routeList[applicationBloc.routevolt.i].routes.isNotEmpty
