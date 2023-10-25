@@ -6,6 +6,7 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+final GoogleSignIn googleSignIn = GoogleSignIn();
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class RegisterScreen extends StatefulWidget {
@@ -26,27 +27,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final confirmPassword = confirmPasswordController.text;
     
     if (emailController.text.isEmpty) {
-      showSnackbar("Email requerido.");
+      showSnackbar("Email required.");
       return;
     }
 
     if (passwordController.text.isEmpty) {
-      showSnackbar("Contraseña requerida.");
+      showSnackbar("Password required.");
       return;
     }
 
     if (confirmPasswordController.text.isEmpty) {
-      showSnackbar("Confirmación de la contraseña requerida.");
+      showSnackbar("Password confirmation required.");
       return;
     }
 
     if (phoneNumber?.phoneNumber == null) {
-      showSnackbar("Número de teléfono requerido.");
+      showSnackbar("Phone number required.");
       return;
     }
 
     if (password != confirmPassword) {
-      showSnackbar("Las contraseñas no coinciden");
+      showSnackbar("Passwords do not match.");
       return;
     }
 
@@ -77,23 +78,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  Future<void> signInWithGoogle() async {
+  Future<User?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      
-      if (googleUser == null) return;
-      
+      print("aqui 1");
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        return null; // El usuario canceló la autenticación
+      }
+
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      final UserCredential authResult = await FirebaseAuth.instance.signInWithCredential(credential);
-      final User? user = authResult.user;
 
-      // Realiza acciones adicionales después de iniciar sesión con Google
-    } catch (e) {
-      // Maneja errores si ocurren durante el proceso de autenticación
+      print("aqui 2");
+      final UserCredential authResult = await _auth.signInWithCredential(credential);
+      final User? user = authResult.user;
+      return user;
+    } catch (error) {
+      print(error);
+      print("error");
+      return null;
     }
   }
 
@@ -128,7 +134,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: Container(
                   margin: const EdgeInsets.only(bottom: 10),
                   child: const Text(
-                    'Crear cuenta',
+                    'Sign Up',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -154,7 +160,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 controller: passwordController,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Contraseña',
+                  labelText: 'Password',
                 ),
               ),
             ),
@@ -165,7 +171,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 controller: confirmPasswordController,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Confirmar Contraseña',
+                  labelText: 'Confirm Password',
                 ),
               ),
             ),
@@ -182,7 +188,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 autoValidateMode: AutovalidateMode.disabled,
                 inputDecoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Número de Teléfono',
+                  labelText: 'Phone Number',
                 ),
               ),
             ),
@@ -191,7 +197,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: ElevatedButton(
-                  child: const Text('Registrarse'),
+                  child: const Text('Sign Up'),
                   onPressed: () {
                     register();
                   },
@@ -207,10 +213,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Row(
               // ignore: sort_child_properties_last
               children: <Widget>[
-                const Text('Ya tienes una cuenta?'),
+                const Text('Do you already have an account?'),
                 TextButton(
                   child: const Text(
-                    'Iniciar sesión',
+                    'Sign In',
                     style: TextStyle(color: Color(0xff4d5e6b), decoration: TextDecoration.underline),
                   ),
                   onPressed: () {
@@ -255,7 +261,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       'assets/images/facebook_logo.png',
                       height: 24,
                     ),
-                    label: const Text('Registrarse con Facebook'),
+                    label: const Text('Sign Up with Facebook'),
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton.icon(
@@ -271,7 +277,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       'assets/images/google_logo_2.png',
                       height: 24,
                     ),
-                    label: const Text('Registrarse con Google'),
+                    label: const Text('Sign Up with Google'),
                   ),
                 ],
               ),

@@ -95,17 +95,17 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 controller: passwordController,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Contraseña',
+                  labelText: 'Password',
                 ),
               ),
             ),
             Row(
               // ignore: sort_child_properties_last
               children: <Widget>[
-                const Text('Has olvidado tu contraseña?'),
+                const Text('Forgot your password?'),
                 TextButton(
                   child: const Text(
-                    'Click aquí',
+                    'Click here',
                     style: TextStyle(color: Color(0xff4d5e6b), decoration: TextDecoration.underline),
                   ),
                   onPressed: () {
@@ -124,7 +124,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: ElevatedButton(
-                  child: const Text('Acceder'),
+                  child: const Text('Log In'),
                   onPressed: () {
                     login();
                   },
@@ -142,7 +142,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: ElevatedButton(
-                  child: const Text('Registrarse'),
+                  child: const Text('Sign Up'),
                   onPressed: () {
                     Navigator.pushNamed(context, '/registro');
                   },
@@ -197,12 +197,12 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                       'assets/images/facebook_logo.png',
                       height: 24,
                     ),
-                    label: const Text('Iniciar sesión con Facebook'),
+                    label: const Text('Log in with Facebook'),
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton.icon(
                     onPressed: () {
-                      _signInWithGoogle();
+                      signInWithGoogle();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
@@ -212,7 +212,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                       'assets/images/google_logo_2.png',
                       height: 24,
                     ),
-                    label: const Text('Iniciar sesión con Google'),
+                    label: const Text('Log in with Google'),
                   ),
                 ],
               ),
@@ -221,30 +221,24 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         )));
   }
 
-  // Función para iniciar sesión con Google
-  Future<void> _signInWithGoogle() async {
+  Future<User?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
-      if (googleSignInAccount == null) {
-        return;
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        return null; // El usuario canceló la autenticación
       }
 
-      final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken,
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
       );
 
-      await _auth.signInWithCredential(credential);
-      
-      // Redirige a la pantalla de inicio, o realiza cualquier otra acción necesaria.
-      Navigator.pushNamed(
-        context,
-        '/home',
-      );
+      final UserCredential authResult = await _auth.signInWithCredential(credential);
+      final User? user = authResult.user;
+      return user;
     } catch (error) {
-      print(error);
-      showSnackbar("Error al iniciar sesión con Google.");
+      return null;
     }
   }
 
@@ -261,12 +255,12 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   Future<void> login() async {
     
     if (emailController.text.isEmpty) {
-      showSnackbar("Email requerido.");
+      showSnackbar("Email required.");
       return;
     }
 
     if (passwordController.text.isEmpty) {
-      showSnackbar("Contraseña requerida.");
+      showSnackbar("Password required.");
       return;
     }
 
@@ -281,13 +275,12 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     );
     //final data = Map.from(jsonDecode(res.body));
 
-    print(res.body);
-    print(res.reasonPhrase);
-    print(res.request);
+    final data = json.decode(res.body);
+    final message = data['message'];
     
     if (res.statusCode != 200) {
       // final errorMessage = responseData['error']['message'];
-      showSnackbar("El email y la contraseña no existen.");
+      showSnackbar(message);
       return;
     }
     //Navigator.push(context,MaterialPageRoute(builder: (context) => Home()),);
