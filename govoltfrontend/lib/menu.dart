@@ -50,7 +50,7 @@ class MenuState extends State<Menu> {
               leading: const Icon(Icons.phone),
               selected: (0 == _selectDrawerItem),
               onTap: () {
-                _onSelectItem(0);
+                //_onSelectItem(0);
               },
             ),
             const Divider(),
@@ -59,7 +59,7 @@ class MenuState extends State<Menu> {
               leading: const Icon(Icons.person),
               selected: (1 == _selectDrawerItem),
               onTap: () {
-                _onSelectItem(1);
+                //_onSelectItem(1);
               },
             ),
             ListTile(
@@ -67,7 +67,7 @@ class MenuState extends State<Menu> {
               leading: const Icon(Icons.wind_power_rounded),
               selected: (2 == _selectDrawerItem),
               onTap: () {
-                _onSelectItem(2);
+                //_onSelectItem(2);
               },
             ),
             ListTile(
@@ -75,7 +75,7 @@ class MenuState extends State<Menu> {
               leading: const Icon(Icons.production_quantity_limits),
               selected: (3 == _selectDrawerItem),
               onTap: () {
-                _onSelectItem(3);
+                //_onSelectItem(3);
               },
             ),
             const Divider(),
