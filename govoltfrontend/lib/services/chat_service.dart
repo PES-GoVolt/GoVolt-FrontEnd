@@ -3,6 +3,8 @@ import 'dart:async';
 
 class ChatService {
   bool messageArrived = false;
+  bool firstLoad = false;
+  DateTime now = DateTime.now();
 
   final _messageArrivedController = StreamController<bool>.broadcast();
   Stream<bool> get onMessageArrivedChanged => _messageArrivedController.stream;
@@ -17,10 +19,9 @@ class ChatService {
         FirebaseDatabase.instance.ref().child('qwerty3');
 
     messagesRef.onChildAdded.listen((event) {
-      // Se ejecutará cuando se agregue un nuevo mensaje
-      print('Nuevo mensaje: ${event.snapshot.value}');
-      messageArrived != messageArrived;
-      // Actualiza la interfaz de usuario para mostrar el nuevo mensaje
+      if (event.snapshot.value is String) {
+        print('Nuevo mensaje:');
+      }
     });
   }
 }
