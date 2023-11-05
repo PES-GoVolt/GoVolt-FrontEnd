@@ -5,6 +5,7 @@ class ChatService {
   bool messageArrived = false;
   bool firstLoad = false;
   DateTime now = DateTime.now();
+  int i = 0;
 
   final _messageArrivedController = StreamController<bool>.broadcast();
   Stream<bool> get onMessageArrivedChanged => _messageArrivedController.stream;
@@ -15,13 +16,19 @@ class ChatService {
   }
 
   void setupDatabaseListener() async {
-    DatabaseReference messagesRef =
-        FirebaseDatabase.instance.ref().child('qwerty3');
+    var id = ["qwerty3", "test"];
+    for (int i = 0; i < id.length; ++i) {
+      DatabaseReference messagesRef =
+          FirebaseDatabase.instance.ref().child(id[i]);
 
-    messagesRef.onChildAdded.listen((event) {
-      if (event.snapshot.value is String) {
-        print('Nuevo mensaje:');
-      }
-    });
+      messagesRef.onChildAdded.listen((event) {
+        if (event.snapshot.value is String) {
+          print('Nuevo mensaje:$i');
+        } else {
+          print('old mensaje:');
+        }
+        ++i;
+      });
+    }
   }
 }
