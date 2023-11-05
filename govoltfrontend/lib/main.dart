@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:govoltfrontend/services/chat_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:govoltfrontend/menu.dart';
 import 'package:govoltfrontend/pages/registro/registro.dart';
 import 'package:govoltfrontend/config.dart';
-
+import 'dart:async';
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart'; // Agrega esta importación
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -53,6 +56,8 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  ChatService chatService = ChatService();
+  late StreamSubscription<bool> messageArrivedSubscription;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -63,6 +68,24 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   //final urlobtenertoken = Uri.parse("http://192.168.1.108/api/api-token-auth/");
   final urlobtenertoken = Uri.http(Config.apiURL, Config.obtenertokenAPI);
   final headers = {"Content-Type": "application/json;charset=UTF-8"};
+
+  @override
+  void dispose() {
+    messageArrivedSubscription.cancel();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    chatService.setupDatabaseListener();
+    // Suscríbete al stream en el método initState
+    messageArrivedSubscription =
+        chatService.onMessageArrivedChanged.listen((messageArrived) {
+      // Maneja los cambios en la variable messageArrived
+      exit(0);
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

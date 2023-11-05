@@ -54,11 +54,13 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDkSE_5o-GKTQnb8K76wI1sPlHfKHhgr9g',
-    appId: '1:986011320631:android:457057d920d7e00c049ab2',
+    apiKey: 'AIzaSyD4CGpMmBrtiQxcSaYDwywSWVdUkqIN_5g',
+    databaseURL:
+        "https://govolt-47ea1-default-rtdb.europe-west1.firebasedatabase.app",
+    appId: '1:699229746495:android:93429fb1e4a3cdf1360f8a',
     messagingSenderId: '986011320631',
-    projectId: 'govolt-5dd50',
-    storageBucket: 'govolt-5dd50.appspot.com',
+    projectId: 'govolt-47ea1',
+    storageBucket: 'govolt-47ea1.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
