@@ -52,6 +52,8 @@ dependencies:
   sensors_plus: ^3.1.0
   firebase_database: ^10.3.3
   firebase_storage: ^11.4.1
+  flutter_chat_ui: ^1.6.9
+  flutter_chat_types: ^3.6.2
 
 
 dev_dependencies:
