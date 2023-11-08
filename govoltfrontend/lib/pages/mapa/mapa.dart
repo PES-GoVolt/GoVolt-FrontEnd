@@ -192,8 +192,6 @@ class _MapaState extends State<MapScreen> {
           applicationBloc.place!.geometry.location.lng)
     ];
     await applicationBloc.calculateRoute(points);
-    applicationBloc.routevolt.distance =
-        applicationBloc.calculateRouteDistance(points);
   }
 
   Future<void> _changeCameraToRouteMode() async {
@@ -479,7 +477,7 @@ class _MapaState extends State<MapScreen> {
               ],
             ),
             Text(
-              applicationBloc.routevolt.distance,
+              applicationBloc.routevolt.getDistance(),
               style: const TextStyle(fontSize: 16),
             ),
           ],
@@ -502,9 +500,9 @@ class _MapaState extends State<MapScreen> {
       markers: {..._chargers, ..._bikeStations,..._myLocMarker, },
       initialCameraPosition: CameraPosition(target: userPosition, zoom: 15.0),
       polylines: applicationBloc.routevolt
-              .routeList[applicationBloc.routevolt.i].routes.isNotEmpty
+              .routeList[applicationBloc.routevolt.i].route.isNotEmpty
           ? applicationBloc
-              .routevolt.routeList[applicationBloc.routevolt.i].routes
+              .routevolt.routeList[applicationBloc.routevolt.i].route
           : emptyRoute,
     );
   }
