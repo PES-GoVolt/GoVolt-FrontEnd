@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:govoltfrontend/config.dart';
 import 'package:govoltfrontend/pages/mapa/mapa.dart';
+import 'pages/crear_viaje/crear_viaje.dart';
 
 class Menu extends StatefulWidget {
   const Menu({super.key});
@@ -13,10 +14,13 @@ class Menu extends StatefulWidget {
 
 class MenuState extends State<Menu> {
   int _selectDrawerItem = 0;
+
   getDrawerItemWidget(int pos) {
     switch (pos) {
       case 0:
         return MapScreen();
+      case 4: // Add this case for "CrearViaje" screen
+      return CrearViajeScreen();
     }
   }
 
@@ -78,11 +82,26 @@ class MenuState extends State<Menu> {
                 _onSelectItem(3);
               },
             ),
+            ListTile(
+              title: const Text('Addviajes'), // New button
+              leading: const Icon(Icons.add), // Icon for the new button
+              selected: (4 == _selectDrawerItem), // Change the index to match the desired selection index.
+              onTap: () {
+
+
+                /*AQUI ES DONDE TENGO QUE NAVEGAR AL ADD VIAJES!!!!*/ 
+
+
+                _onSelectItem(4); // Change the index to match the desired selection index.
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => CrearViajeScreen()));
+                // Add your logic for handling the "Addviajes" button tap here.
+              },
+            ),
             const Divider(),
             ListTile(
               title: const Text('Cerra Sessión'),
               leading: const Icon(Icons.touch_app_outlined),
-              selected: (3 == _selectDrawerItem),
+              selected: (5 == _selectDrawerItem),
               onTap: () {
                 exit(0);
               },
