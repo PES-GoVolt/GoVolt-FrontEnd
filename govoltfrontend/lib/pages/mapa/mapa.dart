@@ -102,6 +102,31 @@ class _MapaState extends State<MapScreen> {
     setState(() {});
   }
 
+  String calculateTime() {
+    String timeS = applicationBloc.routevolt.getTime();
+    int time = int.parse(timeS.substring(0, timeS.length - 1));
+    if (time < 60) {
+      return "$time s";
+    } else if (time < 3600) {
+      int minutos = (time % 3600) ~/ 60;
+      return '$minutos min';
+    } else {
+      int horas = time ~/ 3600;
+      int minutos = (time % 3600) ~/ 60;
+      return '$horas h $minutos min';
+    }
+  }
+
+  String prettyDistance() {
+    int distance = applicationBloc.routevolt.getDistance();
+    if (distance < 1000) {
+      return '$distance m';
+    } else {
+      int km = distance ~/ 1000;
+      return '$km km';
+    }
+  }
+
   Future<void> _goToRandomPlace(double lat, double lng) async {
     final GoogleMapController controller = await _mapController.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(
@@ -426,7 +451,7 @@ class _MapaState extends State<MapScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    applicationBloc.routevolt.getTime(),
+                    calculateTime(),
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -477,7 +502,7 @@ class _MapaState extends State<MapScreen> {
               ],
             ),
             Text(
-              applicationBloc.routevolt.getDistance().toString(),
+              prettyDistance(),
               style: const TextStyle(fontSize: 16),
             ),
           ],
@@ -497,10 +522,14 @@ class _MapaState extends State<MapScreen> {
         cargarBicis();
       },
       myLocationEnabled: true,
-      markers: {..._chargers, ..._bikeStations,..._myLocMarker, },
+      markers: {
+        ..._chargers,
+        ..._bikeStations,
+        ..._myLocMarker,
+      },
       initialCameraPosition: CameraPosition(target: userPosition, zoom: 15.0),
-      polylines: applicationBloc.routevolt
-              .routeList[applicationBloc.routevolt.i].route.isNotEmpty
+      polylines: applicationBloc
+              .routevolt.routeList[applicationBloc.routevolt.i].route.isNotEmpty
           ? applicationBloc
               .routevolt.routeList[applicationBloc.routevolt.i].route
           : emptyRoute,
