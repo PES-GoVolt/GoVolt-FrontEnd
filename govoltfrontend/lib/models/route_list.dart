@@ -21,7 +21,7 @@ class RouteVoltList {
     i =0;
   }
 
-  String getDistance()
+  int getDistance()
   {
     return routeList[i].distance;
   }

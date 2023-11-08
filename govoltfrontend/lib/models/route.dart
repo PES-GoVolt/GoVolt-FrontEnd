@@ -4,13 +4,13 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class RouteVolt {
   Set<Polyline> route = {};
-  String distance = "0";
+  int distance = 0;
   String time = "0";
 
   void clearData()
   {
     route.clear();
-    distance = "0";
+    distance = 0;
     time = "0";
   }
   

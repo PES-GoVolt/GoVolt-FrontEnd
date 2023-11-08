@@ -21,40 +21,43 @@ class RouteService {
       {
         final url = Uri.parse('https://routes.googleapis.com/directions/v2:computeRoutes');
         final body = {
-      "origin": {
-        "location": {
-          "latLng": {"latitude": points[0].latitude, "longitude": points[0].longitude}
+          "origin": {
+            "location": {
+              "latLng": {"latitude": points[0].latitude, "longitude": points[0].longitude}
+            }
+          },
+          "destination": {
+            "location": {
+              "latLng": {"latitude": points[1].latitude, "longitude": points[1].longitude}
+            }
+          },
+          "travelMode": mode,
+          "computeAlternativeRoutes": false,
+          "routeModifiers": {
+            "avoidTolls": false,
+            "avoidHighways": false,
+            "avoidFerries": false
+          },
+          "languageCode": "es",
+          "units": "METRIC"
+        };
+
+        if (mode == "DRIVE") {
+          body["routingPreference"] = "TRAFFIC_AWARE";
         }
-      },
-      "destination": {
-        "location": {
-          "latLng": {"latitude": points[1].latitude, "longitude": points[1].longitude}
-        }
-      },
-      "travelMode": mode,
-      "routingPreference": "TRAFFIC_AWARE",
-      "computeAlternativeRoutes": false,
-      "routeModifiers": {
-        "avoidTolls": false,
-        "avoidHighways": false,
-        "avoidFerries": false
-      },
-      "languageCode": "es",
-      "units": "METRIC"
-    };
 
         final headers = {
-        'Content-Type': 'application/json',
-        'X-Goog-Api-Key': apiKeyGoogle,
-        'X-Goog-FieldMask': 'routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline'
-        };
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': apiKeyGoogle,
+            'X-Goog-FieldMask': 'routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline'
+            };
 
         final response = await http.post(url, headers: headers,body: jsonEncode(body));
 
         if (response.statusCode == 200) {
             final data = jsonDecode(response.body);
             String encodedPolyline = data["routes"][0]["polyline"]["encodedPolyline"];
-            String distanceResponse = data["routes"][0]["distanceMeters"];
+            int distanceResponse = data["routes"][0]["distanceMeters"];
             String timeResponse = data["routes"][0]["duration"];
             PolylinePoints polylinePoints = PolylinePoints();
             List<PointLatLng> result = polylinePoints.decodePolyline(encodedPolyline);

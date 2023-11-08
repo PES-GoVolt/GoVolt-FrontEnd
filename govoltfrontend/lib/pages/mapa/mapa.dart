@@ -424,10 +424,10 @@ class _MapaState extends State<MapScreen> {
           children: <Widget>[
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: Text(
-                    "TIEMPO",
-                    style: TextStyle(
+                    applicationBloc.routevolt.getTime(),
+                    style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                     ),
@@ -477,7 +477,7 @@ class _MapaState extends State<MapScreen> {
               ],
             ),
             Text(
-              applicationBloc.routevolt.getDistance(),
+              applicationBloc.routevolt.getDistance().toString(),
               style: const TextStyle(fontSize: 16),
             ),
           ],
