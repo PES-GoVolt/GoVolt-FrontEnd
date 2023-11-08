@@ -16,7 +16,7 @@ class MenuState extends State<Menu> {
   getDrawerItemWidget(int pos) {
     switch (pos) {
       case 0:
-        return MapScreen();
+        return ChatPage();
     }
   }
 

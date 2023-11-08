@@ -1,43 +1,59 @@
+import 'package:chatview/chatview.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:uuid/uuid.dart';
+
+void main() {
+  initializeDateFormatting().then((_) => runApp(const MyApp()));
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) => const MaterialApp(
+        home: ChatPage(),
+      );
+}
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
 
   @override
-  ChatState createState() => ChatState();
+  State<ChatPage> createState() => _ChatPageState();
 }
 
-class ChatPageState extends State<ChatPage> {
-  List<types.Message> _messages = [];
-  final _user = const types.User(
-    id: '82091008-a484-4a89-ae75-a22bf8d6f3ac',
+class _ChatPageState extends State<ChatPage> {
+  List<Message> _messages = [];
+  final currentUser = ChatUser(id: "1", name: "Marc");
+
+  final chatController = ChatController(
+    initialMessageList: [],
+    scrollController: ScrollController(),
   );
 
-  void _addMessage(types.Message message) {
-    setState(() {
-      _messages.insert(0, message);
-    });
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void onSendTap(String messageText, ReplyMessage replyMessage) {
+    final message = Message(
+      id: const Uuid().v4(),
+      message: messageText,
+      createdAt: DateTime.now(),
+      sendBy: currentUser.id,
+    );
+    chatController.addMessage(message);
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Chat(
-            messages: _messages,
-            onSendPressed: _handleSendPressed,
-            user: _user));
-  }
-
-  void _handleSendPressed(types.PartialText message) {
-    final textMessage = types.TextMessage(
-      author: _user,
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-      id: _user.id,
-      text: message.text,
-    );
-
-    _addMessage(textMessage);
-  }
+  Widget build(BuildContext context) => Scaffold(
+        body: ChatView(
+          sender: currentUser,
+          receiver: ChatUser(id: '2', name: 'Simform'),
+          chatController: chatController,
+          onSendTap: onSendTap,
+        ),
+      );
 }
