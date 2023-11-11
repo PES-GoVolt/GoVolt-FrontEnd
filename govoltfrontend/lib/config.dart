@@ -4,9 +4,11 @@ class Config {
   static const productosAPI = "api/producto";
   static const clientesAPI = "api/cliente";
   static const puntosCargaAPI = "api/puntocarga";
-  static const loginAPI = "api/auth/login/";
-  static const obtenertokenAPI = "api/auth/api-token-auth/";
-  static const registroAPI = "api/auth/register/";
+  static const loginAPI = "api/users/login/";
+  static const seeMyProfileAPI = "api/users/see-my-profile/";
+  static const editMyProfileAPI = "api/users/edit-my-profile/";
+  static const obtenertokenAPI = "api/users/api-token-auth/";
+  static const registroAPI = "api/users/register/";
   static const allBikeStations = "api/bikestations/all";
   static const allChargers = "api/chargers/all";
   static const chargersNearest = "api/chargers/nearest";
