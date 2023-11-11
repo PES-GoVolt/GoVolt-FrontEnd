@@ -32,7 +32,7 @@ class _VolterScreenState extends State<VolterScreen> {
 
 
     final response = await http.post(
-        Uri.http(Config.apiURL, Config.editMyProfileAPI),
+        Uri.http(Config.apiURL, Config.logout),
         headers: {
           'Content-Type': 'application/json',
         },
