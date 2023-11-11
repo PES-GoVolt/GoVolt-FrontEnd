@@ -28,6 +28,23 @@ class _VolterScreenState extends State<VolterScreen> {
   String photo = '';
 
 
+  void logout() async{
+
+
+    final response = await http.post(
+        Uri.http(Config.apiURL, Config.editMyProfileAPI),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+         Navigator.pushNamed(context, '/login');
+      }
+   
+
+
+  }
   Future<void> _getImage() async {
     final pickedFile = await ImagePicker().getImage(
       source: ImageSource.gallery,
@@ -133,12 +150,19 @@ class _VolterScreenState extends State<VolterScreen> {
     phoneNumberController.dispose();
     super.dispose();
   }
+  
 
   @override
   StatefulWidget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Volter'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushNamed(context, '/home');
+          },
+        ),
       ),
       body: Container(
         padding: EdgeInsets.all(16.0),
@@ -305,6 +329,12 @@ class _VolterScreenState extends State<VolterScreen> {
           color: isRed ? Colors.red : Colors.grey,
         ),
       ),
+       onTap: () {
+      if (isRed) {
+        
+       logout();
+      } 
+    }
     );
   }
 
