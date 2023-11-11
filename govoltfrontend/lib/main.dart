@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:govoltfrontend/models/message.dart';
 import 'package:govoltfrontend/services/chat_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -57,7 +57,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   ChatService chatService = ChatService();
-  late StreamSubscription<bool> messageArrivedSubscription;
+  late StreamSubscription<MessageVolt> messageArrivedSubscription;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
