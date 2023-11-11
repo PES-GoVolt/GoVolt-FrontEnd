@@ -10,4 +10,6 @@ class Config {
   static const allBikeStations = "api/bikestations/all";
   static const allChargers = "api/chargers/all";
   static const chargersNearest = "api/chargers/nearest";
+  static const seeMyProfileAPI = "api/users/see-my-profile/";
+  static const editMyProfileAPI = "api/users/edit-my-profile/";
 }
