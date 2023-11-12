@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:govoltfrontend/config.dart';
 import 'package:govoltfrontend/pages/mapa/mapa.dart';
+import 'package:govoltfrontend/pages/rutas/main_routes.dart';
 
 class Menu extends StatefulWidget {
   const Menu({super.key});
@@ -17,6 +18,8 @@ class MenuState extends State<Menu> {
     switch (pos) {
       case 0:
         return MapScreen();
+      case 2:
+        return RoutesScreen();
     }
   }
 
@@ -47,33 +50,33 @@ class MenuState extends State<Menu> {
               ),
             ),
             ListTile(
-              title: const Text('Inicio'),
-              leading: const Icon(Icons.map),
-              selected: (0 == _selectDrawerItem),
-              onTap: () {
-                _onSelectItem(0);
-              },
-            ),
-            const Divider(),
-            ListTile(
-              title: const Text('Clientes'),
+              title: const Text('Perfil'),
               leading: const Icon(Icons.person),
               selected: (1 == _selectDrawerItem),
               onTap: () {
                 _onSelectItem(1);
               },
             ),
+            const Divider(),
             ListTile(
-              title: const Text('Productos'),
-              leading: const Icon(Icons.wind_power_rounded),
+              title: const Text('Mapa'),
+              leading: const Icon(Icons.map),
+              selected: (0 == _selectDrawerItem),
+              onTap: () {
+                _onSelectItem(0);
+              },
+            ),
+            ListTile(
+              title: const Text('Volters'),
+              leading: const Icon(Icons.directions_car),
               selected: (2 == _selectDrawerItem),
               onTap: () {
                 _onSelectItem(2);
               },
             ),
             ListTile(
-              title: const Text('Ventas'),
-              leading: const Icon(Icons.production_quantity_limits),
+              title: const Text('Chat'),
+              leading: const Icon(Icons.chat),
               selected: (3 == _selectDrawerItem),
               onTap: () {
                 _onSelectItem(3);
