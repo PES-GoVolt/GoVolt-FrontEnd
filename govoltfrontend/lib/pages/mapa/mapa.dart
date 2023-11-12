@@ -20,7 +20,6 @@ class _MapaState extends State<MapScreen> {
   final GeolocatiorService geolocatiorService = GeolocatiorService();
   final Completer<GoogleMapController> _mapController = Completer();
   final applicationBloc = AplicationBloc();
-  late StreamSubscription locationSubscription;
 
   LatLng userPosition = const LatLng(41.303110065444294, 2.0025687347671783);
   double directionUser = 0;
@@ -30,6 +29,7 @@ class _MapaState extends State<MapScreen> {
   double zoomMap = 19.0;
   bool goToNearestChargerEnable = false;
   late BitmapDescriptor bikeStationIcon;
+  bool allDataLoaded = false;
 
   List<PlaceSearch>? searchResults;
   List<Marker> myMarkers = [];
@@ -44,13 +44,14 @@ class _MapaState extends State<MapScreen> {
       userPosition = LatLng(position.latitude, position.longitude);
       directionUser = position.heading;
       centerScreen();
+      getMarkers();
+      allDataLoaded = true;
     });
     super.initState();
   }
 
   @override
   void dispose() {
-    locationSubscription.cancel();
     super.dispose();
   }
 
@@ -519,7 +520,6 @@ class _MapaState extends State<MapScreen> {
       },
       onMapCreated: (GoogleMapController controller) {
         _mapController.complete(controller);
-        getMarkers();
       },
       myLocationEnabled: true,
       markers: {
@@ -645,8 +645,7 @@ class _MapaState extends State<MapScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget getMapScreen() {
     return Scaffold(
       bottomSheet: (placeIsSelected || showRouteDetails || routeStarted)
           ? bottomSheetInfo()
@@ -683,5 +682,14 @@ class _MapaState extends State<MapScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return allDataLoaded
+        ? getMapScreen()
+        : Center(
+            child: CircularProgressIndicator(),
+          );
   }
 }

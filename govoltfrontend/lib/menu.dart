@@ -39,15 +39,16 @@ class MenuState extends State<Menu> {
         child: ListView(
           children: <Widget>[
             const UserAccountsDrawerHeader(
-              accountName: Text(Config.appName),
-              accountEmail: Text('contaco@xyz.com'),
-              currentAccountPicture: CircleAvatar(
-                backgroundImage: AssetImage('assets/images/logoxyz.png'),
+              accountName: Text(""),
+              accountEmail: Text(''),
+              decoration: BoxDecoration(
+                color: const Color.fromRGBO(125, 193, 165,
+                    1), // Cambia este color según tus preferencias
               ),
             ),
             ListTile(
               title: const Text('Inicio'),
-              leading: const Icon(Icons.phone),
+              leading: const Icon(Icons.map),
               selected: (0 == _selectDrawerItem),
               onTap: () {
                 _onSelectItem(0);
