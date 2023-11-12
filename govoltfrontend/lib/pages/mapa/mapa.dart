@@ -70,6 +70,11 @@ class _MapaState extends State<MapScreen> {
     setState(() {});
   }
 
+  void getMarkers() async {
+    await cargarMarcadores();
+    await cargarBicis();
+  }
+
   void placeSelected(var idPlace) async {
     await applicationBloc.searchPlace(idPlace);
     placeIsSelected = true;
@@ -514,8 +519,7 @@ class _MapaState extends State<MapScreen> {
       },
       onMapCreated: (GoogleMapController controller) {
         _mapController.complete(controller);
-        cargarMarcadores();
-        cargarBicis();
+        getMarkers();
       },
       myLocationEnabled: true,
       markers: {
