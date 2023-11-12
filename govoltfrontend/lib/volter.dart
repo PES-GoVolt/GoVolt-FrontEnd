@@ -41,7 +41,7 @@ class _VolterScreenState extends State<VolterScreen> {
   }
 
   Future<void> _getImage() async {
-    final pickedFile = await ImagePicker().getImage(
+    final pickedFile = await ImagePicker().pickImage(
       source: ImageSource.gallery,
     );
 
