@@ -44,7 +44,6 @@ class _MapaState extends State<MapScreen> {
       userPosition = LatLng(position.latitude, position.longitude);
       directionUser = position.heading;
       centerScreen();
-      getMarkers();
       allDataLoaded = true;
     });
     super.initState();
@@ -520,6 +519,7 @@ class _MapaState extends State<MapScreen> {
       },
       onMapCreated: (GoogleMapController controller) {
         _mapController.complete(controller);
+        getMarkers();
       },
       myLocationEnabled: true,
       markers: {
@@ -686,10 +686,6 @@ class _MapaState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return allDataLoaded
-        ? getMapScreen()
-        : Center(
-            child: CircularProgressIndicator(),
-          );
+    return getMapScreen();
   }
 }
