@@ -44,9 +44,6 @@ class MenuState extends State<Menu> {
             const UserAccountsDrawerHeader(
               accountName: Text(Config.appName),
               accountEmail: Text('contaco@xyz.com'),
-              currentAccountPicture: CircleAvatar(
-                backgroundImage: AssetImage('assets/images/logoxyz.png'),
-              ),
             ),
             ListTile(
               title: const Text('Inicio'),

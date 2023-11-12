@@ -27,24 +27,19 @@ class _VolterScreenState extends State<VolterScreen> {
   String lastName = '';
   String photo = '';
 
-
-  void logout() async{
-
-
+  void logout() async {
     final response = await http.post(
-        Uri.http(Config.apiURL, Config.logout),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      );
+      Uri.http(Config.apiURL, Config.logoutAPI),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
 
-      if (response.statusCode == 200) {
-         Navigator.pushNamed(context, '/login');
-      }
-   
-
-
+    if (response.statusCode == 200) {
+      Navigator.pushNamed(context, '/login');
+    }
   }
+
   Future<void> _getImage() async {
     final pickedFile = await ImagePicker().getImage(
       source: ImageSource.gallery,
@@ -56,9 +51,6 @@ class _VolterScreenState extends State<VolterScreen> {
       });
     }
   }
-
- 
-
 
   void saveChanges() async {
     try {
@@ -150,7 +142,6 @@ class _VolterScreenState extends State<VolterScreen> {
     phoneNumberController.dispose();
     super.dispose();
   }
-  
 
   @override
   StatefulWidget build(BuildContext context) {
@@ -318,24 +309,22 @@ class _VolterScreenState extends State<VolterScreen> {
 
   Widget buildOption(String text, IconData icon, {bool isRed = false}) {
     return ListTile(
-      leading: Icon(
-        icon,
-        color: isRed ? Colors.red : Colors.grey,
-      ),
-      title: Text(
-        text,
-        style: TextStyle(
-          fontSize: 16,
+        leading: Icon(
+          icon,
           color: isRed ? Colors.red : Colors.grey,
         ),
-      ),
-       onTap: () {
-      if (isRed) {
-        
-       logout();
-      } 
-    }
-    );
+        title: Text(
+          text,
+          style: TextStyle(
+            fontSize: 16,
+            color: isRed ? Colors.red : Colors.grey,
+          ),
+        ),
+        onTap: () {
+          if (isRed) {
+            logout();
+          }
+        });
   }
 
   Widget buildFormField(
