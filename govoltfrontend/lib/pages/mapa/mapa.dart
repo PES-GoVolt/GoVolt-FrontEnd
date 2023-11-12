@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:govoltfrontend/models/markers_data.dart';
 import 'package:govoltfrontend/services/geolocator_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/mapa/place.dart';
@@ -70,11 +71,6 @@ class _MapaState extends State<MapScreen> {
     setState(() {});
   }
 
-  void getMarkers() async {
-    await cargarMarcadores();
-    await cargarBicis();
-  }
-
   void placeSelected(var idPlace) async {
     await applicationBloc.searchPlace(idPlace);
     placeIsSelected = true;
@@ -134,11 +130,9 @@ class _MapaState extends State<MapScreen> {
         CameraPosition(target: LatLng(lat, lng), zoom: 17)));
   }
 
-  Future<void> cargarMarcadores() async {
+  cargarMarcadores() {
     try {
-      final puntosDeCarga = await applicationBloc.getChargers();
-
-      final nuevosMarcadores = puntosDeCarga.map((punto) {
+      final nuevosMarcadores = MarkersData.chargers.map((punto) {
         return Marker(
           markerId: MarkerId(punto.chargerId),
           position: LatLng(punto.longitud, punto.latitud),
@@ -155,13 +149,11 @@ class _MapaState extends State<MapScreen> {
     }
   }
 
-  Future<void> cargarBicis() async {
+  cargarBicis() {
     try {
       // Call the service to get bike stations
-      final bikeStations = await applicationBloc.getBikeStations();
-
       // Iterate through the bike stations and create markers
-      final newMarkers = bikeStations.map((station) {
+      final newMarkers = MarkersData.bikeStation.map((station) {
         return Marker(
           markerId:
               MarkerId(station.stationId), // Must be unique for each marker
@@ -519,7 +511,8 @@ class _MapaState extends State<MapScreen> {
       },
       onMapCreated: (GoogleMapController controller) {
         _mapController.complete(controller);
-        getMarkers();
+        cargarBicis();
+        cargarMarcadores();
       },
       myLocationEnabled: true,
       markers: {
