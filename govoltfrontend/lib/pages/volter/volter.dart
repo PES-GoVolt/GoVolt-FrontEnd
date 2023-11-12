@@ -1,12 +1,10 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:govoltfrontend/config.dart';
+import 'package:govoltfrontend/blocs/application_bloc.dart';
+import 'package:govoltfrontend/models/usuario.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-
-import 'dart:convert';
 
 class VolterScreen extends StatefulWidget {
   @override
@@ -19,6 +17,7 @@ class _VolterScreenState extends State<VolterScreen> {
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
   bool edit = false; // Estado para controlar si se está editando
+  final applicationBloc = AplicationBloc();
 
   XFile? _imageFile;
   String email = '';
@@ -28,14 +27,8 @@ class _VolterScreenState extends State<VolterScreen> {
   String photo = '';
 
   void logout() async {
-    final response = await http.post(
-      Uri.http(Config.apiURL, Config.logoutAPI),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    );
-
-    if (response.statusCode == 200) {
+    bool allOkey = await applicationBloc.logOutUser();
+    if (allOkey) {
       Navigator.pushNamed(context, '/login');
     }
   }
@@ -53,69 +46,28 @@ class _VolterScreenState extends State<VolterScreen> {
   }
 
   void saveChanges() async {
-    try {
-      firstName = firstNameController.text;
-      lastName = lastNameController.text;
-      email = emailController.text;
-      phoneNumber = phoneNumberController.text;
+    firstName = firstNameController.text;
+    lastName = lastNameController.text;
+    email = emailController.text;
+    phoneNumber = phoneNumberController.text;
 
-      Map<String, dynamic> requestBody = {
-        'first_name': firstName,
-        'last_name': lastName,
-        'phone': phoneNumber,
-        'photo_url': photo
-        // Otros campos...
-      };
-
-      final response = await http.post(
-        Uri.http(Config.apiURL, Config.editMyProfileAPI),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(requestBody),
-      );
-
-      if (response.statusCode == 200) {
-        print("Cambios guardados exitosamente");
-      } else {
-        print(
-            "Error al guardar los cambios. Código de estado: ${response.statusCode}");
-        // Puedes manejar el error de acuerdo a tus necesidades
-      }
-    } catch (error) {
-      print("Error al realizar la solicitud HTTP: $error");
-      // Puedes manejar el error de acuerdo a tus necesidades
-    }
+    applicationBloc.saveUserChanges(
+        firstName, lastName, email, phoneNumber, photo);
   }
 
   Future<void> fetchProfileData() async {
-    final response =
-        await http.get(Uri.http(Config.apiURL, Config.seeMyProfileAPI));
+    dynamic response = await applicationBloc.getCurrentUserData();
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-
-      email = data['email'];
-      phoneNumber = data['phone'];
-      dynamic firstNameValue = data['first_name'];
-      if (firstNameValue != null) {
-        firstName = firstNameValue;
-      }
-      dynamic lastNameValue = data['last_name'];
-      if (lastNameValue != null) {
-        lastName = lastNameValue;
-      }
-
-      dynamic photoValue = data['photo'];
-      if (photoValue != null) {
-        photo = photoValue;
-      }
-
+    if (response != null) {
+      final userData = response as Usuario;
       setState(() {
-        if (email != "") emailController.text = email;
-        if (phoneNumber != "") phoneNumberController.text = phoneNumber;
-        if (firstName != "") firstNameController.text = firstName;
-        if (lastName != "") lastNameController.text = lastName;
+        if (userData.email != "") emailController.text = userData.email;
+        if (userData.phoneNumber != "")
+          phoneNumberController.text = userData.phoneNumber;
+        if (userData.firstName != "")
+          firstNameController.text = userData.firstName;
+        if (userData.lastName != "")
+          lastNameController.text = userData.lastName;
         // Otros campos del perfil...
       });
     } else {
@@ -146,15 +98,7 @@ class _VolterScreenState extends State<VolterScreen> {
   @override
   StatefulWidget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Volter'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pushNamed(context, '/home');
-          },
-        ),
-      ),
+      resizeToAvoidBottomInset: false,
       body: Container(
         padding: EdgeInsets.all(16.0),
         child: Column(

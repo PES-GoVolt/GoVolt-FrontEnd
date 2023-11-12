@@ -23,7 +23,7 @@ class _MapaState extends State<MapScreen> {
   final Completer<GoogleMapController> _mapController = Completer();
   final applicationBloc = AplicationBloc();
   late StreamSubscription locationSubscription;
-  final chargersService = ChargersService("http://127.0.0.1:0080/api");
+  final chargersService = ChargersService();
   final bikeService = BikeStationsService("http://127.0.0.1:0080/api");
 
   LatLng userPosition = const LatLng(41.303110065444294, 2.0025687347671783);
@@ -66,6 +66,11 @@ class _MapaState extends State<MapScreen> {
   );
 }
 */
+
+  void getMarkers() async {
+    await cargarMarcadores();
+    await cargarBicis();
+  }
 
   void valueChanged(var value) async {
     await applicationBloc.searchPlaces(
@@ -518,8 +523,7 @@ class _MapaState extends State<MapScreen> {
       },
       onMapCreated: (GoogleMapController controller) {
         _mapController.complete(controller);
-        cargarMarcadores();
-        cargarBicis();
+        getMarkers();
       },
       myLocationEnabled: true,
       markers: {

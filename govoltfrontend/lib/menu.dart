@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:govoltfrontend/config.dart';
-import 'package:govoltfrontend/volter.dart';
+import 'package:govoltfrontend/pages/volter/volter.dart';
 import 'package:govoltfrontend/pages/mapa/mapa.dart';
 
 class Menu extends StatefulWidget {

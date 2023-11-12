@@ -4,9 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:govoltfrontend/config.dart';
 
 class ChargersService {
-  String baseUrl;
-
-  ChargersService(this.baseUrl);
+  ChargersService();
 
   Future<List<Coordenada>> obtenerPuntosDeCarga() async {
     try {
