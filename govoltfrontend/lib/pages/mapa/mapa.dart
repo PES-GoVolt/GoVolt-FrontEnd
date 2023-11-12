@@ -5,8 +5,6 @@ import 'package:govoltfrontend/services/geolocator_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/mapa/place.dart';
 import 'package:govoltfrontend/models/place_search.dart';
-import 'package:govoltfrontend/services/puntos_bici_service.dart';
-import 'package:govoltfrontend/services/puntos_carga_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:govoltfrontend/models/mapa/geometry.dart';
 import 'package:govoltfrontend/models/mapa/location.dart';
@@ -23,8 +21,6 @@ class _MapaState extends State<MapScreen> {
   final Completer<GoogleMapController> _mapController = Completer();
   final applicationBloc = AplicationBloc();
   late StreamSubscription locationSubscription;
-  final chargersService = ChargersService("http://127.0.0.1:0080/api");
-  final bikeService = BikeStationsService("http://127.0.0.1:0080/api");
 
   LatLng userPosition = const LatLng(41.303110065444294, 2.0025687347671783);
   double directionUser = 0;
@@ -157,7 +153,7 @@ class _MapaState extends State<MapScreen> {
   Future<void> cargarBicis() async {
     try {
       // Call the service to get bike stations
-      final bikeStations = await bikeService.getBikeStations();
+      final bikeStations = await applicationBloc.getBikeStations();
 
       // Iterate through the bike stations and create markers
       final newMarkers = bikeStations.map((station) {
