@@ -107,11 +107,11 @@ class _InputState extends State<Input> {
   }
 
   void _handleTextControllerChange() {
-    if (_textController.value.isComposingRangeValid) {
-      return;
-    }
     setState(() {
       _sendButtonVisible = _textController.text.trim() != '';
+      if (_textController.value.isComposingRangeValid) {
+        return;
+      }
     });
   }
 

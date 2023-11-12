@@ -20,10 +20,11 @@ class ChatService {
     _messageArrivedController.add(value);
   }
 
-  void sendMessage(String idRuta, String idUsuario, String message) async {
+  void sendMessage(
+      String idRuta, String idUsuario, String message, String idChat) async {
     final body = {
       "content": message,
-      "room_name": "$idRuta/$idUsuario",
+      "room_name": "$idRuta/$idChat",
       "sender": idUsuario
     };
     final url = Uri.http(Config.apiURL, Config.chatAddMessage);

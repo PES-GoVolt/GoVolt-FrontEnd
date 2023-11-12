@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:govoltfrontend/config.dart';
+import 'package:govoltfrontend/pages/chat/chat_list.dart';
 import 'package:govoltfrontend/pages/mapa/mapa.dart';
 import 'pages/chat/chat.dart';
 
@@ -16,7 +17,7 @@ class MenuState extends State<Menu> {
   getDrawerItemWidget(int pos) {
     switch (pos) {
       case 0:
-        return ChatPage();
+        return ChatListVolter();
     }
   }
 

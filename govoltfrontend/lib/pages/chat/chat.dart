@@ -8,22 +8,18 @@ import 'package:govoltfrontend/services/chat_service.dart';
 import 'package:uuid/uuid.dart';
 //import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 
-void main() {
-  // Cambia la función main para inicializar Firebase
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) => const MaterialApp(
-        home: ChatPage(),
-      );
-}
-
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  const ChatPage(
+      {super.key,
+      required this.idUserReciever,
+      required this.idRuta,
+      required this.userName,
+      required this.idChat});
+
+  final String idUserReciever;
+  final String idRuta;
+  final String userName;
+  final String idChat;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -32,16 +28,20 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   List<types.Message> messages = [];
   final user = const types.User(id: 'userid', firstName: "Marc");
-  final user2 = const types.User(id: 'userid2', firstName: "Lluis");
-  final idRuta = "rutaid";
+  late String idRuta;
+  late String idChatUser;
   final chatService = ChatService();
   late StreamSubscription<MessageVolt> messageArrivedSubscription;
   bool messagesLoaded = false;
 
   @override
   void initState() {
-    chatService.setupDatabaseSingleListener("rutaid/userid");
+    idRuta = widget.idRuta;
+    idChatUser = widget.idChat;
+    chatService.setupDatabaseSingleListener("$idRuta/$idChatUser");
     // Suscríbete al stream en el método initState
+    final user2 =
+        types.User(id: widget.idUserReciever, firstName: widget.userName);
     messageArrivedSubscription =
         chatService.onMessageArrivedChanged.listen((messageArrived) {
       String messageUserId = chatService.message.userid;
@@ -69,7 +69,7 @@ class _ChatPageState extends State<ChatPage> {
       id: Uuid().v4(),
       text: message.text,
     );
-    chatService.sendMessage(idRuta, user.id, message.text);
+    chatService.sendMessage(idRuta, user.id, message.text, idChatUser);
     _addMessage(textMessage);
   }
 
