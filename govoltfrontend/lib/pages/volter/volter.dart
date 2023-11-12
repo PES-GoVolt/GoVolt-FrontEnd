@@ -60,6 +60,12 @@ class _VolterScreenState extends State<VolterScreen> {
 
     if (response != null) {
       final userData = response as Usuario;
+      email = userData.email;
+      phoneNumber = userData.phoneNumber;
+      firstName = userData.firstName;
+      lastName = userData.lastName;
+      email = userData.email;
+      phoneNumber = userData.phoneNumber;
       setState(() {
         if (userData.email != "") emailController.text = userData.email;
         if (userData.phoneNumber != "")
