@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:govoltfrontend/config.dart';
 import 'package:govoltfrontend/pages/chat/chat.dart';
 
 class ChatListVolter extends StatefulWidget {
@@ -106,9 +108,6 @@ class _ChatListState extends State<ChatListVolter> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Creación de Viaje'),
-      ),
       body: showChat
           ? showSingleChat(idUserPressed, idRutaPressed, userNameChatPressed)
           : listChats(),
