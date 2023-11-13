@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:govoltfrontend/models/markers_data.dart';
 import 'package:govoltfrontend/services/geolocator_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/mapa/place.dart';
 import 'package:govoltfrontend/models/place_search.dart';
-import 'package:govoltfrontend/services/puntos_bici_service.dart';
-import 'package:govoltfrontend/services/puntos_carga_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:govoltfrontend/models/mapa/geometry.dart';
 import 'package:govoltfrontend/models/mapa/location.dart';
@@ -24,7 +23,7 @@ class _MapaState extends State<MapScreen> {
   final applicationBloc = AplicationBloc();
   late StreamSubscription locationSubscription;
   final chargersService = ChargersService();
-  final bikeService = BikeStationsService("http://127.0.0.1:0080/api");
+  final bikeService = BikeStationsService();
 
   LatLng userPosition = const LatLng(41.303110065444294, 2.0025687347671783);
   double directionUser = 0;
@@ -34,6 +33,7 @@ class _MapaState extends State<MapScreen> {
   double zoomMap = 19.0;
   bool goToNearestChargerEnable = false;
   late BitmapDescriptor bikeStationIcon;
+  bool allDataLoaded = false;
 
   List<PlaceSearch>? searchResults;
   List<Marker> myMarkers = [];
@@ -48,13 +48,13 @@ class _MapaState extends State<MapScreen> {
       userPosition = LatLng(position.latitude, position.longitude);
       directionUser = position.heading;
       centerScreen();
+      allDataLoaded = true;
     });
     super.initState();
   }
 
   @override
   void dispose() {
-    locationSubscription.cancel();
     super.dispose();
   }
 
@@ -138,11 +138,9 @@ class _MapaState extends State<MapScreen> {
         CameraPosition(target: LatLng(lat, lng), zoom: 17)));
   }
 
-  Future<void> cargarMarcadores() async {
+  cargarMarcadores() {
     try {
-      final puntosDeCarga = await applicationBloc.getChargers();
-
-      final nuevosMarcadores = puntosDeCarga.map((punto) {
+      final nuevosMarcadores = MarkersData.chargers.map((punto) {
         return Marker(
           markerId: MarkerId(punto.chargerId),
           position: LatLng(punto.longitud, punto.latitud),
@@ -159,13 +157,11 @@ class _MapaState extends State<MapScreen> {
     }
   }
 
-  Future<void> cargarBicis() async {
+  cargarBicis() {
     try {
       // Call the service to get bike stations
-      final bikeStations = await bikeService.getBikeStations();
-
       // Iterate through the bike stations and create markers
-      final newMarkers = bikeStations.map((station) {
+      final newMarkers = MarkersData.bikeStation.map((station) {
         return Marker(
           markerId:
               MarkerId(station.stationId), // Must be unique for each marker
@@ -523,7 +519,8 @@ class _MapaState extends State<MapScreen> {
       },
       onMapCreated: (GoogleMapController controller) {
         _mapController.complete(controller);
-        getMarkers();
+        cargarBicis();
+        cargarMarcadores();
       },
       myLocationEnabled: true,
       markers: {
@@ -649,8 +646,7 @@ class _MapaState extends State<MapScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget getMapScreen() {
     return Scaffold(
       bottomSheet: (placeIsSelected || showRouteDetails || routeStarted)
           ? bottomSheetInfo()
@@ -687,5 +683,10 @@ class _MapaState extends State<MapScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return getMapScreen();
   }
 }

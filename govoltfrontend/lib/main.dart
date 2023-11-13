@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:govoltfrontend/services/puntos_carga_service.dart';
+import 'package:govoltfrontend/blocs/application_bloc.dart';
+import 'package:govoltfrontend/models/markers_data.dart';
 import 'package:http/http.dart' as http;
 import 'package:govoltfrontend/menu.dart';
 import 'package:govoltfrontend/pages/registro/registro.dart';
 import 'package:govoltfrontend/config.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Agrega esta importación
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -17,13 +18,23 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  loadData();
   runApp(const MyApp());
+}
+
+void loadData() async {
+  final applicationBloc = AplicationBloc();
+  final puntosDeCarga = await applicationBloc.getChargers();
+  MarkersData.chargers = puntosDeCarga;
+  final bikeStations = await applicationBloc.getBikeStations();
+  MarkersData.bikeStation = bikeStations;
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   static const String _title = Config.appName;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -53,7 +64,7 @@ class MyStatefulWidget extends StatefulWidget {
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  //final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -287,14 +298,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       showSnackbar(message);
       return;
     }
-
-    /*final url = Uri.http(Config.apiURL, Config.allChargers);
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      List<Coordenada> puntosDeCarga = [];
-    }*/
-
     //Navigator.push(context,MaterialPageRoute(builder: (context) => Home()),);
     // ignore: use_build_context_synchronously
     await Future.delayed(Duration.zero);

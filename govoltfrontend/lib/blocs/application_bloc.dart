@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:govoltfrontend/models/bike_station.dart';
 import 'package:govoltfrontend/models/mapa/place.dart';
 import 'package:govoltfrontend/models/place_search.dart';
 import 'package:govoltfrontend/models/route_list.dart';
 import 'package:govoltfrontend/services/user_service.dart';
 import 'package:govoltfrontend/services/places_service.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:govoltfrontend/services/puntos_bici_service.dart';
 import 'package:govoltfrontend/services/puntos_carga_service.dart';
 import 'package:govoltfrontend/services/routes_service.dart';
 
@@ -41,6 +43,10 @@ class AplicationBloc with ChangeNotifier {
 
   Future<List<Coordenada>> getChargers() async {
     return await chargersService.obtenerPuntosDeCarga();
+  }
+
+  Future<List<BikeStation>> getBikeStations() async {
+    return await bikeService.getBikeStations();
   }
 
   searchNearestCharger(LatLng coord) async {
