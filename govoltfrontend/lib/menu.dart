@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:govoltfrontend/config.dart';
+import 'package:govoltfrontend/pages/volter/volter.dart';
 import 'package:govoltfrontend/pages/mapa/mapa.dart';
 
 class Menu extends StatefulWidget {
@@ -17,6 +18,8 @@ class MenuState extends State<Menu> {
     switch (pos) {
       case 0:
         return MapScreen();
+      case 1:
+        return VolterScreen();
     }
   }
 
@@ -56,7 +59,7 @@ class MenuState extends State<Menu> {
             ),
             const Divider(),
             ListTile(
-              title: const Text('Clientes'),
+              title: const Text('Volters'),
               leading: const Icon(Icons.person),
               selected: (1 == _selectDrawerItem),
               onTap: () {
