@@ -4,9 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:govoltfrontend/config.dart';
 
 class BikeStationsService {
-  String baseUrl;
-
-  BikeStationsService(this.baseUrl);
+  BikeStationsService();
 
   Future<List<BikeStation>> getBikeStations() async {
     try {

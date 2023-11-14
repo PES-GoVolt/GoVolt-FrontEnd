@@ -14,6 +14,7 @@ class AplicationBloc with ChangeNotifier {
   final placesService = PlacesService();
   final routeService = RouteService();
   final chargersService = ChargersService();
+  final bikeService = BikeStationsService();
   final editUser = EditUserService();
   RouteVoltList routevolt = RouteVoltList();
   List<PlaceSearch>? searchResults;

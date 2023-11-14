@@ -22,8 +22,6 @@ class _MapaState extends State<MapScreen> {
   final Completer<GoogleMapController> _mapController = Completer();
   final applicationBloc = AplicationBloc();
   late StreamSubscription locationSubscription;
-  final chargersService = ChargersService();
-  final bikeService = BikeStationsService();
 
   LatLng userPosition = const LatLng(41.303110065444294, 2.0025687347671783);
   double directionUser = 0;
