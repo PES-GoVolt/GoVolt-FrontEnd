@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:govoltfrontend/config.dart';
 import 'package:govoltfrontend/pages/chat/chat_list.dart';
 import 'package:govoltfrontend/pages/mapa/mapa.dart';
-import 'pages/chat/chat.dart';
 
 class Menu extends StatefulWidget {
   const Menu({super.key});
@@ -17,6 +16,8 @@ class MenuState extends State<Menu> {
   getDrawerItemWidget(int pos) {
     switch (pos) {
       case 0:
+        return MapScreen();
+      case 3:
         return ChatListVolter();
     }
   }
@@ -40,43 +41,44 @@ class MenuState extends State<Menu> {
         child: ListView(
           children: <Widget>[
             const UserAccountsDrawerHeader(
-              accountName: Text(Config.appName),
-              accountEmail: Text('contaco@xyz.com'),
-              currentAccountPicture: CircleAvatar(
-                  //backgroundImage: AssetImage('assets/images/logoxyz.png'),
-                  ),
+              accountName: Text(""),
+              accountEmail: Text(''),
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(125, 193, 165,
+                    1), // Cambia este color según tus preferencias
+              ),
             ),
             ListTile(
-              title: const Text('Inicio'),
-              leading: const Icon(Icons.phone),
-              selected: (0 == _selectDrawerItem),
+              title: const Text('Perfil'),
+              leading: const Icon(Icons.person),
+              selected: (1 == _selectDrawerItem),
               onTap: () {
-                //_onSelectItem(0);
+                _onSelectItem(1);
               },
             ),
             const Divider(),
             ListTile(
-              title: const Text('Clientes'),
-              leading: const Icon(Icons.person),
-              selected: (1 == _selectDrawerItem),
+              title: const Text('Mapa'),
+              leading: const Icon(Icons.map),
+              selected: (0 == _selectDrawerItem),
               onTap: () {
-                //_onSelectItem(1);
+                _onSelectItem(0);
               },
             ),
             ListTile(
-              title: const Text('Productos'),
-              leading: const Icon(Icons.wind_power_rounded),
+              title: const Text('Volters'),
+              leading: const Icon(Icons.directions_car),
               selected: (2 == _selectDrawerItem),
               onTap: () {
-                //_onSelectItem(2);
+                _onSelectItem(2);
               },
             ),
             ListTile(
-              title: const Text('Ventas'),
-              leading: const Icon(Icons.production_quantity_limits),
+              title: const Text('Chat'),
+              leading: const Icon(Icons.chat),
               selected: (3 == _selectDrawerItem),
               onTap: () {
-                //_onSelectItem(3);
+                _onSelectItem(3);
               },
             ),
             const Divider(),

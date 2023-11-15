@@ -77,13 +77,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   @override
   void initState() {
-    chatService.setupDatabaseListener();
+    chatService.setupDatabaseSingleListener();
     // Suscríbete al stream en el método initState
     messageArrivedSubscription =
-        chatService.onMessageArrivedChanged.listen((messageArrived) {
-      // Maneja los cambios en la variable messageArrived
-      exit(0);
-    });
+        chatService.onMessageArrivedChanged.listen((messageArrived) {});
     super.initState();
   }
 

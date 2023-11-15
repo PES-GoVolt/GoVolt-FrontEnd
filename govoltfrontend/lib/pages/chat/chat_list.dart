@@ -104,9 +104,16 @@ class _ChatListState extends State<ChatListVolter> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return showChat
-        ? showSingleChat(idUserPressed, idRutaPressed, userNameChatPressed)
-        : listChats();
+    return Scaffold(
+      body: showChat
+          ? showSingleChat(idUserPressed, idRutaPressed, userNameChatPressed)
+          : listChats(),
+    );
   }
 }

@@ -22,7 +22,6 @@ class _MapaState extends State<MapScreen> {
   final GeolocatiorService geolocatiorService = GeolocatiorService();
   final Completer<GoogleMapController> _mapController = Completer();
   final applicationBloc = AplicationBloc();
-  late StreamSubscription locationSubscription;
   final chargersService = ChargersService("http://127.0.0.1:0080/api");
   final bikeService = BikeStationsService("http://127.0.0.1:0080/api");
 
@@ -54,7 +53,6 @@ class _MapaState extends State<MapScreen> {
 
   @override
   void dispose() {
-    locationSubscription.cancel();
     super.dispose();
   }
 
