@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:govoltfrontend/config.dart';
 import 'package:govoltfrontend/pages/chat/chat.dart';
 
 class ChatListVolter extends StatefulWidget {
@@ -103,6 +101,11 @@ class _ChatListState extends State<ChatListVolter> {
           userName: userName,
           idChat: idChat),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override

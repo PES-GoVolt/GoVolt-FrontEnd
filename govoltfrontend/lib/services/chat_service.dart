@@ -9,10 +9,13 @@ import 'package:http/http.dart' as http;
 class ChatService {
   bool firstLoad = false;
   DateTime now = DateTime.now();
-  final message = MessageVolt();
+  static final message =
+      MessageVolt(userid: "", content: "", timestamp: "", roomName: "");
   String currentUserId = "userid";
+  static String currentRoom = "";
 
-  final _messageArrivedController = StreamController<MessageVolt>.broadcast();
+  static final _messageArrivedController =
+      StreamController<MessageVolt>.broadcast();
   Stream<MessageVolt> get onMessageArrivedChanged =>
       _messageArrivedController.stream;
 
@@ -31,9 +34,9 @@ class ChatService {
     await http.post(url, body: body);
   }
 
-  Future<void> getLastMessage(String idRuta, String idUsuario) async {
-    final url = Uri.http(Config.apiURL, Config.chatAddMessage,
-        {'room_name': "$idRuta/$idUsuario"});
+  Future<void> getLastMessage(String idRoom) async {
+    final url =
+        Uri.http(Config.apiURL, Config.chatAddMessage, {'room_name': idRoom});
     final response = await http.get(url);
     final jsonResponse = json.decode(response.body);
     var data = jsonResponse["messages"] as List;
@@ -41,48 +44,44 @@ class ChatService {
     message.content = messageData['content'];
     message.timestamp = messageData['timestamp'].toString();
     message.userid = messageData['sender'];
+    message.roomName = messageData['room_name'];
   }
 
-  void setupDatabaseListener() async {
-    var id = []; //"rutaid/userid"
+  void leaveRoomChat() {
+    currentRoom = "";
+  }
+
+  void enterChatRoom(String idRoom) {
+    currentRoom = idRoom;
+  }
+
+  Future<List<MessageVolt>> loadAllMessagesData(
+      String idRuta, String idUsuario) async {
+    final url = Uri.http(Config.apiURL, Config.chatAddMessage,
+        {'room_name': "$idRuta/$idUsuario"});
+    final response = await http.get(url);
+    final jsonResponse = json.decode(response.body);
+    var data = jsonResponse["messages"] as List;
+    return data.map((mensaje) => MessageVolt.fromMap(mensaje)).toList();
+  }
+
+  void setupDatabaseSingleListener() async {
+    var id = ["rutaid/userid", "rutaid/userid2"];
     for (int i = 0; i < id.length; ++i) {
-      DatabaseReference messagesRef =
+      DatabaseReference messagesRefSingle =
           FirebaseDatabase.instance.ref().child(id[i]);
 
-      messagesRef.onChildAdded.listen((event) {
+      messagesRefSingle.onChildAdded.listen((event) async {
         final dynamicValue = event.snapshot.value;
         if (dynamicValue is String) {
-          print(dynamicValue);
-        } else if (dynamicValue is Map<String, dynamic>) {
-          final data = dynamicValue;
-          DateTime messageTime = DateTime.fromMillisecondsSinceEpoch(
-              data['timestamp'].toInt() * 1000);
-          if (messageTime.isAfter(now)) {
-            print('Nuevo mensaje:$i');
-          } else {}
+          var a = messagesRefSingle.path;
+          await getLastMessage(currentRoom);
+          if (message.userid != currentUserId &&
+              message.roomName == currentRoom) {
+            setMessageArrived(message);
+          }
         }
       });
     }
-  }
-
-  void setupDatabaseSingleListener(String idRoom) async {
-    DatabaseReference messagesRefSingle =
-        FirebaseDatabase.instance.ref().child(idRoom);
-
-    messagesRefSingle.onChildAdded.listen((event) async {
-      final dynamicValue = event.snapshot.value;
-      if (dynamicValue is String) {
-        await getLastMessage("rutaid", "userid");
-        if (message.userid != currentUserId) {
-          setMessageArrived(message);
-        }
-      } else if (dynamicValue is Map) {
-        final data = dynamicValue;
-        message.content = data['content'];
-        message.timestamp = data['timestamp'].toString();
-        message.userid = data['sender'];
-        setMessageArrived(message);
-      }
-    });
   }
 }

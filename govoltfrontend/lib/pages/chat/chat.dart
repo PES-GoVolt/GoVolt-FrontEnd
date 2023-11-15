@@ -34,26 +34,50 @@ class _ChatPageState extends State<ChatPage> {
   late StreamSubscription<MessageVolt> messageArrivedSubscription;
   bool messagesLoaded = false;
 
+  void loadAllData() async {
+    List<MessageVolt> messagesDataLoaded =
+        await chatService.loadAllMessagesData(idRuta, idChatUser);
+    for (var element in messagesDataLoaded) {
+      String messageUserId = element.userid;
+      final textMessage = types.TextMessage(
+        author: messageUserId == user.id
+            ? user
+            : types.User(id: widget.idUserReciever, firstName: widget.userName),
+        createdAt: int.parse(element.timestamp),
+        id: Uuid().v4(),
+        text: element.content,
+      );
+      _addMessage(textMessage);
+    }
+    messagesLoaded = true;
+  }
+
   @override
   void initState() {
     idRuta = widget.idRuta;
     idChatUser = widget.idChat;
-    chatService.setupDatabaseSingleListener("$idRuta/$idChatUser");
-    // Suscríbete al stream en el método initState
+    if (!messagesLoaded) loadAllData();
+    chatService.enterChatRoom("$idRuta/$idChatUser");
     final user2 =
         types.User(id: widget.idUserReciever, firstName: widget.userName);
     messageArrivedSubscription =
         chatService.onMessageArrivedChanged.listen((messageArrived) {
-      String messageUserId = chatService.message.userid;
+      String messageUserId = ChatService.message.userid;
       final textMessage = types.TextMessage(
         author: messageUserId == user.id ? user : user2,
-        createdAt: int.parse(chatService.message.timestamp),
+        createdAt: int.parse(ChatService.message.timestamp),
         id: Uuid().v4(),
-        text: chatService.message.content,
+        text: ChatService.message.content,
       );
       _addMessage(textMessage);
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    chatService.leaveRoomChat();
+    super.dispose();
   }
 
   void _addMessage(types.Message message) {

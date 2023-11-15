@@ -41,17 +41,13 @@ class AplicationBloc with ChangeNotifier {
   }
 
   calculateRoute(List<LatLng> points) async {
-    await routeService.getRoute(
-        points, routevolt.carRoute, "DRIVE");
-    await routeService.getRoute(
-        points,routevolt.bicycleRoute, "BICYCLE");
-    await routeService.getRoute(
-        points,routevolt.walkingRoute, "WALK");
+    await routeService.getRoute(points, routevolt.carRoute, "DRIVE");
+    await routeService.getRoute(points, routevolt.bicycleRoute, "BICYCLE");
+    await routeService.getRoute(points, routevolt.walkingRoute, "WALK");
   }
 
   calculateRouteToCharger(List<LatLng> points) async {
-    await routeService.getRoute(
-        points, routevolt.carRoute, "DRIVE");
+    await routeService.getRoute(points, routevolt.carRoute, "DRIVE");
   }
 
   changePointer(int mode) {
