@@ -8,6 +8,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:699229746495:android:93429fb1e4a3cdf1360f8a",
+        "android_client_info": {
+          "package_name": "com.example.apptest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4CGpMmBrtiQxcSaYDwywSWVdUkqIN_5g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:699229746495:android:822f959e1c3c81ef360f8a",
         "android_client_info": {
           "package_name": "com.example.govoltfrontend"
