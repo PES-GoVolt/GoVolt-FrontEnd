@@ -74,11 +74,13 @@ class ChatService {
       messagesRefSingle.onChildAdded.listen((event) async {
         final dynamicValue = event.snapshot.value;
         if (dynamicValue is String) {
-          var a = messagesRefSingle.path;
-          await getLastMessage(currentRoom);
-          if (message.userid != currentUserId &&
-              message.roomName == currentRoom) {
-            setMessageArrived(message);
+          var roomName = messagesRefSingle.path;
+          if (roomName == currentRoom)
+          {
+            await getLastMessage(currentRoom);
+            if (message.userid != currentUserId) {
+              setMessageArrived(message);
+            }
           }
         }
       });
