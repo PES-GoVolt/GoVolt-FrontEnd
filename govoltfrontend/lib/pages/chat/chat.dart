@@ -60,6 +60,7 @@ class _ChatPageState extends State<ChatPage> {
     chatService.enterChatRoom("$idRuta/$idChatUser");
     final user2 =
         types.User(id: widget.idUserReciever, firstName: widget.userName);
+    super.initState();
     messageArrivedSubscription =
         chatService.onMessageArrivedChanged.listen((messageArrived) {
       String messageUserId = ChatService.message.userid;
@@ -71,12 +72,13 @@ class _ChatPageState extends State<ChatPage> {
       );
       _addMessage(textMessage);
     });
-    super.initState();
+    
   }
 
   @override
   void dispose() {
     chatService.leaveRoomChat();
+    messageArrivedSubscription.cancel();
     super.dispose();
   }
 

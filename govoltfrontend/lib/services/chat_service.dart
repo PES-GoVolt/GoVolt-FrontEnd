@@ -19,6 +19,11 @@ class ChatService {
   Stream<MessageVolt> get onMessageArrivedChanged =>
       _messageArrivedController.stream;
 
+      static final _messageArrivedNotificationController =
+      StreamController<bool>.broadcast();
+  Stream<bool> get onMessageArrivedNotificationChanged =>
+      _messageArrivedNotificationController.stream;
+
   void setMessageArrived(MessageVolt value) {
     _messageArrivedController.add(value);
   }
@@ -81,6 +86,9 @@ class ChatService {
             if (message.userid != currentUserId) {
               setMessageArrived(message);
             }
+          }
+          else{
+            _messageArrivedNotificationController.add(true);
           }
         }
       });

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:govoltfrontend/models/message.dart';
 import 'package:govoltfrontend/services/chat_service.dart';
 import 'package:flutter/material.dart';
+import 'package:govoltfrontend/services/notifications_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:govoltfrontend/menu.dart';
 import 'package:govoltfrontend/pages/registro/registro.dart';
@@ -19,6 +20,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await LocalNotificationService().init();
   runApp(const MyApp());
 }
 
@@ -56,8 +58,6 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
-  ChatService chatService = ChatService();
-  late StreamSubscription<MessageVolt> messageArrivedSubscription;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -71,16 +71,12 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   @override
   void dispose() {
-    messageArrivedSubscription.cancel();
     super.dispose();
   }
 
   @override
   void initState() {
-    chatService.setupDatabaseSingleListener();
     // Suscríbete al stream en el método initState
-    messageArrivedSubscription =
-        chatService.onMessageArrivedChanged.listen((messageArrived) {});
     super.initState();
   }
 

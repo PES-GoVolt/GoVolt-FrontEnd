@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:govoltfrontend/config.dart';
 import 'package:govoltfrontend/pages/chat/chat_list.dart';
 import 'package:govoltfrontend/pages/mapa/mapa.dart';
+import 'package:govoltfrontend/services/chat_service.dart';
+import 'package:govoltfrontend/services/notifications_service.dart';
 
 class Menu extends StatefulWidget {
   const Menu({super.key});
@@ -13,6 +15,8 @@ class Menu extends StatefulWidget {
 
 class MenuState extends State<Menu> {
   int _selectDrawerItem = 0;
+  ChatService chatService = ChatService();
+  late StreamSubscription<bool> messageArrivedSubscription;
   getDrawerItemWidget(int pos) {
     switch (pos) {
       case 0:
@@ -27,6 +31,23 @@ class MenuState extends State<Menu> {
     setState(() {
       _selectDrawerItem = pos;
     });
+  }
+
+  @override
+  void initState() {
+    chatService.setupDatabaseSingleListener();
+    // Suscríbete al stream en el método initState
+    messageArrivedSubscription =
+        chatService.onMessageArrivedNotificationChanged.listen((messageArrived) {
+          LocalNotificationService.showNotificationAndroid("Title", "Value");
+        });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    messageArrivedSubscription.cancel();
+    super.dispose();
   }
 
   @override
