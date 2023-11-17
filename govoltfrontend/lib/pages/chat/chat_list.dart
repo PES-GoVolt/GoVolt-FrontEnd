@@ -83,6 +83,37 @@ class _ChatListState extends State<ChatListVolter> {
     );
   }
 
+  void _mostrarOpciones(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Opciones'),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            _botonOpciones('Añadir Pasajero', Icons.person_add_alt_1),
+            const SizedBox(height: 20),
+            _botonOpciones('Bloquear Pasajero', Icons.block),
+            // Agrega más opciones según sea necesario
+          ],
+        ),
+      );
+    },
+  );
+}
+
+Widget _botonOpciones(String texto, IconData icono) {
+  return Row(
+    children: <Widget>[
+      Icon(icono),
+      const SizedBox(width: 11),
+      Text(texto),
+    ],
+  );
+}
+  
   Widget showSingleChat(String idUSer, String idRuta, String userName) {
     return Scaffold(
       appBar: AppBar(
@@ -91,9 +122,18 @@ class _ChatListState extends State<ChatListVolter> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             showChat = false;
-            setState(() {});
+            setState(() {
+            });
           },
         ),
+        actions:  <Widget>[
+          IconButton(
+            icon: const Icon(Icons.shield),
+            onPressed: () {
+              _mostrarOpciones(context);
+            },
+          ),
+        ],
       ),
       body: ChatPage(
           idUserReciever: idUSer,
