@@ -20,8 +20,8 @@ class ChatService {
       _messageArrivedController.stream;
 
       static final _messageArrivedNotificationController =
-      StreamController<bool>.broadcast();
-  Stream<bool> get onMessageArrivedNotificationChanged =>
+      StreamController<String>.broadcast();
+  Stream<String> get onMessageArrivedNotificationChanged =>
       _messageArrivedNotificationController.stream;
 
   void setMessageArrived(MessageVolt value) {
@@ -88,7 +88,9 @@ class ChatService {
             }
           }
           else{
-            _messageArrivedNotificationController.add(true);
+            await getLastMessage(roomName);
+            String messageReceived = "${message.userid}_${message.content}";
+            _messageArrivedNotificationController.add(messageReceived);
           }
         }
       });

@@ -16,7 +16,7 @@ class Menu extends StatefulWidget {
 class MenuState extends State<Menu> {
   int _selectDrawerItem = 0;
   ChatService chatService = ChatService();
-  late StreamSubscription<bool> messageArrivedSubscription;
+  late StreamSubscription<String> messageArrivedSubscription;
   getDrawerItemWidget(int pos) {
     switch (pos) {
       case 0:
@@ -39,7 +39,8 @@ class MenuState extends State<Menu> {
     // Suscríbete al stream en el método initState
     messageArrivedSubscription =
         chatService.onMessageArrivedNotificationChanged.listen((messageArrived) {
-          LocalNotificationService.showNotificationAndroid("Title", "Value");
+          List<String> parts = messageArrived.split("_");
+          LocalNotificationService.showNotificationAndroid(parts[0], parts[1]);
         });
     super.initState();
   }
