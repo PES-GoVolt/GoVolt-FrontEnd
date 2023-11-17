@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:govoltfrontend/pages/chat/chat.dart';
 
@@ -15,6 +17,20 @@ class _ChatListState extends State<ChatListVolter> {
   String idRutaPressed = "";
   String idUserPressed = "";
   String idChat = "";
+
+  static const colors = [
+  Color(0xffff6767),
+  Color(0xff66e0da),
+  Color(0xfff5a2d9),
+  Color(0xfff0c722),
+  Color(0xff6a85e5),
+  Color(0xfffd9a6f),
+  Color(0xff92db6e),
+  Color(0xff73b8e5),
+  Color(0xfffd7590),
+  Color(0xffc78ae5),
+];
+
   List<Map<String, dynamic>> itemList = [
     {
       "name": "Marc",
@@ -31,6 +47,7 @@ class _ChatListState extends State<ChatListVolter> {
     // Agrega más elementos según sea necesario
   ];
 
+  
   Widget listChats() {
     return ListView.builder(
       itemCount: itemList.length,
@@ -46,15 +63,7 @@ class _ChatListState extends State<ChatListVolter> {
             contentPadding: const EdgeInsets.all(16.0),
             title: Row(
               children: [
-                CircleAvatar(
-                  radius: 16,
-                  backgroundColor: const Color.fromRGBO(125, 193, 165, 1),
-                  child: Text(
-                    userName.characters.first,
-                    style:
-                        const TextStyle(color: Color.fromRGBO(77, 94, 107, 1)),
-                  ),
-                ),
+                circleColorCustom(userName, idUser),
                 const SizedBox(width: 16.0),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,12 +78,18 @@ class _ChatListState extends State<ChatListVolter> {
                 ),
               ],
             ),
-            onTap: () {
+            onTap: () async {
               idRutaPressed = idRuta;
               idUserPressed = idUser;
               idChat = idChatItem;
               userNameChatPressed = userName;
-              showChat = true;
+              await Navigator.push(context, MaterialPageRoute(builder: (context) =>  ChatPage(
+                idUserReciever: idUser,
+                idRuta: idRuta,
+                userName: userName,
+                idChat: idChat)
+                )
+              );
               setState(() {});
             },
           ),
@@ -83,66 +98,20 @@ class _ChatListState extends State<ChatListVolter> {
     );
   }
 
-  void _mostrarOpciones(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Opciones'),
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            _botonOpciones('Añadir Pasajero', Icons.person_add_alt_1),
-            const SizedBox(height: 20),
-            _botonOpciones('Bloquear Pasajero', Icons.block),
-            // Agrega más opciones según sea necesario
-          ],
-        ),
-      );
-    },
-  );
-}
-
-Widget _botonOpciones(String texto, IconData icono) {
-  return Row(
-    children: <Widget>[
-      Icon(icono),
-      const SizedBox(width: 11),
-      Text(texto),
-    ],
-  );
-}
-  
-  Widget showSingleChat(String idUSer, String idRuta, String userName) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(userNameChatPressed),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            showChat = false;
-            setState(() {
-            });
-          },
-        ),
-        actions:  <Widget>[
-          IconButton(
-            icon: const Icon(Icons.shield),
-            onPressed: () {
-              _mostrarOpciones(context);
-            },
-          ),
-        ],
-      ),
-      body: ChatPage(
-          idUserReciever: idUSer,
-          idRuta: idRuta,
-          userName: userName,
-          idChat: idChat),
-    );
+  Widget circleColorCustom(String username, String id){
+    String usernameLastCharacter = id.characters.first;
+    final initialsNumber = usernameLastCharacter.codeUnitAt(0) % 10;
+    return CircleAvatar(
+                  radius: 16,
+                  backgroundColor: colors[initialsNumber],
+                  child: Text(
+                    username.characters.first,
+                    style:
+                        const TextStyle(color: Colors.white),
+                  ),
+                );
   }
-
+  
   @override
   void initState() {
     super.initState();
@@ -151,9 +120,7 @@ Widget _botonOpciones(String texto, IconData icono) {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: showChat
-          ? showSingleChat(idUserPressed, idRutaPressed, userNameChatPressed)
-          : listChats(),
+      body: listChats(),
     );
   }
 }

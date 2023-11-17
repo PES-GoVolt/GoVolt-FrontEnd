@@ -21,16 +21,6 @@ class UserName extends StatelessWidget {
     final color = getUserAvatarNameColor(author, theme.userAvatarNameColors);
     final name = getUserName(author);
 
-    return name.isEmpty
-        ? const SizedBox()
-        : Padding(
-            padding: const EdgeInsets.only(bottom: 6),
-            child: Text(
-              name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.userNameTextStyle.copyWith(color: color),
-            ),
-          );
+    return const SizedBox();
   }
 }

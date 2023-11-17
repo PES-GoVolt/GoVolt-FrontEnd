@@ -28,6 +28,19 @@ class UserAvatar extends StatelessWidget {
   /// Called when user taps on an avatar.
   final void Function(types.User)? onAvatarTap;
 
+  static const colors = [
+  Color(0xffff6767),
+  Color(0xff66e0da),
+  Color(0xfff5a2d9),
+  Color(0xfff0c722),
+  Color(0xff6a85e5),
+  Color(0xfffd9a6f),
+  Color(0xff92db6e),
+  Color(0xff73b8e5),
+  Color(0xfffd7590),
+  Color(0xffc78ae5),
+];
+
   @override
   Widget build(BuildContext context) {
     final color = getUserAvatarNameColor(
@@ -36,6 +49,8 @@ class UserAvatar extends StatelessWidget {
     );
     final hasImage = author.imageUrl != null;
     final initials = getUserInitials(author);
+    String usernameLastCharacter = author.id.characters.first;
+    final initialsNumber = usernameLastCharacter.codeUnitAt(0) % 10;
 
     return Container(
       margin: bubbleRtlAlignment == BubbleRtlAlignment.left
@@ -48,7 +63,7 @@ class UserAvatar extends StatelessWidget {
               ? InheritedChatTheme.of(context)
                   .theme
                   .userAvatarImageBackgroundColor
-              : color,
+              : colors[initialsNumber],
           backgroundImage: hasImage
               ? NetworkImage(author.imageUrl!, headers: imageHeaders)
               : null,

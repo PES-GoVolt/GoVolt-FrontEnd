@@ -19,7 +19,7 @@ class ChatService {
   Stream<MessageVolt> get onMessageArrivedChanged =>
       _messageArrivedController.stream;
 
-      static final _messageArrivedNotificationController =
+  static final _messageArrivedNotificationController =
       StreamController<String>.broadcast();
   Stream<String> get onMessageArrivedNotificationChanged =>
       _messageArrivedNotificationController.stream;

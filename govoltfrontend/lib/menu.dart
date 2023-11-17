@@ -17,6 +17,8 @@ class MenuState extends State<Menu> {
   int _selectDrawerItem = 0;
   ChatService chatService = ChatService();
   late StreamSubscription<String> messageArrivedSubscription;
+  late StreamSubscription<bool> showAppbarSubscription;
+  ChatListVolter chatList = ChatListVolter();
   getDrawerItemWidget(int pos) {
     switch (pos) {
       case 0:
@@ -36,7 +38,6 @@ class MenuState extends State<Menu> {
   @override
   void initState() {
     chatService.setupDatabaseSingleListener();
-    // Suscríbete al stream en el método initState
     messageArrivedSubscription =
         chatService.onMessageArrivedNotificationChanged.listen((messageArrived) {
           List<String> parts = messageArrived.split("_");
