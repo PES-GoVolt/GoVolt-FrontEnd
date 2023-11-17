@@ -25,6 +25,8 @@ class MenuState extends State<Menu> {
         return MapScreen();
       case 3:
         return ChatListVolter();
+      case 1:
+        return VolterScreen();
     }
   }
 
@@ -67,10 +69,24 @@ class MenuState extends State<Menu> {
               accountName: Text(""),
               accountEmail: Text(''),
               decoration: BoxDecoration(
+                color: const Color.fromRGBO(125, 193, 165,
+                    1), // Cambia este color según tus preferencias
+              accountName: Text(""),
+              accountEmail: Text(''),
+              decoration: BoxDecoration(
                 color: Color.fromRGBO(125, 193, 165,
                     1), // Cambia este color según tus preferencias
               ),
             ),
+            ListTile(
+              title: const Text('Inicio'),
+              leading: const Icon(Icons.map),
+              selected: (0 == _selectDrawerItem),
+              onTap: () {
+                _onSelectItem(0);
+              },
+            ),
+            const Divider(),
             ListTile(
               title: const Text('Perfil'),
               leading: const Icon(Icons.person),

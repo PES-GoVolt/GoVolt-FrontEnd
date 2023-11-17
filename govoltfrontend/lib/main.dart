@@ -3,12 +3,16 @@ import 'package:govoltfrontend/models/message.dart';
 import 'package:govoltfrontend/services/chat_service.dart';
 import 'package:flutter/material.dart';
 import 'package:govoltfrontend/services/notifications_service.dart';
+import 'package:govoltfrontend/blocs/application_bloc.dart';
+import 'package:govoltfrontend/models/markers_data.dart';
 import 'package:http/http.dart' as http;
 import 'package:govoltfrontend/menu.dart';
 import 'package:govoltfrontend/pages/registro/registro.dart';
 import 'package:govoltfrontend/config.dart';
 import 'dart:async';
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart'; // Agrega esta importación
+
 import 'package:firebase_auth/firebase_auth.dart'; // Agrega esta importación
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,14 +24,24 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  loadData();
   await LocalNotificationService().init();
   runApp(const MyApp());
+}
+
+void loadData() async {
+  final applicationBloc = AplicationBloc();
+  final puntosDeCarga = await applicationBloc.getChargers();
+  MarkersData.chargers = puntosDeCarga;
+  final bikeStations = await applicationBloc.getBikeStations();
+  MarkersData.bikeStation = bikeStations;
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   static const String _title = Config.appName;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -63,7 +77,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   TextEditingController passwordController = TextEditingController();
 
   //final urllogin = Uri.parse("http://192.168.1.108/api/login/");
-  final urllogin = Uri.https(Config.apiURL, Config.loginAPI);
+  final urllogin = Uri.http(Config.apiURL, Config.loginAPI);
 
   //final urlobtenertoken = Uri.parse("http://192.168.1.108/api/api-token-auth/");
   final urlobtenertoken = Uri.http(Config.apiURL, Config.obtenertokenAPI);
