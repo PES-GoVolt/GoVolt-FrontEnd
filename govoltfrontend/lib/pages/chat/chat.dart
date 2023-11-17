@@ -113,9 +113,9 @@ class _ChatPageState extends State<ChatPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            _botonOpciones('Añadir Pasajero', Icons.person_add_alt_1),
+            _botonOpciones('Añadir Pasajero', Icons.person_add_alt_1, Colors.black),
             const SizedBox(height: 20),
-            _botonOpciones('Bloquear Pasajero', Icons.block),
+            _botonOpciones('Rechazar Pasajero', Icons.block, Colors.red),
             // Agrega más opciones según sea necesario
           ],
         ),
@@ -124,12 +124,12 @@ class _ChatPageState extends State<ChatPage> {
   );
 }
 
-Widget _botonOpciones(String texto, IconData icono) {
+Widget _botonOpciones(String texto, IconData icono, Color textColor) {
   return Row(
     children: <Widget>[
       Icon(icono),
       const SizedBox(width: 11),
-      Text(texto),
+      Text(texto, style: TextStyle(color: textColor),),
     ],
   );
 }

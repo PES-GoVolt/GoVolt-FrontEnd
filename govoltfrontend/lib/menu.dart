@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:govoltfrontend/pages/chat/chat_list.dart';
 import 'package:govoltfrontend/pages/mapa/mapa.dart';
+import 'package:govoltfrontend/pages/volter/volter.dart';
 import 'package:govoltfrontend/services/chat_service.dart';
 import 'package:govoltfrontend/services/notifications_service.dart';
 
@@ -54,7 +55,7 @@ class MenuState extends State<Menu> {
     super.dispose();
   }
 
-  @override
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -69,24 +70,9 @@ class MenuState extends State<Menu> {
               accountName: Text(""),
               accountEmail: Text(''),
               decoration: BoxDecoration(
-                color: const Color.fromRGBO(125, 193, 165,
-                    1), // Cambia este color según tus preferencias
-              accountName: Text(""),
-              accountEmail: Text(''),
-              decoration: BoxDecoration(
-                color: Color.fromRGBO(125, 193, 165,
-                    1), // Cambia este color según tus preferencias
+                color: const Color.fromRGBO(125, 193, 165,1),
               ),
             ),
-            ListTile(
-              title: const Text('Inicio'),
-              leading: const Icon(Icons.map),
-              selected: (0 == _selectDrawerItem),
-              onTap: () {
-                _onSelectItem(0);
-              },
-            ),
-            const Divider(),
             ListTile(
               title: const Text('Perfil'),
               leading: const Icon(Icons.person),

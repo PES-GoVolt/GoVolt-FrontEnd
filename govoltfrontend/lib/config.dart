@@ -5,6 +5,7 @@ class Config {
   static const clientesAPI = "api/cliente";
   static const puntosCargaAPI = "api/puntocarga";
   static const loginAPI = "api/auth/login/";
+   static const logoutAPI = "api/users/logout/";
   static const obtenertokenAPI = "api/auth/api-token-auth/";
   static const registroAPI = "api/auth/register/";
   static const allBikeStations = "api/bikestations/all";
