@@ -24,10 +24,12 @@ TextField printSearchBar() {
 class _RoutesState extends State<RoutesScreen> {
   int _selectedIndex = 0; // Estado para controlar el botón seleccionado
   final RutaService rutaService = RutaService(); // Instancia del servicio
-  DateTime _selectedDay = DateTime.now();
+  DateTime _selectedDay = DateTime(0);
   DateTime _focusedDay = DateTime.now();
   CalendarFormat _calendarFormat = CalendarFormat.month;
   List<DateTime> _events = [];
+  List<Ruta> combinedRutas=[];
+  List<Ruta> filteredRutas=[];
 
   @override
   void initState() {
@@ -140,13 +142,28 @@ class _RoutesState extends State<RoutesScreen> {
       _events = dateList;
     });
   }
+Future<List<Ruta>> _filterRutas() async {
+
+    filteredRutas = combinedRutas
+        .where((ruta) =>
+            _selectedDay.isAtSameMomentAs(DateTime(0)) ||
+            DateTime.parse(ruta.date).isAtSameMomentAs(_selectedDay) ||
+            (DateTime.parse(ruta.date).year == _selectedDay.year &&
+                DateTime.parse(ruta.date).month == _selectedDay.month &&
+                DateTime.parse(ruta.date).day == _selectedDay.day))
+        .toList();
+
+    return filteredRutas;
+  }
 
   Future<List<Ruta>> _loadCombinedRutas() async {
     List<Ruta> myRutas = await rutaService.getMyRutas();
     List<Ruta> partRutas = await rutaService.getPartRutas();
 
-    // Combina las listas y devuelve el resultado
-    return [...myRutas, ...partRutas];
+    combinedRutas = [...myRutas, ...partRutas];
+
+
+    return combinedRutas;
   }
 
   Widget _buildRouteCards() {
@@ -154,7 +171,7 @@ class _RoutesState extends State<RoutesScreen> {
       child: FutureBuilder<List<Ruta>>(
         future: _selectedIndex == 1
             ? rutaService.getAllRutas()
-            : _loadCombinedRutas(),
+            : _filterRutas(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -238,7 +255,12 @@ class _RoutesState extends State<RoutesScreen> {
           },
           onDaySelected: (selectedDay, focusedDay) {
             setState(() {
-              _selectedDay = selectedDay;
+              if (isSameDay(_selectedDay, selectedDay)) {
+                _selectedDay = DateTime(0);
+                _focusedDay = DateTime(0);
+              } else {
+                _selectedDay = selectedDay;
+              }
               _focusedDay = focusedDay;
             });
             print(_selectedDay);
