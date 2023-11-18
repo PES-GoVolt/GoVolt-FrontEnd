@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:table_calendar/table_calendar.dart';
 import 'package:govoltfrontend/models/rutas.dart';
 import 'package:govoltfrontend/pages/rutas/route_card.dart';
 import 'package:govoltfrontend/services/rutas_service.dart';
@@ -11,21 +12,20 @@ class RoutesScreen extends StatefulWidget {
 }
 
 TextField printSearchBar() {
-    return TextField(
-      decoration: const InputDecoration(
-          hintText: 'Busca tu trayecto ...',
-          prefixIcon: Icon(Icons.search)),
-      onChanged: (value) {
-        value = value;
-      },
-    );
-  }
-
- 
+  return TextField(
+    decoration: const InputDecoration(
+        hintText: 'Busca tu trayecto ...', prefixIcon: Icon(Icons.search)),
+    onChanged: (value) {
+      value = value;
+    },
+  );
+}
 
 class _RoutesState extends State<RoutesScreen> {
   int _selectedIndex = 0; // Estado para controlar el botón seleccionado
   final RutaService rutaService = RutaService(); // Instancia del servicio
+  DateTime _selectedDay = DateTime.now();
+  DateTime _focusedDay = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -33,12 +33,12 @@ class _RoutesState extends State<RoutesScreen> {
       resizeToAvoidBottomInset: false,
       body: Column(
         children: [
-          if(_selectedIndex == 1)...{
+          if (_selectedIndex == 1) ...{
             _buildSearchBar(),
-            _buildRouteCards(),   
-          }
-          else...{
+            _buildRouteCards(),
+          } else ...{
             // cosas de ruben :)
+            _buildCalendar()
           }
         ],
       ),
@@ -79,7 +79,6 @@ class _RoutesState extends State<RoutesScreen> {
           ],
         ),
       ),
-
     );
   }
 
@@ -92,16 +91,17 @@ class _RoutesState extends State<RoutesScreen> {
           Expanded(
             child: printSearchBar(),
           ),
-          SizedBox(width: 8), // Espacio entre la barra de búsqueda y el botón de filtro
+          SizedBox(
+              width:
+                  8), // Espacio entre la barra de búsqueda y el botón de filtro
           ElevatedButton(
             onPressed: () {
               // Lógica para el botón de filtro
               // Puedes abrir un cuadro de diálogo, mostrar opciones, etc.
             },
             style: ElevatedButton.styleFrom(
-              fixedSize: Size.fromHeight(50),
-              backgroundColor:  Color(0xff4d5e6b)
-            ),
+                fixedSize: Size.fromHeight(50),
+                backgroundColor: Color(0xff4d5e6b)),
             child: const Icon(Icons.filter_list),
           ),
         ],
@@ -144,21 +144,24 @@ class _RoutesState extends State<RoutesScreen> {
         border: Border(
           bottom: BorderSide(
             width: 4,
-            color: selected ? Color(0xff4d5e6b) : const Color.fromARGB(0, 255, 255, 255), 
+            color: selected
+                ? Color(0xff4d5e6b)
+                : const Color.fromARGB(0, 255, 255, 255),
           ),
         ),
       ),
       child: Text(
         text,
         style: TextStyle(
-          color: selected ? Color(0xff4d5e6b) : Colors.white, 
-          fontWeight: selected ? FontWeight.bold : FontWeight.normal, 
+          color: selected ? Color(0xff4d5e6b) : Colors.white,
+          fontWeight: selected ? FontWeight.bold : FontWeight.normal,
         ),
       ),
     );
   }
 
-  Widget _buildCircleButton({required VoidCallback onPressed, required IconData icon}) {
+  Widget _buildCircleButton(
+      {required VoidCallback onPressed, required IconData icon}) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
@@ -177,6 +180,27 @@ class _RoutesState extends State<RoutesScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildCalendar() {
+    return Column(
+      children: [
+        TableCalendar(
+          firstDay: DateTime.utc(2010, 10, 16),
+          lastDay: DateTime.utc(2030, 3, 14),
+          focusedDay: _focusedDay,
+          selectedDayPredicate: (day) {
+            return isSameDay(_selectedDay, day);
+          },
+          onDaySelected: (selectedDay, focusedDay) {
+            setState(() {
+              _selectedDay = selectedDay;
+              _focusedDay = focusedDay;
+            });
+          },
+        ),
+      ],
     );
   }
 }
