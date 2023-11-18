@@ -26,6 +26,14 @@ class _RoutesState extends State<RoutesScreen> {
   final RutaService rutaService = RutaService(); // Instancia del servicio
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  List<DateTime> _events = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMyRutas();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +46,8 @@ class _RoutesState extends State<RoutesScreen> {
             _buildRouteCards(),
           } else ...{
             // cosas de ruben :)
-            _buildCalendar()
+            _buildCalendar(),
+            _buildRouteCards(),
           }
         ],
       ),
@@ -109,6 +118,29 @@ class _RoutesState extends State<RoutesScreen> {
     );
   }
 
+  Future<void> _loadMyRutas() async {
+    // Tu lógica para cargar las rutas combinadas
+    List<Ruta> combinedRutas = await _loadCombinedRutas();
+
+    setState(() {
+      // Inicializar la lista de fechas
+      List<DateTime> dateList = [];
+
+      combinedRutas.forEach((ruta) {
+        List<int> dateParts = ruta.date.split('-').map(int.parse).toList();
+        DateTime date = DateTime(dateParts[0], dateParts[1], dateParts[2]);
+
+        // Agregar la fecha a la lista si no está presente
+        if (!dateList.contains(date)) {
+          dateList.add(date);
+        }
+      });
+
+      // Asignar la lista de fechas a la variable _events
+      _events = dateList;
+    });
+  }
+
   Future<List<Ruta>> _loadCombinedRutas() async {
     List<Ruta> myRutas = await rutaService.getMyRutas();
     List<Ruta> partRutas = await rutaService.getPartRutas();
@@ -120,7 +152,9 @@ class _RoutesState extends State<RoutesScreen> {
   Widget _buildRouteCards() {
     return Expanded(
       child: FutureBuilder<List<Ruta>>(
-        future: _selectedIndex == 1 ? rutaService.getAllRutas() : _loadCombinedRutas(),
+        future: _selectedIndex == 1
+            ? rutaService.getAllRutas()
+            : _loadCombinedRutas(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -195,9 +229,10 @@ class _RoutesState extends State<RoutesScreen> {
     return Column(
       children: [
         TableCalendar(
-          firstDay: DateTime.utc(2010, 10, 16),
-          lastDay: DateTime.utc(2030, 3, 14),
+          firstDay: DateTime.utc(2023, 1, 1),
+          lastDay: DateTime.utc(2029, 12, 31),
           focusedDay: _focusedDay,
+          calendarFormat: _calendarFormat,
           selectedDayPredicate: (day) {
             return isSameDay(_selectedDay, day);
           },
@@ -206,7 +241,45 @@ class _RoutesState extends State<RoutesScreen> {
               _selectedDay = selectedDay;
               _focusedDay = focusedDay;
             });
+            print(_selectedDay);
           },
+          calendarStyle: const CalendarStyle(
+            selectedDecoration: BoxDecoration(
+              color: Colors.blue,
+            ),
+          ),
+          headerStyle: const HeaderStyle(
+            formatButtonVisible: false,
+          ),
+          calendarBuilders: CalendarBuilders(
+            markerBuilder: (context, date, events) {
+              if (_events.any((eventDate) =>
+                  eventDate.year == date.year &&
+                  eventDate.month == date.month &&
+                  eventDate.day == date.day)) {
+                bool isSelectedDay = isSameDay(_selectedDay, date);
+                return Container(
+                  margin: const EdgeInsets.all(4.0),
+                  decoration: BoxDecoration(
+                    color: isSelectedDay
+                        ? Colors.blue
+                        : const Color.fromRGBO(125, 193, 165, 1),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${date.day}',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                );
+              } else {
+                // Devuelve un contenedor vacío si no necesitas marcar esta fecha
+                return Container();
+              }
+            },
+          ),
         ),
       ],
     );
