@@ -109,10 +109,18 @@ class _RoutesState extends State<RoutesScreen> {
     );
   }
 
+  Future<List<Ruta>> _loadCombinedRutas() async {
+    List<Ruta> myRutas = await rutaService.getMyRutas();
+    List<Ruta> partRutas = await rutaService.getPartRutas();
+
+    // Combina las listas y devuelve el resultado
+    return [...myRutas, ...partRutas];
+  }
+
   Widget _buildRouteCards() {
     return Expanded(
       child: FutureBuilder<List<Ruta>>(
-        future: rutaService.getAllRutas(),
+        future: _selectedIndex == 1 ? rutaService.getAllRutas() : _loadCombinedRutas(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
