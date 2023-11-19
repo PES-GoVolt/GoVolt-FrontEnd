@@ -42,6 +42,15 @@ class AplicationBloc with ChangeNotifier {
     notifyListeners();
   }
 
+  searchCities(String searchTerm) async {
+    if (searchTerm == "") {
+      searchResults!.clear();
+    } else {
+      searchResults = await placesService.getAutoCompleteCities(searchTerm);
+    }
+    notifyListeners();
+  }
+
   Future<List<Coordenada>> getChargers() async {
     return await chargersService.obtenerPuntosDeCarga();
   }
@@ -61,6 +70,8 @@ class AplicationBloc with ChangeNotifier {
     searchResults!.clear();
     notifyListeners();
   }
+
+
 
   calculateRoute(List<LatLng> points) async {
     await routeService.getRoute(points, routevolt.carRoute, "DRIVE");

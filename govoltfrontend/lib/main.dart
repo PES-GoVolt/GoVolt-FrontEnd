@@ -63,6 +63,7 @@ class MyStatefulWidget extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+  
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
@@ -77,7 +78,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   final headers = {"Content-Type": "application/json;charset=UTF-8"};
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {    
     return Scaffold(
         body: Padding(
             padding: const EdgeInsets.all(10),

@@ -48,6 +48,8 @@ dependencies:
   provider: ^6.0.5
   url_launcher: ^6.1.14
   sensors_plus: ^3.1.0
+  flutter_form_builder: ^8.0.0
+
   flutter_polyline_points: ^2.0.0
   table_calendar: ^3.0.9
 
