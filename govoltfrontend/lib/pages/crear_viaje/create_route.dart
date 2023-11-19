@@ -85,6 +85,7 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 /*
+                BARRA DE BUSQUEDA BUENA
                 customSearchBar(),
                 if (applicationBloc.searchResults != null &&
                     searchResults!.isNotEmpty)
@@ -128,6 +129,7 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
                     setState(() {
                       _selectedDate = dateTime;
                       /*
+                      POR SI QUEREMOS PONER HORA AL CREAR
                       if (_selectedTime != null) {
                         _selectedDate = DateTime(
                           _selectedDate!.year,

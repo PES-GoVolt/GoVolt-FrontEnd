@@ -9,14 +9,12 @@ class CreateRoutesService {
       'Content-Type': 'application/json',
       // Add any additional headers you might need
     };
-  print("aloo");
     try {
       final response = await http.post(
         url,
         headers: headers,
         body: jsonEncode(formData),
       );
-  print("aloo2");
 
       if (response.statusCode == 200) {
         // Successful request, you can handle the response here
