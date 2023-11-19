@@ -13,13 +13,13 @@ class CrearViajeScreen extends StatefulWidget {
 class _CrearViajeScreenState extends State<CrearViajeScreen> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   DateTime? _selectedDate;
-  TimeOfDay? _selectedTime;
+  //TimeOfDay? _selectedTime;
   final applicationBloc = AplicationBloc();
   List<PlaceSearch>? searchResults;
   String? _ubicacionInicial;
 
   void valueChanged(var value) async {
-    await applicationBloc.searchCities(value);
+    //await applicationBloc.searchCities(value);
     searchResults = applicationBloc.searchResults;
     setState(() {});
   }
@@ -148,10 +148,10 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
                   onPressed: () async {
                     if (_formKey.currentState?.saveAndValidate() ?? false) {
                       var formData = Map<String,dynamic>.from(_formKey.currentState!.value);
-                      print(formData);
                       formData['fecha'] = (_selectedDate != null) ? _selectedDate!.toString().split(' ')[0] : null;
-                      await CreateRoutesService.createRuta(formData!);
+                      await CreateRoutesService.createRuta(formData);
                     }
+                    Navigator.of(context).pop();
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:govoltfrontend/pages/crear_viaje/create_route.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:govoltfrontend/models/rutas.dart';
 import 'package:govoltfrontend/pages/rutas/route_card.dart';
@@ -215,7 +216,7 @@ class _RoutesState extends State<RoutesScreen> {
             ),
             _buildCircleButton(
               onPressed: () {
-                // cosas de pol :)
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => CrearViajeScreen()));
               },
               icon: Icons.add_circle_outline_outlined,
             ),

@@ -42,14 +42,14 @@ class AplicationBloc with ChangeNotifier {
     notifyListeners();
   }
 
-  searchCities(String searchTerm) async {
+  /*searchCities(String searchTerm) async {
     if (searchTerm == "") {
       searchResults!.clear();
     } else {
-      searchResults = await placesService.getAutoCompleteCities(searchTerm);
+      searchResults = await placesService.getAutoComplete(searchTerm, );
     }
     notifyListeners();
-  }
+  }*/
 
   Future<List<Coordenada>> getChargers() async {
     return await chargersService.obtenerPuntosDeCarga();
