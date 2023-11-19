@@ -193,7 +193,7 @@ Future<List<Ruta>> _filterRutas() async {
   }
 
   Widget _buildRouteCard({required Ruta ruta}) {
-    return RouteCard(ruta: ruta);
+    return RouteCard(ruta: ruta ,showJoin: _selectedIndex==1);
   }
 
   Widget _buildBottomButton({required String text, required bool selected}) {
