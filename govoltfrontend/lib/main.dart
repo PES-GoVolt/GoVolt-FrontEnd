@@ -1,6 +1,5 @@
 import 'dart:convert';
-import 'package:govoltfrontend/models/message.dart';
-import 'package:govoltfrontend/services/chat_service.dart';
+
 import 'package:flutter/material.dart';
 import 'package:govoltfrontend/services/notifications_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
@@ -10,10 +9,8 @@ import 'package:govoltfrontend/menu.dart';
 import 'package:govoltfrontend/pages/registro/registro.dart';
 import 'package:govoltfrontend/config.dart';
 import 'dart:async';
-import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart'; // Agrega esta importación
 
-import 'package:firebase_auth/firebase_auth.dart'; // Agrega esta importación
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -31,10 +28,14 @@ void main() async {
 
 void loadData() async {
   final applicationBloc = AplicationBloc();
+  try{
   final puntosDeCarga = await applicationBloc.getChargers();
   MarkersData.chargers = puntosDeCarga;
   final bikeStations = await applicationBloc.getBikeStations();
   MarkersData.bikeStation = bikeStations;
+  }
+  catch (e){
+  }
 }
 
 class MyApp extends StatelessWidget {

@@ -22,7 +22,8 @@ class ChargersService {
         throw Exception('Error al obtener los puntos de carga');
       }
     } catch (e) {
-      throw Exception('Error de red: $e');
+      //throw Exception('Error de red: $e');
+      return [];
     }
   }
 

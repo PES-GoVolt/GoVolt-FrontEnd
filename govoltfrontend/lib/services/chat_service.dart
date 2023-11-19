@@ -36,20 +36,25 @@ class ChatService {
       "sender": idUsuario
     };
     final url = Uri.http(Config.apiURL, Config.chatAddMessage);
-    await http.post(url, body: body);
+    try {
+      await http.post(url, body: body);
+    }
+    catch (error){}
   }
 
   Future<void> getLastMessage(String idRoom) async {
     final url =
         Uri.http(Config.apiURL, Config.chatAddMessage, {'room_name': idRoom});
     final response = await http.get(url);
-    final jsonResponse = json.decode(response.body);
-    var data = jsonResponse["messages"] as List;
-    var messageData = data.last as Map;
-    message.content = messageData['content'];
-    message.timestamp = messageData['timestamp'].toString();
-    message.userid = messageData['sender'];
-    message.roomName = messageData['room_name'];
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      var data = jsonResponse["messages"] as List;
+      var messageData = data.last as Map;
+      message.content = messageData['content'];
+      message.timestamp = messageData['timestamp'].toString();
+      message.userid = messageData['sender'];
+      message.roomName = messageData['room_name'];
+    }
   }
 
   void leaveRoomChat() {
@@ -64,10 +69,15 @@ class ChatService {
       String idRuta, String idUsuario) async {
     final url = Uri.http(Config.apiURL, Config.chatAddMessage,
         {'room_name': "$idRuta/$idUsuario"});
-    final response = await http.get(url);
-    final jsonResponse = json.decode(response.body);
-    var data = jsonResponse["messages"] as List;
-    return data.map((mensaje) => MessageVolt.fromMap(mensaje)).toList();
+    try {
+      final response = await http.get(url);
+      final jsonResponse = json.decode(response.body);
+      var data = jsonResponse["messages"] as List;
+      return data.map((mensaje) => MessageVolt.fromMap(mensaje)).toList();
+    }
+    catch (error){
+      return [];
+    }
   }
 
   void setupDatabaseSingleListener() async {
@@ -82,18 +92,33 @@ class ChatService {
           var roomName = messagesRefSingle.path;
           if (roomName == currentRoom)
           {
-            await getLastMessage(currentRoom);
+            try{
+              await getLastMessage(currentRoom);
+            }
+            catch (error){}
             if (message.userid != currentUserId) {
               setMessageArrived(message);
             }
           }
           else{
-            await getLastMessage(roomName);
+            try{
+              await getLastMessage(roomName);
+            }
+            catch (error){}
             String messageReceived = "${message.userid}_${message.content}";
             _messageArrivedNotificationController.add(messageReceived);
           }
         }
       });
     }
+  }
+
+  void addParticipantToRoute(String idUser, String idRuta) async {
+    String urlInfo = "${Config.chatAddMessage}/$idRuta/$idUser/";
+    final url = Uri.http(Config.apiURL, urlInfo);
+    try{
+    await http.post(url);
+    }
+    catch (error){}
   }
 }

@@ -48,7 +48,10 @@ class AttachmentButton extends StatelessWidget {
                     ),
                   ),
                 )
-              : Icon(Icons.location_on_outlined),
+              : Image.asset(
+                    'assets/images/send-location.png',
+                    color: InheritedChatTheme.of(context).theme.inputTextColor,
+                  ),
           onPressed: isLoading ? null : onPressed,
           padding: padding,
           splashRadius: 24,

@@ -43,7 +43,13 @@ class AplicationBloc with ChangeNotifier {
   }
 
   Future<List<Coordenada>> getChargers() async {
-    return await chargersService.obtenerPuntosDeCarga();
+    try
+    {
+      return await chargersService.obtenerPuntosDeCarga();
+    }
+    catch(e){
+      return [];
+    }
   }
 
   Future<List<BikeStation>> getBikeStations() async {
