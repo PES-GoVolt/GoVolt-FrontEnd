@@ -3,8 +3,9 @@ import 'package:govoltfrontend/models/rutas.dart';
 
 class RouteCard extends StatelessWidget {
   final Ruta ruta;
+  final bool showJoin;
 
-  const RouteCard({super.key, required this.ruta});
+  RouteCard({super.key,required this.ruta, required this.showJoin});
 
   @override
   Widget build(BuildContext context) {
@@ -12,15 +13,17 @@ class RouteCard extends StatelessWidget {
     elevation: 3,
     margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
     child: ExpansionTile(
-      trailing: ElevatedButton(
-        onPressed: () {
-          // cosas Marc :)
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xff4d5e6b)
-          ),
-        child: const Text('Chatear')
-      ),
+      trailing: showJoin
+        ? ElevatedButton(
+            onPressed: () {
+              // Cosas marc :)
+            },
+            child: const Text('Solicitar unirse'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xff4d5e6b),
+            ),
+          )
+        : null,
       title: Text('Inicio: ${ruta.beginning} Destino: ${ruta.destination}'),
       subtitle: Text('Fecha: ${ruta.date}'),
       children: [
