@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:govoltfrontend/pages/crear_viaje/create_route.dart';
+import 'package:govoltfrontend/pages/rutas/crear_viaje/create_route.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:govoltfrontend/models/rutas.dart';
 import 'package:govoltfrontend/pages/rutas/route_card.dart';
@@ -113,6 +113,7 @@ class _RoutesState extends State<RoutesScreen> {
                     max: 100,
                     divisions: 100,
                     label: '${_currentPriceFilter.round().toString()}€',
+                    activeColor: Color.fromRGBO(125, 193, 165, 1),
                     onChanged: (double value) {
                       setState(() {
                         _currentPriceFilter = value;
@@ -161,6 +162,9 @@ class _RoutesState extends State<RoutesScreen> {
                           filterRoutes(query, selectedDateFilter: _selectedDateFilter, selectedPriceFilter: _currentPriceFilter);
                           Navigator.pop(context);
                         },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xff4d5e6b), // Define el color de fondo del botón
+                        ),
                         child: const Text('Aplicar'),
                       ),
                       ElevatedButton(
@@ -168,6 +172,9 @@ class _RoutesState extends State<RoutesScreen> {
                           filterRoutes(query);
                           Navigator.pop(context);
                         },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xff4d5e6b), // Define el color de fondo del botón
+                        ),
                         child: const Text('Quitar'),
                       ),
                     ],
@@ -431,7 +438,7 @@ Future<List<Ruta>> _filterRutas() async {
           },
           calendarStyle: const CalendarStyle(
             selectedDecoration: BoxDecoration(
-              color: Colors.blue,
+              color: const Color(0xff4d5e6b),
             ),
           ),
           headerStyle: const HeaderStyle(
@@ -448,7 +455,7 @@ Future<List<Ruta>> _filterRutas() async {
                   margin: const EdgeInsets.all(4.0),
                   decoration: BoxDecoration(
                     color: isSelectedDay
-                        ? Colors.blue
+                        ? const Color(0xff4d5e6b)
                         : const Color.fromRGBO(125, 193, 165, 1),
                   ),
                   child: Center(

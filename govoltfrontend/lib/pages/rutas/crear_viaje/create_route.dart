@@ -75,6 +75,7 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Creación de Viaje'),
+        backgroundColor: Color.fromRGBO(125, 193, 165, 1),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -147,20 +148,23 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState?.saveAndValidate() ?? false) {
-                      var formData = Map<String,dynamic>.from(_formKey.currentState!.value);
+                      var formData = Map<String, dynamic>.from(_formKey.currentState!.value);
                       formData['fecha'] = (_selectedDate != null) ? _selectedDate!.toString().split(' ')[0] : null;
                       await CreateRoutesService.createRuta(formData);
                     }
                     Navigator.of(context).pop();
                   },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Color(0xff4d5e6b)), // Aquí estableces el color deseado
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Text(
                       'Crear Viaje',
-                      style: TextStyle(fontSize: 20.0),
+                      style: TextStyle(fontSize: 20.0, color: Colors.white),
                     ),
                   ),
-                ),
+                )
               ],
             ),
           ),
