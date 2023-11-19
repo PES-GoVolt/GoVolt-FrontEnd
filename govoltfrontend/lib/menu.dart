@@ -6,6 +6,7 @@ import 'package:govoltfrontend/pages/mapa/mapa.dart';
 import 'package:govoltfrontend/pages/volter/volter.dart';
 import 'package:govoltfrontend/services/chat_service.dart';
 import 'package:govoltfrontend/services/notifications_service.dart';
+import 'package:govoltfrontend/pages/rutas/main_routes.dart';
 
 class Menu extends StatefulWidget {
   const Menu({super.key});
@@ -24,6 +25,8 @@ class MenuState extends State<Menu> {
     switch (pos) {
       case 0:
         return MapScreen();
+      case 2:
+        return const RoutesScreen();
       case 3:
         return ChatListVolter();
       case 1:
@@ -70,7 +73,7 @@ class MenuState extends State<Menu> {
               accountName: Text(""),
               accountEmail: Text(''),
               decoration: BoxDecoration(
-                color: const Color.fromRGBO(125, 193, 165,1),
+                color: Color.fromRGBO(125, 193, 165,1),
               ),
             ),
             ListTile(

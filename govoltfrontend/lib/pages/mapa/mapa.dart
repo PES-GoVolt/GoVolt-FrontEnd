@@ -18,6 +18,8 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapaState extends State<MapScreen> {
+
+
   final GeolocatiorService geolocatiorService = GeolocatiorService();
   final Completer<GoogleMapController> _mapController = Completer();
   final applicationBloc = AplicationBloc();
@@ -240,6 +242,8 @@ class _MapaState extends State<MapScreen> {
     setState(() {});
   }
 
+
+
   Widget buildRouteDetailsContainer() {
     return Stack(
       children: [
@@ -281,6 +285,9 @@ class _MapaState extends State<MapScreen> {
       ],
     );
   }
+
+  
+
 
   Widget buildRouteModeButton(IconData icon, String label, int mode) {
     return ElevatedButton(
