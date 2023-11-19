@@ -20,7 +20,6 @@ class PlacesService {
     Uri url = Uri.parse(
         'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$search&key=$apiKey&location=$lat%2C$lng&radius=5000&origin=$lat%2C$lng&region=$region');
     var response = await http.get(url);
-    print("hola2");
     var json = convert.jsonDecode(response.body);
     /*Map<String, dynamic> json = {
       "predictions": [
@@ -143,7 +142,6 @@ class PlacesService {
         'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$apiKey');
     var response = await http.get(url);
     var json = convert.jsonDecode(response.body);
-    print("hola3");
     /*Map<String, dynamic> json = {
       "html_attributions": [],
       "result": {

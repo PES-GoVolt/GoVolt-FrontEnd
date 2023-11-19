@@ -1,7 +1,5 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:govoltfrontend/config.dart';
 import 'package:govoltfrontend/pages/mapa/mapa.dart';
 import 'package:govoltfrontend/pages/rutas/main_routes.dart';
 
@@ -19,7 +17,7 @@ class MenuState extends State<Menu> {
       case 0:
         return MapScreen();
       case 2:
-        return RoutesScreen();
+        return const RoutesScreen();
     }
   }
 
@@ -45,8 +43,7 @@ class MenuState extends State<Menu> {
               accountName: Text(""),
               accountEmail: Text(''),
               decoration: BoxDecoration(
-                color: const Color.fromRGBO(125, 193, 165,
-                    1), // Cambia este color según tus preferencias
+                color: Color.fromRGBO(125, 193, 165,1),
               ),
             ),
             ListTile(

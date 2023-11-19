@@ -3,29 +3,175 @@ import 'package:govoltfrontend/models/rutas.dart';
 import 'package:govoltfrontend/pages/rutas/route_card.dart';
 import 'package:govoltfrontend/services/rutas_service.dart';
 
+
 class RoutesScreen extends StatefulWidget {
-  RoutesScreen();
+  const RoutesScreen({super.key});
 
   @override
   State<StatefulWidget> createState() => _RoutesState();
 }
 
-TextField printSearchBar() {
-    return TextField(
-      decoration: const InputDecoration(
-          hintText: 'Busca tu trayecto ...',
-          prefixIcon: Icon(Icons.search)),
-      onChanged: (value) {
-        value = value;
+TextField printSearchBar(Function(String) onSearch) {
+  String query = '';
+
+  return TextField(
+    decoration: const InputDecoration(
+      hintText: 'Busca tu trayecto ...',
+      prefixIcon: Icon(Icons.search),
+    ),
+    onChanged: (value) {
+      query = value;
+      onSearch(query); 
+    },
+  );
+}
+
+class _RoutesState extends State<RoutesScreen> {
+  int _selectedIndex = 0; 
+  final RutaService rutaService = RutaService(); 
+  List<Ruta> _routes = []; 
+  List<Ruta> filteredRoutes = []; 
+  String query = '';
+  DateTime? _selectedDateFilter; 
+  double _currentPriceFilter = 50.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRoutes();
+  }
+
+  Future<void> _loadRoutes() async {
+    final List<Ruta> fetchedRoutes = await rutaService.getAllRutas();
+    setState(() {
+      _routes = fetchedRoutes;
+      filteredRoutes = List.from(_routes); 
+    });
+  }
+
+  void filterRoutes(String query, {DateTime? selectedDateFilter, double? selectedPriceFilter}) {
+  setState(() {
+    if (query.isNotEmpty || selectedDateFilter != null || selectedPriceFilter != null) {
+      filteredRoutes = _routes.where((ruta) {
+        bool matchesQuery = query.isEmpty ||
+            ruta.beginning.toLowerCase().contains(query.toLowerCase()) ||
+            ruta.destination.toLowerCase().contains(query.toLowerCase());
+
+        bool matchesDateFilter = selectedDateFilter == null ||
+            (ruta.date ==
+                "${selectedDateFilter.year}-${selectedDateFilter.month}-${selectedDateFilter.day}");
+
+        bool matchesPriceFilter = selectedPriceFilter == null ||
+            double.parse(ruta.price) <= selectedPriceFilter; 
+
+        return matchesQuery && matchesDateFilter && matchesPriceFilter;
+      }).toList();
+    } else {
+      filteredRoutes = List.from(_routes);
+    }
+  });
+}
+
+  void _showFilterOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Container(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const SizedBox(height: 20.0),
+                  const Text(
+                    'Precio',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+                  ),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          '0€ - ${_currentPriceFilter.round().toString()}€',
+                          style: const TextStyle(fontSize: 18.0),
+                        ),
+                      ],
+                    ),
+                  const SizedBox(height: 10.0),
+                  Slider(
+                    value: _currentPriceFilter,
+                    min: 0,
+                    max: 100,
+                    divisions: 100,
+                    label: '${_currentPriceFilter.round().toString()}€',
+                    onChanged: (double value) {
+                      setState(() {
+                        _currentPriceFilter = value;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 20.0),
+                  const Text(
+                    'Fecha',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+                  ),
+                  const SizedBox(height: 10.0),
+                  InkWell(
+                    onTap: () async {
+                      final DateTime? picked = await showDatePicker(
+                        context: context,
+                        initialDate: _selectedDateFilter ?? DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2101),
+                      );
+                      if (picked != null && picked != _selectedDateFilter) {
+                        setState(() {
+                          _selectedDateFilter = picked;
+                        });
+                      }
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          _selectedDateFilter != null
+                              ? "${_selectedDateFilter!.year}-${_selectedDateFilter!.month}-${_selectedDateFilter!.day}"
+                              : 'Selecciona una fecha',
+                          style: const TextStyle(fontSize: 18.0),
+                        ),
+                        const Icon(Icons.calendar_today),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          filterRoutes(query, selectedDateFilter: _selectedDateFilter, selectedPriceFilter: _currentPriceFilter);
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Aplicar'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          filterRoutes(query); 
+                          Navigator.pop(context); 
+                        },
+                        child: const Text('Quitar'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
       },
     );
   }
-
- 
-
-class _RoutesState extends State<RoutesScreen> {
-  int _selectedIndex = 0; // Estado para controlar el botón seleccionado
-  final RutaService rutaService = RutaService(); // Instancia del servicio
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +180,7 @@ class _RoutesState extends State<RoutesScreen> {
       body: Column(
         children: [
           if(_selectedIndex == 1)...{
-            _buildSearchBar(),
+            _buildSearchBar(filterRoutes),
             _buildRouteCards(),   
           }
           else...{
@@ -43,7 +189,7 @@ class _RoutesState extends State<RoutesScreen> {
         ],
       ),
       bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         color: const Color.fromRGBO(125, 193, 165, 1),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -79,28 +225,36 @@ class _RoutesState extends State<RoutesScreen> {
           ],
         ),
       ),
-
-    );
+    );    
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(Function(String) onSearch) {
+    String query = '';
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
           Expanded(
-            child: printSearchBar(),
+            child: TextField(
+              decoration: const InputDecoration(
+                hintText: 'Busca tu trayecto ...',
+                prefixIcon: Icon(Icons.search),
+              ),
+              onChanged: (value) {
+                query = value;
+                onSearch(query); 
+              },
+            ),
           ),
-          SizedBox(width: 8), // Espacio entre la barra de búsqueda y el botón de filtro
+          const SizedBox(width: 8), 
           ElevatedButton(
             onPressed: () {
-              // Lógica para el botón de filtro
-              // Puedes abrir un cuadro de diálogo, mostrar opciones, etc.
+              _showFilterOptions(context);
             },
             style: ElevatedButton.styleFrom(
-              fixedSize: Size.fromHeight(50),
-              backgroundColor:  Color(0xff4d5e6b)
+              fixedSize: const Size.fromHeight(50),
+              backgroundColor: const Color(0xff4d5e6b),
             ),
             child: const Icon(Icons.filter_list),
           ),
@@ -111,23 +265,10 @@ class _RoutesState extends State<RoutesScreen> {
 
   Widget _buildRouteCards() {
     return Expanded(
-      child: FutureBuilder<List<Ruta>>(
-        future: rutaService.getAllRutas(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No se encontraron rutas.'));
-          } else {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                return _buildRouteCard(ruta: snapshot.data![index]);
-              },
-            );
-          }
+      child: ListView.builder(
+        itemCount: filteredRoutes.length,
+        itemBuilder: (context, index) {
+          return _buildRouteCard(ruta: filteredRoutes[index]);
         },
       ),
     );
@@ -139,19 +280,19 @@ class _RoutesState extends State<RoutesScreen> {
 
   Widget _buildBottomButton({required String text, required bool selected}) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
             width: 4,
-            color: selected ? Color(0xff4d5e6b) : const Color.fromARGB(0, 255, 255, 255), 
+            color: selected ? const Color(0xff4d5e6b) : const Color.fromARGB(0, 255, 255, 255), 
           ),
         ),
       ),
       child: Text(
         text,
         style: TextStyle(
-          color: selected ? Color(0xff4d5e6b) : Colors.white, 
+          color: selected ? const Color(0xff4d5e6b) : Colors.white, 
           fontWeight: selected ? FontWeight.bold : FontWeight.normal, 
         ),
       ),
@@ -162,19 +303,25 @@ class _RoutesState extends State<RoutesScreen> {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        shape: CircleBorder(),
-        fixedSize: Size.square(50),
+        shape: const CircleBorder(),
+        fixedSize: const Size.square(50),
         backgroundColor: const Color(0xff4d5e6b), // Cambiar el color del botón
       ),
-      child: Container(
+      child: const SizedBox(
         width: 50,
         height: 50,
-        child: Center(
-          child: Icon(
-            icon,
-            size: 40,
-            color: Colors.white, // Cambiar el color del ícono a blanco
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "+",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
       ),
     );
