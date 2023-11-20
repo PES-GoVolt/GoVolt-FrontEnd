@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/place_search.dart';
 import 'package:govoltfrontend/services/create_route_service.dart';
@@ -82,6 +83,7 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
           padding: const EdgeInsets.all(16.0),
           child: FormBuilder(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -100,23 +102,33 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
                 FormBuilderTextField(
                   name: 'ubicacion_inicial',
                   decoration: InputDecoration(labelText: 'Ciudad Inicial'),
+                  validator: FormBuilderValidators.required(),
                 ),
                 SizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'ubicacion_final',
                   decoration: InputDecoration(labelText: 'Ciudad Fin'),
+                  validator: FormBuilderValidators.required(),
                 ),
                 SizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'precio',
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                   decoration: InputDecoration(labelText: 'Precio (Euros)'),
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                    FormBuilderValidators.numeric()
+                  ]),        
                 ),
                 SizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'num_plazas',
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(labelText: 'Plazas Disponibles'),
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                    FormBuilderValidators.numeric()
+                  ]),
                 ),
                 SizedBox(height: 16.0),
                 FormBuilderDateTimePicker(
@@ -147,12 +159,13 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
                 SizedBox(height: 16.0),
                 ElevatedButton(
                   onPressed: () async {
-                    if (_formKey.currentState?.saveAndValidate() ?? false) {
+                    if (_formKey.currentState?.saveAndValidate() ?? false ) {
                       var formData = Map<String, dynamic>.from(_formKey.currentState!.value);
                       formData['fecha'] = (_selectedDate != null) ? _selectedDate!.toString().split(' ')[0] : null;
                       await CreateRoutesService.createRuta(formData);
+                      Navigator.of(context).pop();
                     }
-                    Navigator.of(context).pop();
+                    
                   },
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(Color(0xff4d5e6b)), // Aquí estableces el color deseado
