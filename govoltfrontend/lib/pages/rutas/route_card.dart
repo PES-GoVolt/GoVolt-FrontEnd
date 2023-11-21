@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/rutas.dart';
 
 class RouteCard extends StatelessWidget {
@@ -6,6 +7,8 @@ class RouteCard extends StatelessWidget {
   final bool showJoin;
 
   RouteCard({super.key,required this.ruta, required this.showJoin});
+
+  final applicationBloc = AplicationBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +19,7 @@ class RouteCard extends StatelessWidget {
       trailing: showJoin
         ? ElevatedButton(
             onPressed: () {
-              // Cosas marc :)
+              applicationBloc.createChat(ruta.id, ruta.creator, ruta.creator);
             },
             child: const Text('Solicitar unirse'),
             style: ElevatedButton.styleFrom(

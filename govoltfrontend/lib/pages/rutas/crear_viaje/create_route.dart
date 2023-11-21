@@ -152,7 +152,7 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
                       formData['fecha'] = (_selectedDate != null) ? _selectedDate!.toString().split(' ')[0] : null;
                       String idRuta = await CreateRoutesService.createRuta(formData);
                       if (idRuta != "") {
-                        await applicationBloc.createChat(idRuta);
+                        await applicationBloc.createRouteListener(idRuta);
                       }
                     }
                     Navigator.of(context).pop();

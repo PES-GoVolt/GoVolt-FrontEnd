@@ -32,8 +32,23 @@ class ChatService {
     _messageArrivedController.add(value);
   }
 
-  void sendMessage(
-      String roomName, String idUsuario, String message) async {
+  void createChat(String idRuta, String userUid, String creatorUid) async {
+    final url = Uri.http(Config.apiURL, Config.chats);
+    String roomName = "$idRuta/$userUid";
+    final body = {
+      "user_uid": userUid,
+      "creator_uid" : creatorUid,
+      "room_name": roomName
+    };
+
+    try{
+      await http.post(url, body: body);
+      sendMessage(roomName, "DefaultUser", "Me gustaria unirme a tu ruta");
+    }
+    catch (e){}
+  }
+  
+  void sendMessage(String roomName, String idUsuario, String message) async {
     final body = {
       "content": message,
       "room_name": roomName,
@@ -46,7 +61,10 @@ class ChatService {
     catch (error){}
   }
 
-  Future<void> createChat(String idRuta) async {
+  Future<void> createChatRouteListener(String idRuta) async {
+    
+    setupDatabaseSngleListener(idRuta);
+    
     final body = {
       "content": "Default",
       "room_name": idRuta,
@@ -55,6 +73,7 @@ class ChatService {
     final url = Uri.http(Config.apiURL, Config.chatAddMessage);
     try {
       await http.post(url, body: body);
+      
     }
     catch (error){}
   }
@@ -116,18 +135,21 @@ class ChatService {
       //await
       http.put(url, body: body);
     }
-    catch (e){
-
-    }
+    catch (e){}
   }
 
   Future<List<String>> getAllListeners() async {
     dynamic chats = await getChats();
+    List<String> rutasMy = [];
+    List<String> roomNames = [];
     List<Ruta> rutas = await rutasService.getMyRutas();
-    Map<String, dynamic> data = jsonDecode(chats);
-    List<dynamic> chatsList = data['chats'];
-    List<String> roomNames = chatsList.map((chat) => chat['room_name'].toString()).toList();
-    List<String> rutasMy = rutas.map((ruta) => ruta.id).toList();
+    if (chats != null)
+    {
+      Map<String, dynamic> data = jsonDecode(chats);
+      List<dynamic> chatsList = data['chats'];
+      roomNames = chatsList.map((chat) => chat['room_name'].toString()).toList();
+    }
+    rutasMy = rutas.map((ruta) => ruta.id).toList();
     return rutasMy + roomNames;
   }
 
@@ -165,8 +187,6 @@ class ChatService {
   }
 
   void setupDatabaseSngleListener(String roomName) async {
-
-    createChat(roomName);
 
     DatabaseReference messagesRefSingle =
         FirebaseDatabase.instance.ref().child(roomName);

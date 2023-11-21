@@ -43,7 +43,6 @@ class MenuState extends State<Menu> {
 
   @override
   void initState() {
-    chatService.getAllListeners();
     chatService.setupDatabaseAllListeners();
     messageArrivedSubscription =
         chatService.onMessageArrivedNotificationChanged.listen((messageArrived) {

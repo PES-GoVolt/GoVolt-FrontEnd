@@ -87,6 +87,8 @@ class AplicationBloc with ChangeNotifier {
       rutasService.addParticipant(userId, idRuta);
   }
 
+  
+
   calculateRoute(List<LatLng> points) async {
     await routeService.getRoute(points, routevolt.carRoute, "DRIVE");
     await routeService.getRoute(points, routevolt.bicycleRoute, "BICYCLE");
@@ -105,8 +107,12 @@ class AplicationBloc with ChangeNotifier {
     routevolt.clearData();
   }
 
-  createChat(String roomName) async {
-      chatService.setupDatabaseSngleListener(roomName);
+  createRouteListener(String roomName) async {
+      chatService.createChatRouteListener(roomName);
+  }
+
+  createChat(String idRuta, String userUid, String creatorUid){
+      chatService.createChat(idRuta, userUid, creatorUid);
   }
 
 }
