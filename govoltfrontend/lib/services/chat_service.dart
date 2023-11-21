@@ -4,6 +4,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'dart:async';
 import 'package:govoltfrontend/config.dart';
 import 'package:govoltfrontend/models/message.dart';
+import 'package:govoltfrontend/models/rutas.dart';
+import 'package:govoltfrontend/services/rutas_service.dart';
 import 'package:http/http.dart' as http;
 
 class ChatService {
@@ -13,6 +15,7 @@ class ChatService {
       MessageVolt(userid: "", content: "", timestamp: "", roomName: "");
   String currentUserId = "userid";
   static String currentRoom = "";
+  final rutasService = RutaService();
 
   static final _messageArrivedController =
       StreamController<MessageVolt>.broadcast();
@@ -29,10 +32,11 @@ class ChatService {
     _messageArrivedController.add(value);
   }
 
-  void sendMessage(String idRuta, String idUsuario, String message, String idChat) async {
+  void sendMessage(
+      String roomName, String idUsuario, String message) async {
     final body = {
       "content": message,
-      "room_name": "$idRuta/$idChat",
+      "room_name": roomName,
       "sender": idUsuario
     };
     final url = Uri.http(Config.apiURL, Config.chatAddMessage);
@@ -53,6 +57,16 @@ class ChatService {
       await http.post(url, body: body);
     }
     catch (error){}
+  }
+
+  Future<dynamic> getChats() async{
+    final url =
+        Uri.http(Config.apiURL, Config.chats);
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      return response.body;
+    }
+    return null;
   }
 
   Future<void> getLastMessage(String idRoom) async {
@@ -79,9 +93,9 @@ class ChatService {
   }
 
   Future<List<MessageVolt>> loadAllMessagesData(
-      String idRuta, String idUsuario) async {
+      String room_name, String idUsuario) async {
     final url = Uri.http(Config.apiURL, Config.chatAddMessage,
-        {'room_name': "$idRuta/$idUsuario"});
+        {'room_name': room_name});
     try {
       final response = await http.get(url);
       final jsonResponse = json.decode(response.body);
@@ -93,11 +107,35 @@ class ChatService {
     }
   }
 
+  void updateLastConnection(String roomName) {
+    final url = Uri.http(Config.apiURL, Config.chats);
+    final body = {
+      "id_chat": roomName,
+    };
+    try {
+      //await
+      http.put(url, body: body);
+    }
+    catch (e){
+
+    }
+  }
+
+  Future<List<String>> getAllListeners() async {
+    dynamic chats = await getChats();
+    List<Ruta> rutas = await rutasService.getMyRutas();
+    Map<String, dynamic> data = jsonDecode(chats);
+    List<dynamic> chatsList = data['chats'];
+    List<String> roomNames = chatsList.map((chat) => chat['room_name'].toString()).toList();
+    List<String> rutasMy = rutas.map((ruta) => ruta.id).toList();
+    return rutasMy + roomNames;
+  }
+
   void setupDatabaseAllListeners() async {
     var id = ["rutaid/userid", "rutaid/userid2"];
     for (int i = 0; i < id.length; ++i) {
       DatabaseReference messagesRefSingle =
-          FirebaseDatabase.instance.ref().child(id[i]);
+          FirebaseDatabase.instance.ref().child(listaConcatenada[i]);
 
       messagesRefSingle.onChildAdded.listen((event) async {
         final dynamicValue = event.snapshot.value;
@@ -118,7 +156,7 @@ class ChatService {
               await getLastMessage(roomName);
             }
             catch (error){}
-            String messageReceived = "${message.userid}_${message.content}";
+            String messageReceived = "Nuevo Mensaje_";
             _messageArrivedNotificationController.add(messageReceived);
           }
         }

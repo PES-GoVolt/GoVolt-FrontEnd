@@ -15,7 +15,9 @@ class Config {
   static const editMyProfileAPI = "api/users/edit-my-profile/";
   static const allRutas = "api/rutas/";
   static const myRutas = "api/rutas/my/";
-   static const createRoute = "api/rutas/create/";
+  static const createRoute = "api/rutas/create/";
   static const participantRutas = "api/rutas/participant_route/";
   static const chatAddMessage = "api/messages/";
+  static const chats = "api/messages/chats/";
+  static const addParticipantToRuta = "/rutas/add_participant/";
 }

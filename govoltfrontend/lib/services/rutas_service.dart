@@ -44,6 +44,12 @@ class RutaService {
     return await getRutasFromEndpoint(Config.myRutas);
   }
 
+  Future <void> addParticipant(String userId, String idRuta) async{
+    String urlString = "api${Config.addParticipantToRuta}$idRuta/$userId/";
+    final url = Uri.http(Config.apiURL, urlString);
+    await http.post(url);
+  }
+
   Future<List<Ruta>> getPartRutas() async {
     return await getRutasFromEndpoint(Config.participantRutas);
   }
