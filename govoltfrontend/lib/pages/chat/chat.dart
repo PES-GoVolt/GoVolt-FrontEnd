@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/message.dart';
 import 'package:govoltfrontend/utils/chat_library/flutter_chat_ui.dart';
 import 'package:govoltfrontend/services/chat_service.dart';
@@ -12,14 +13,14 @@ class ChatPage extends StatefulWidget {
   const ChatPage(
       {super.key,
       required this.idUserReciever,
-      required this.idRuta,
       required this.userName,
-      required this.idChat});
+      required this.idChat,
+      required this.lastConection});
 
   final String idUserReciever;
-  final String idRuta;
   final String userName;
   final String idChat;
+  final int lastConection;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -28,39 +29,53 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   List<types.Message> messages = [];
   final user = const types.User(id: 'userid', firstName: "Marc");
-  late String idRuta;
+  late String roomName;
   late String idChatUser;
+  late int lastConection;
   final chatService = ChatService();
+  final applicationBloc = AplicationBloc();
   late StreamSubscription<MessageVolt> messageArrivedSubscription;
   bool messagesLoaded = false;
+  String idLastMessageReaded = "";
 
-  void loadAllData() async {
+  void loadAllData(int lastConection) async {
     List<MessageVolt> messagesDataLoaded =
-        await chatService.loadAllMessagesData(idRuta, idChatUser);
+        await chatService.loadAllMessagesData(roomName, "userid");
     for (var element in messagesDataLoaded) {
-      String messageUserId = element.userid;
-      final textMessage = types.TextMessage(
-        author: messageUserId == user.id
-            ? user
-            : types.User(id: widget.idUserReciever, firstName: widget.userName),
-        createdAt: int.parse(element.timestamp),
-        id: Uuid().v4(),
-        text: element.content,
-      );
-      _addMessage(textMessage);
+      
+        String messageUserId = element.userid;
+        String idMessage = Uuid().v4();
+        final textMessage = types.TextMessage(
+          author: messageUserId == user.id
+              ? user
+              : types.User(id: widget.idUserReciever, firstName: widget.userName),
+          createdAt: int.parse(element.timestamp),
+          id: idMessage,
+          text: element.content,
+        );
+        DateTime dateTimeLastConection = DateTime.fromMillisecondsSinceEpoch(lastConection);
+        DateTime messageDate = DateTime.fromMillisecondsSinceEpoch(int.parse(element.timestamp));
+        if (messageDate.isBefore(dateTimeLastConection))
+        {
+          idLastMessageReaded = idMessage;
+        }
+        _addMessage(textMessage);
     }
     messagesLoaded = true;
   }
 
   @override
   void initState() {
-    idRuta = widget.idRuta;
+    roomName = widget.idChat;
     idChatUser = widget.idChat;
-    if (!messagesLoaded) loadAllData();
-    chatService.enterChatRoom("$idRuta/$idChatUser");
+    lastConection = widget.lastConection;
+    if (!messagesLoaded) loadAllData(lastConection);
+    chatService.enterChatRoom(roomName);
+    //chatService.updateLastConnection(roomName);
     final user2 =
         types.User(id: widget.idUserReciever, firstName: widget.userName);
     super.initState();
+    
     messageArrivedSubscription =
         chatService.onMessageArrivedChanged.listen((messageArrived) {
       String messageUserId = ChatService.message.userid;
@@ -95,7 +110,7 @@ class _ChatPageState extends State<ChatPage> {
       id: Uuid().v4(),
       text: message.text,
     );
-    chatService.sendMessage(idRuta, user.id, message.text, idChatUser);
+    chatService.sendMessage(roomName, user.id, message.text);
     _addMessage(textMessage);
   }
 
@@ -115,7 +130,8 @@ class _ChatPageState extends State<ChatPage> {
           children: <Widget>[
             TextButton(
               onPressed: () {
-                
+                applicationBloc.addParticipant("userId3", "auAsER3wB1dytm9rDz4w");
+                Navigator.of(context).pop();
               },
               child: const Row(
                 children: <Widget>[
@@ -151,7 +167,7 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(125, 193, 165, 1),
-        title: Text(widget.userName),
+        title: Text(widget.userName, style: const TextStyle(color: Colors.black),),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -162,7 +178,7 @@ class _ChatPageState extends State<ChatPage> {
         ),
         actions:  <Widget>[
           IconButton(
-            icon: const Icon(Icons.shield),
+            icon: const Icon(Icons.shield, color: Color(0xff4d5e6b),),
             onPressed: () {
               _mostrarOpciones(context);
             },
@@ -174,6 +190,10 @@ class _ChatPageState extends State<ChatPage> {
           onSendPressed: _handleSendPressed,
           user: user,
           showUserAvatars: true,
-          onAttachmentPressed: _handleAttachmentPressed,
+          scrollToUnreadOptions: (idLastMessageReaded != "") ?  ScrollToUnreadOptions(
+          lastReadMessageId: idLastMessageReaded,
+          scrollOnOpen: true
+          ): const ScrollToUnreadOptions(),
+          //onAttachmentPressed: _handleAttachmentPressed,
           showUserNames: true));
 }

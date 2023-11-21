@@ -1,7 +1,8 @@
-import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:govoltfrontend/pages/chat/chat.dart';
+import 'package:govoltfrontend/services/chat_service.dart';
 
 class ChatListVolter extends StatefulWidget {
   const ChatListVolter({super.key});
@@ -17,6 +18,8 @@ class _ChatListState extends State<ChatListVolter> {
   String idRutaPressed = "";
   String idUserPressed = "";
   String idChat = "";
+  final chatService = ChatService();
+  late List<Map<String, dynamic>> itemList = [];
 
   static const colors = [
   Color(0xffff6767),
@@ -31,32 +34,34 @@ class _ChatListState extends State<ChatListVolter> {
   Color(0xffc78ae5),
 ];
 
-  List<Map<String, dynamic>> itemList = [
-    {
-      "name": "Marc",
-      "idruta": "rutaid",
-      "iduser": "userid2",
-      "idChat": "userid"
-    },
-    {
-      "name": "Esther",
-      "idruta": "rutaid",
-      "iduser": "userid",
-      "idChat": "userid2"
-    },
-    // Agrega más elementos según sea necesario
-  ];
+  getChatsMethod() async {
+    
+    dynamic jsonResponse = await chatService.getChats(); 
+    Map<String, dynamic> response = jsonDecode(jsonResponse);
+    itemList = List.from(response['chats']);
+    setState(() {
+    });
+  }
 
+  @override
+  void initState() {
+    if (itemList.isEmpty)
+    {
+      getChatsMethod();
+    }
+    super.initState();
+  }
+  
   
   Widget listChats() {
     return ListView.builder(
       itemCount: itemList.length,
       itemBuilder: (context, index) {
         Map<String, dynamic> item = itemList[index];
-        final String userName = item["name"];
-        final idRuta = item["idruta"];
-        final idUser = item["iduser"];
-        final idChatItem = item["idChat"];
+        final String userName = "TODO";
+        final idRuta = item["room_name"];
+        final lastConection = item["last_conection"];
+        final idUser = "Username";
         return Card(
           margin: const EdgeInsets.all(8.0),
           child: ListTile(
@@ -79,16 +84,15 @@ class _ChatListState extends State<ChatListVolter> {
               ],
             ),
             onTap: () async {
-              idRutaPressed = idRuta;
               idUserPressed = idUser;
-              idChat = idChatItem;
+              idChat = idRuta;
               userNameChatPressed = userName;
               await Navigator.push(context, MaterialPageRoute(builder: (context) =>  ChatPage(
                 idUserReciever: idUser,
-                idRuta: idRuta,
                 userName: userName,
-                idChat: idChat)
-                )
+                idChat: idChat,
+                lastConection: lastConection,
+                ))
               );
               setState(() {});
             },
@@ -112,11 +116,6 @@ class _ChatListState extends State<ChatListVolter> {
                 );
   }
   
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

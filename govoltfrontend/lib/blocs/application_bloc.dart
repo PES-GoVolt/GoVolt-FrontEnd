@@ -3,6 +3,7 @@ import 'package:govoltfrontend/models/bike_station.dart';
 import 'package:govoltfrontend/models/mapa/place.dart';
 import 'package:govoltfrontend/models/place_search.dart';
 import 'package:govoltfrontend/models/route_list.dart';
+import 'package:govoltfrontend/services/rutas_service.dart';
 import 'package:govoltfrontend/services/user_service.dart';
 import 'package:govoltfrontend/services/places_service.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -16,6 +17,7 @@ class AplicationBloc with ChangeNotifier {
   final chargersService = ChargersService();
   final bikeService = BikeStationsService();
   final editUser = EditUserService();
+  final rutasService = RutaService();
   RouteVoltList routevolt = RouteVoltList();
   List<PlaceSearch>? searchResults;
   Place? place;
@@ -77,7 +79,10 @@ class AplicationBloc with ChangeNotifier {
     notifyListeners();
   }
 
-
+  addParticipant(String userId, String idRuta)
+  {
+      rutasService.addParticipant(userId, idRuta);
+  }
 
   calculateRoute(List<LatLng> points) async {
     await routeService.getRoute(points, routevolt.carRoute, "DRIVE");
