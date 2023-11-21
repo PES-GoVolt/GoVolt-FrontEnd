@@ -21,6 +21,7 @@ class ChatService {
 
   static final _messageArrivedNotificationController =
       StreamController<String>.broadcast();
+
   Stream<String> get onMessageArrivedNotificationChanged =>
       _messageArrivedNotificationController.stream;
 
@@ -28,12 +29,24 @@ class ChatService {
     _messageArrivedController.add(value);
   }
 
-  void sendMessage(
-      String idRuta, String idUsuario, String message, String idChat) async {
+  void sendMessage(String idRuta, String idUsuario, String message, String idChat) async {
     final body = {
       "content": message,
       "room_name": "$idRuta/$idChat",
       "sender": idUsuario
+    };
+    final url = Uri.http(Config.apiURL, Config.chatAddMessage);
+    try {
+      await http.post(url, body: body);
+    }
+    catch (error){}
+  }
+
+  Future<void> createChat(String idRuta) async {
+    final body = {
+      "content": "Default",
+      "room_name": idRuta,
+      "sender": "Default"
     };
     final url = Uri.http(Config.apiURL, Config.chatAddMessage);
     try {
@@ -80,7 +93,7 @@ class ChatService {
     }
   }
 
-  void setupDatabaseSingleListener() async {
+  void setupDatabaseAllListeners() async {
     var id = ["rutaid/userid", "rutaid/userid2"];
     for (int i = 0; i < id.length; ++i) {
       DatabaseReference messagesRefSingle =
@@ -111,6 +124,23 @@ class ChatService {
         }
       });
     }
+  }
+
+  void setupDatabaseSngleListener(String roomName) async {
+
+    createChat(roomName);
+
+    DatabaseReference messagesRefSingle =
+        FirebaseDatabase.instance.ref().child(roomName);
+
+    messagesRefSingle.onChildAdded.listen((event) async {
+      if (event.snapshot.value is Map)
+      {
+          String messageReceived = "Nuevo mensaje_Alguien quiere unirse a tu ruta";
+          _messageArrivedNotificationController.add(messageReceived);
+
+      }
+    });
   }
 
   void addParticipantToRoute(String idUser, String idRuta) async {

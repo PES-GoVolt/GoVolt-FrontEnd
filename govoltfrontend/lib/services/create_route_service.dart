@@ -3,11 +3,10 @@ import 'package:http/http.dart' as http;
 import 'package:govoltfrontend/config.dart';
 
 class CreateRoutesService {
-  static Future<void> createRuta(Map<String, dynamic> formData) async {
+  static Future<String> createRuta(Map<String, dynamic> formData) async {
     final url = Uri.http(Config.apiURL, Config.createRoute);
     final headers = {
       'Content-Type': 'application/json',
-      // Add any additional headers you might need
     };
     try {
       final response = await http.post(
@@ -17,18 +16,15 @@ class CreateRoutesService {
       );
 
       if (response.statusCode == 200) {
-        // Successful request, you can handle the response here
-        print('Ruta created successfully');
-        print(response.body);
+        Map<String, dynamic> jsonMap = json.decode(response.body);
+        String messageValue = jsonMap['message'];
+        return messageValue;
+        
       } else {
-        // Handle error response
-        print('Error creating ruta');
-        print('Status Code: ${response.statusCode}');
-        print('Response Body: ${response.body}');
+        return "";
       }
     } catch (error) {
-      // Handle any network or other errors
-      print('Error: $error');
+      return "";
     }
   }
 }
