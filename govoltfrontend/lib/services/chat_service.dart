@@ -132,8 +132,8 @@ class ChatService {
   }
 
   void setupDatabaseAllListeners() async {
-    var id = ["rutaid/userid", "rutaid/userid2"];
-    for (int i = 0; i < id.length; ++i) {
+    var listaConcatenada = await getAllListeners();
+    for (int i = 0; i < listaConcatenada.length; ++i) {
       DatabaseReference messagesRefSingle =
           FirebaseDatabase.instance.ref().child(listaConcatenada[i]);
 

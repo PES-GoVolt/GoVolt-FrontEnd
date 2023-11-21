@@ -3,6 +3,8 @@ import 'package:govoltfrontend/models/bike_station.dart';
 import 'package:govoltfrontend/models/mapa/place.dart';
 import 'package:govoltfrontend/models/place_search.dart';
 import 'package:govoltfrontend/models/route_list.dart';
+import 'package:govoltfrontend/services/chat_service.dart';
+import 'package:govoltfrontend/services/rutas_service.dart';
 import 'package:govoltfrontend/services/user_service.dart';
 import 'package:govoltfrontend/services/places_service.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -78,6 +80,7 @@ class AplicationBloc with ChangeNotifier {
     searchResults!.clear();
     notifyListeners();
   }
+
 
   addParticipant(String userId, String idRuta)
   {
