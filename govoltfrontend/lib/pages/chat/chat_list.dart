@@ -36,11 +36,13 @@ class _ChatListState extends State<ChatListVolter> {
 
   getChatsMethod() async {
     
-    dynamic jsonResponse = await chatService.getChats(); 
-    Map<String, dynamic> response = jsonDecode(jsonResponse);
-    itemList = List.from(response['chats']);
-    setState(() {
-    });
+    dynamic jsonResponse = await chatService.getChats();
+    if (jsonResponse != null)
+    {
+      Map<String, dynamic> response = jsonDecode(jsonResponse);
+      itemList = List.from(response['chats']);
+      setState(() {});
+    }
   }
 
   @override
