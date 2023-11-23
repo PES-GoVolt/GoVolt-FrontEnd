@@ -80,7 +80,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<User?> signInWithGoogle() async {
     try {
-      print("aqui 1");
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
         return null; // El usuario canceló la autenticación
@@ -92,13 +91,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         idToken: googleAuth.idToken,
       );
 
-      print("aqui 2");
       final UserCredential authResult = await _auth.signInWithCredential(credential);
       final User? user = authResult.user;
       return user;
     } catch (error) {
-      print(error);
-      print("error");
       return null;
     }
   }
@@ -124,8 +120,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 alignment: Alignment.center,
                 padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
                 child: Image.asset(
-                  'assets/images/logo-govolt.png', // Ruta de la imagen en assets
-                  height: 50, // Altura deseada
+                  'assets/images/logo-govolt.png', 
+                  height: 50, 
                 ),
             ),
             Center(
@@ -213,7 +209,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Row(
               // ignore: sort_child_properties_last
               children: <Widget>[
-                const Text('Do you already have an account?'),
+                const Text('Do you already have an account?', style: TextStyle(
+                      color: Colors.black,
+                      ),),
                 TextButton(
                   child: const Text(
                     'Sign In',
@@ -231,16 +229,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Expanded(
                   child: Container(
                     margin: const EdgeInsets.only(right: 10, top: 10, bottom: 10),
-                    height: 1, // Altura de la línea (grosor)
-                    color: Colors.grey, // Color de la línea
+                    height: 1, 
+                    color: Colors.grey, 
                   ),
                 ),
-                Text(" Or "),
+                const Text(" Or ",
+                  style: TextStyle(
+                  color: Colors.black,
+                  ),
+                ),
                 Expanded(
                   child: Container(
                     margin: const EdgeInsets.only(left: 10, top: 10, bottom: 10),
-                    height: 1, // Altura de la línea (grosor)
-                    color: Colors.grey, // Color de la línea
+                    height: 1, 
+                    color: Colors.grey, 
                   ),
                 ),
               ],
@@ -255,7 +257,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xff3b5998),
-                      minimumSize: const Size(double.infinity, 50), // Altura de 50
+                      minimumSize: const Size(double.infinity, 50), 
                     ),
                     icon: Image.asset(
                       'assets/images/facebook_logo.png',
@@ -271,13 +273,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
-                      minimumSize: const Size(double.infinity, 50), // Altura de 50
+                      minimumSize: const Size(double.infinity, 50), 
                     ),
                     icon: Image.asset(
                       'assets/images/google_logo_2.png',
                       height: 24,
                     ),
-                    label: const Text('Sign Up with Google'),
+                    label: const Text('Sign Up with Google',
+                      style: TextStyle(
+                      color: Colors.white,
+                      ),
+                    )
                   ),
                 ],
               ),

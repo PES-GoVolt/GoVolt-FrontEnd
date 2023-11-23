@@ -63,6 +63,7 @@ class MyStatefulWidget extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+  
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
@@ -77,7 +78,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   final headers = {"Content-Type": "application/json;charset=UTF-8"};
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {    
     return Scaffold(
         body: Padding(
             padding: const EdgeInsets.all(10),
@@ -139,7 +140,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: ElevatedButton(
-                    child: const Text('Log In'),
                     onPressed: () {
                       login();
                     },
@@ -151,6 +151,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                                 RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
                         ))),
+                    child: const Text('Log In', style: TextStyle(
+                      color: Colors.white,
+                      ),),
                   ),
                 ),
                 Container(
@@ -158,7 +161,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: ElevatedButton(
-                    child: const Text('Sign Up'),
                     onPressed: () {
                       Navigator.pushNamed(context, '/registro');
                     },
@@ -174,6 +176,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                                 RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
                         ))),
+                    child: const Text('Sign Up',style: TextStyle(
+                      color: Color(0xff4d5e6b),
+                      ),),
                   ),
                 ),
                 Row(
