@@ -14,12 +14,16 @@ class ChatPage extends StatefulWidget {
       {super.key,
       required this.idUserReciever,
       required this.userName,
-      required this.idChat,
-      required this.lastConection});
+      required this.roomName,
+      required this.lastConection, 
+      required this.myUserId, 
+      required this.creador});
 
   final String idUserReciever;
+  final String myUserId;
+  final bool creador;
   final String userName;
-  final String idChat;
+  final String roomName;
   final int lastConection;
 
   @override
@@ -28,10 +32,14 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   List<types.Message> messages = [];
-  final user = const types.User(id: 'userid', firstName: "Marc");
+
   late String roomName;
-  late String idChatUser;
+  late String idUserReciever;
   late int lastConection;
+  late bool creador;
+  late String myUserId;
+  late String userName;
+
   final chatService = ChatService();
   final applicationBloc = AplicationBloc();
   late StreamSubscription<MessageVolt> messageArrivedSubscription;
@@ -40,14 +48,13 @@ class _ChatPageState extends State<ChatPage> {
 
   void loadAllData(int lastConection) async {
     List<MessageVolt> messagesDataLoaded =
-        await chatService.loadAllMessagesData(roomName, "userid");
+        await chatService.loadAllMessagesData(roomName);
     for (var element in messagesDataLoaded) {
-      
         String messageUserId = element.userid;
         String idMessage = Uuid().v4();
         final textMessage = types.TextMessage(
-          author: messageUserId == user.id
-              ? user
+          author: (messageUserId == myUserId || (messageUserId == "DefaultUser" && !creador))
+              ? types.User(id: myUserId)
               : types.User(id: widget.idUserReciever, firstName: widget.userName),
           createdAt: int.parse(element.timestamp),
           id: idMessage,
@@ -66,9 +73,13 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void initState() {
-    roomName = widget.idChat;
-    idChatUser = widget.idChat;
+    roomName = widget.roomName;
+    idUserReciever = widget.idUserReciever;
     lastConection = widget.lastConection;
+    creador = widget.creador;
+    myUserId = widget.myUserId;
+    userName = widget.userName;
+
     if (!messagesLoaded) loadAllData(lastConection);
     chatService.enterChatRoom(roomName);
     //chatService.updateLastConnection(roomName);
@@ -80,7 +91,7 @@ class _ChatPageState extends State<ChatPage> {
         chatService.onMessageArrivedChanged.listen((messageArrived) {
       String messageUserId = ChatService.message.userid;
       final textMessage = types.TextMessage(
-        author: messageUserId == user.id ? user : user2,
+        author: messageUserId == myUserId ? types.User(id: myUserId) : user2,
         createdAt: int.parse(ChatService.message.timestamp),
         id: Uuid().v4(),
         text: ChatService.message.content,
@@ -105,17 +116,69 @@ class _ChatPageState extends State<ChatPage> {
 
   void _handleSendPressed(types.PartialText message) {
     final textMessage = types.TextMessage(
-      author: user,
+      author: types.User(id: myUserId),
       createdAt: DateTime.now().millisecondsSinceEpoch,
       id: Uuid().v4(),
       text: message.text,
     );
-    chatService.sendMessage(roomName, user.id, message.text);
+    chatService.sendMessage(roomName, myUserId, message.text);
     _addMessage(textMessage);
   }
 
   void _handleAttachmentPressed() { 
     //TODO send current Location
+  }
+
+  List<Widget> opcionesCreador()
+  {
+    return [
+      TextButton(
+        onPressed: () {
+          applicationBloc.addParticipant(idUserReciever, roomName.split("/")[0]);
+          Navigator.of(context).pop();
+        },
+        child: const Row(
+          children: <Widget>[
+            Icon(Icons.person_add_alt_1,
+            color: Colors.blue,),
+            SizedBox(width: 11),
+            Text('Añadir Pasajero', style: TextStyle(color: Colors.black),),
+          ],
+        ),
+      ),
+      const SizedBox(height: 10),
+      TextButton(
+        onPressed: () {
+
+        },
+        child: const Row(
+          children: <Widget>[
+            Icon(Icons.block,
+            color: Colors.red,),
+            SizedBox(width: 11),
+            Text('Rechazar Pasajero', style: TextStyle(color: Colors.red),),
+          ],
+        ),
+      ),    
+    ];
+  }
+
+  List<Widget> opcionesPasajero()
+  {
+    return [
+      TextButton(
+        onPressed: () {
+        },
+        child: const Row(
+          children: <Widget>[
+            Icon(Icons.block,
+            color: Colors.red,),
+            SizedBox(width: 11),
+            Text('Rechazar Pasajero', style: TextStyle(color: Colors.red),),
+          ],
+        ),
+      ),    
+    ];
   }
 
   void _mostrarOpciones(BuildContext context) {
@@ -128,34 +191,7 @@ class _ChatPageState extends State<ChatPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            TextButton(
-              onPressed: () {
-                applicationBloc.addParticipant("userId3", "auAsER3wB1dytm9rDz4w");
-                Navigator.of(context).pop();
-              },
-              child: const Row(
-                children: <Widget>[
-                  Icon(Icons.person_add_alt_1,
-                  color: Colors.blue,),
-                  SizedBox(width: 11),
-                  Text('Añadir Pasajero', style: TextStyle(color: Colors.black),),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
-            TextButton(
-              onPressed: () {
-
-              },
-              child: const Row(
-                children: <Widget>[
-                  Icon(Icons.block,
-                  color: Colors.red,),
-                  SizedBox(width: 11),
-                  Text('Rechazar Pasajero', style: TextStyle(color: Colors.red),),
-                ],
-              ),
-            ),
+            creador ? Column(children: opcionesCreador()) : Column(children: opcionesPasajero())
           ],
         ),
       );
@@ -188,7 +224,7 @@ class _ChatPageState extends State<ChatPage> {
       body: Chat(
           messages: messages,
           onSendPressed: _handleSendPressed,
-          user: user,
+          user: types.User(id: myUserId),
           showUserAvatars: true,
           scrollToUnreadOptions: (idLastMessageReaded != "") ?  ScrollToUnreadOptions(
           lastReadMessageId: idLastMessageReaded,

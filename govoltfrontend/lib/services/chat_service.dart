@@ -34,16 +34,21 @@ class ChatService {
 
   void createChat(String idRuta, String userUid, String creatorUid) async {
     final url = Uri.http(Config.apiURL, Config.chats);
-    String roomName = "$idRuta/$userUid";
     final body = {
       "user_uid": userUid,
       "creator_uid" : creatorUid,
-      "room_name": roomName
+      "room_name": idRuta
     };
 
     try{
-      await http.post(url, body: body);
-      sendMessage(roomName, "DefaultUser", "Me gustaria unirme a tu ruta");
+      dynamic response = await http.post(url, body: body);
+      Map<String, dynamic> responseData = json.decode(response.body);
+      String roomName = responseData['room_name'];
+      if (roomName != null)
+      {
+        sendMessage(roomName as String, "DefaultUser", "Me gustaria unirme a tu ruta");
+        subscribeToNewChat(roomName);
+      }
     }
     catch (e){}
   }
@@ -112,7 +117,7 @@ class ChatService {
   }
 
   Future<List<MessageVolt>> loadAllMessagesData(
-      String room_name, String idUsuario) async {
+      String room_name) async {
     final url = Uri.http(Config.apiURL, Config.chatAddMessage,
         {'room_name': room_name});
     try {
@@ -199,6 +204,37 @@ class ChatService {
 
       }
     });
+  }
+
+  void subscribeToNewChat(String roomName) async {
+
+    DatabaseReference messagesRefSingle =
+        FirebaseDatabase.instance.ref().child(roomName);
+
+    messagesRefSingle.onChildAdded.listen((event) async {
+        final dynamicValue = event.snapshot.value;
+        if (dynamicValue is String) {
+          var roomName = messagesRefSingle.path;
+          if (roomName == currentRoom)
+          {
+            try{
+              await getLastMessage(currentRoom);
+            }
+            catch (error){}
+            if (message.userid != currentUserId) {
+              setMessageArrived(message);
+            }
+          }
+          else{
+            try{
+              await getLastMessage(roomName);
+            }
+            catch (error){}
+            String messageReceived = "Nuevo Mensaje_";
+            _messageArrivedNotificationController.add(messageReceived);
+          }
+        }
+      });
   }
 
   void addParticipantToRoute(String idUser, String idRuta) async {

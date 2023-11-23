@@ -60,17 +60,19 @@ class _ChatListState extends State<ChatListVolter> {
       itemCount: itemList.length,
       itemBuilder: (context, index) {
         Map<String, dynamic> item = itemList[index];
-        final String userName = "TODO";
+        final String userName = item["email"];
         final idRuta = item["room_name"];
         final lastConection = item["last_conection"];
-        final idUser = "Username";
+        final idUserReciever = item["userUid_reciever"];
+        final myUserId = item["userUid_sender"];
+        final creador = item["creator"];
         return Card(
           margin: const EdgeInsets.all(8.0),
           child: ListTile(
             contentPadding: const EdgeInsets.all(16.0),
             title: Row(
               children: [
-                circleColorCustom(userName, idUser),
+                circleColorCustom(userName, idUserReciever),
                 const SizedBox(width: 16.0),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,15 +88,16 @@ class _ChatListState extends State<ChatListVolter> {
               ],
             ),
             onTap: () async {
-              idUserPressed = idUser;
+              idUserPressed = idUserReciever;
               idChat = idRuta;
               userNameChatPressed = userName;
               await Navigator.push(context, MaterialPageRoute(builder: (context) =>  ChatPage(
-                idUserReciever: idUser,
-                userName: userName,
-                idChat: idChat,
-                lastConection: lastConection,
-                ))
+                idUserReciever: idUserReciever, 
+                userName: userName, 
+                roomName: idRuta, 
+                lastConection: lastConection, 
+                myUserId: myUserId, 
+                creador: creador))
               );
               setState(() {});
             },
@@ -111,7 +114,7 @@ class _ChatListState extends State<ChatListVolter> {
                   radius: 16,
                   backgroundColor: colors[initialsNumber],
                   child: Text(
-                    username.characters.first,
+                    username.characters.first.toUpperCase(),
                     style:
                         const TextStyle(color: Colors.white),
                   ),
