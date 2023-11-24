@@ -12,8 +12,8 @@ class ChatService {
   bool firstLoad = false;
   DateTime now = DateTime.now();
   static final message =
-      MessageVolt(userid: "", content: "", timestamp: "", roomName: "");
-  String currentUserId = "userid";
+      MessageVolt(userid: "", content: "", timestamp: "", roomName: "", chatId: "");
+  static String currentUserId = "userid";
   static String currentRoom = "";
   final rutasService = RutaService();
 
@@ -112,8 +112,9 @@ class ChatService {
     currentRoom = "";
   }
 
-  void enterChatRoom(String idRoom) {
+  void enterChatRoom(String idRoom, String myId) {
     currentRoom = idRoom;
+    currentUserId = myId;
   }
 
   Future<List<MessageVolt>> loadAllMessagesData(
@@ -172,6 +173,7 @@ class ChatService {
           {
             try{
               await getLastMessage(currentRoom);
+              updateLastConnection(roomName);
             }
             catch (error){}
             if (message.userid != currentUserId) {
@@ -219,6 +221,7 @@ class ChatService {
           {
             try{
               await getLastMessage(currentRoom);
+              updateLastConnection(roomName);
             }
             catch (error){}
             if (message.userid != currentUserId) {

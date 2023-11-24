@@ -3,12 +3,14 @@ class MessageVolt {
   String content = "";
   String timestamp = "";
   String roomName = "";
+  String chatId = "";
 
   MessageVolt({
     required this.userid,
     required this.content,
     required this.timestamp,
     required this.roomName,
+    required this.chatId
   });
 
   void clearData() {
@@ -28,6 +30,7 @@ class MessageVolt {
       content: map['content'] ?? "",
       timestamp: map['timestamp'].toString() ?? "",
       roomName: map['room_name'] ?? "",
+      chatId: map['id_chat'] ?? ""
     );
   }
 }

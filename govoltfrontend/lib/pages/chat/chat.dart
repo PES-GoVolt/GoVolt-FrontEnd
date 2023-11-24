@@ -17,7 +17,9 @@ class ChatPage extends StatefulWidget {
       required this.roomName,
       required this.lastConection, 
       required this.myUserId, 
-      required this.creador});
+      required this.creador, 
+      required this.chatId, 
+      required this.refreshChats});
 
   final String idUserReciever;
   final String myUserId;
@@ -25,9 +27,12 @@ class ChatPage extends StatefulWidget {
   final String userName;
   final String roomName;
   final int lastConection;
+  final String chatId;
+  final Function refreshChats;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
+  
 }
 
 class _ChatPageState extends State<ChatPage> {
@@ -39,6 +44,7 @@ class _ChatPageState extends State<ChatPage> {
   late bool creador;
   late String myUserId;
   late String userName;
+  late String chatId;
 
   final chatService = ChatService();
   final applicationBloc = AplicationBloc();
@@ -79,10 +85,11 @@ class _ChatPageState extends State<ChatPage> {
     creador = widget.creador;
     myUserId = widget.myUserId;
     userName = widget.userName;
+    chatId = widget.chatId;
 
     if (!messagesLoaded) loadAllData(lastConection);
-    chatService.enterChatRoom(roomName);
-    //chatService.updateLastConnection(roomName);
+    chatService.enterChatRoom(roomName, myUserId);
+    chatService.updateLastConnection(chatId);
     final user2 =
         types.User(id: widget.idUserReciever, firstName: widget.userName);
     super.initState();
@@ -105,6 +112,7 @@ class _ChatPageState extends State<ChatPage> {
   void dispose() {
     chatService.leaveRoomChat();
     messageArrivedSubscription.cancel();
+    widget.refreshChats();
     super.dispose();
   }
 
@@ -174,7 +182,7 @@ class _ChatPageState extends State<ChatPage> {
             Icon(Icons.block,
             color: Colors.red,),
             SizedBox(width: 11),
-            Text('Rechazar Pasajero', style: TextStyle(color: Colors.red),),
+            Text('Bloquear Usuario', style: TextStyle(color: Colors.red),),
           ],
         ),
       ),    

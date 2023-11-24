@@ -66,6 +66,7 @@ class _ChatListState extends State<ChatListVolter> {
         final idUserReciever = item["userUid_reciever"];
         final myUserId = item["userUid_sender"];
         final creador = item["creator"];
+        final idChat = item["id_chat"];
         return Card(
           margin: const EdgeInsets.all(8.0),
           child: ListTile(
@@ -89,7 +90,6 @@ class _ChatListState extends State<ChatListVolter> {
             ),
             onTap: () async {
               idUserPressed = idUserReciever;
-              idChat = idRuta;
               userNameChatPressed = userName;
               await Navigator.push(context, MaterialPageRoute(builder: (context) =>  ChatPage(
                 idUserReciever: idUserReciever, 
@@ -97,7 +97,11 @@ class _ChatListState extends State<ChatListVolter> {
                 roomName: idRuta, 
                 lastConection: lastConection, 
                 myUserId: myUserId, 
-                creador: creador))
+                creador: creador,
+                chatId: idChat,
+                refreshChats: () {
+                  getChatsMethod();
+                }))
               );
               setState(() {});
             },
