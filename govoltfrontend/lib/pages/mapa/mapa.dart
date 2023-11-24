@@ -159,18 +159,15 @@ class _MapaState extends State<MapScreen> {
 
   cargarBicis() {
     try {
-      // Call the service to get bike stations
-      // Iterate through the bike stations and create markers
       final newMarkers = MarkersData.bikeStation.map((station) {
         return Marker(
           markerId:
-              MarkerId(station.stationId), // Must be unique for each marker
+              MarkerId(station.stationId),
           position: LatLng(station.latitude, station.longitude),
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
           infoWindow: InfoWindow(title: 'Station ID: ${station.stationId}'),
         );
-      }).toSet(); // Convert the list of markers into a set of markers
-      // Update the set of markers
+      }).toSet(); 
       setState(() {
         _bikeStations = newMarkers;
       });
@@ -368,11 +365,11 @@ class _MapaState extends State<MapScreen> {
                   },
                   icon: const Icon(
                     Icons
-                        .directions, // Icono de dirección similar al de Google Maps
-                    color: Colors.white, // Color del icono
+                        .directions,
+                    color: Colors.white,
                   ),
                   label: const Text(
-                    'Ruta', // Texto del botón
+                    'Ruta',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white,
@@ -380,7 +377,7 @@ class _MapaState extends State<MapScreen> {
                   ),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Colors.blue, // Color del texto en el botón
+                    backgroundColor: Colors.blue,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -473,11 +470,11 @@ class _MapaState extends State<MapScreen> {
                   },
                   icon: const Icon(
                     Icons
-                        .directions, // Icono de dirección similar al de Google Maps
-                    color: Colors.white, // Color del icono
+                        .directions,
+                    color: Colors.white,
                   ),
                   label: const Text(
-                    'Iniciar Ruta', // Texto del botón
+                    'Iniciar Ruta',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white,
@@ -485,7 +482,7 @@ class _MapaState extends State<MapScreen> {
                   ),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Colors.blue, // Color del texto en el botón
+                    backgroundColor: Colors.blue,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -608,19 +605,19 @@ class _MapaState extends State<MapScreen> {
                   },
                   icon: const Icon(
                     Icons
-                        .directions, // Icono de dirección similar al de Google Maps
-                    color: Colors.white, // Color del icono
+                        .directions,
+                    color: Colors.white,
                   ),
                   label: !goToNearestChargerEnable
                       ? const Text(
-                          'Buscar cargador cercano', // Texto del botón
+                          'Buscar cargador cercano',
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,
                           ),
                         )
                       : const Text(
-                          'Volver a destino original', // Texto del botón
+                          'Volver a destino original',
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,
@@ -628,7 +625,7 @@ class _MapaState extends State<MapScreen> {
                         ),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Colors.blue, // Color del texto en el botón
+                    backgroundColor: Colors.blue, 
                   ),
                 ),
                 const SizedBox(width: 10),

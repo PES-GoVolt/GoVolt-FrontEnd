@@ -38,11 +38,10 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
 
   Widget hiddenFormField() {
     return TextFormField(
-      // The name of the field
-      initialValue: _ubicacionInicial, // Set initial value
-      style: TextStyle(color: Colors.transparent), // Make text color transparent
-      decoration: InputDecoration.collapsed(
-        hintText: '', // An empty hint text
+      initialValue: _ubicacionInicial,
+      style: const TextStyle(color: Colors.transparent),
+      decoration: const InputDecoration.collapsed(
+        hintText: '',
       ),
     );
   }
@@ -75,8 +74,8 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Creación de Viaje'),
-        backgroundColor: Color.fromRGBO(125, 193, 165, 1),
+        title: const Text('Creación de Viaje'),
+        backgroundColor: const Color.fromRGBO(125, 193, 165, 1),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -97,44 +96,43 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
                     child: printListView(),
                   ),
                   */
-                SizedBox(height: 16.0),
-                // TextFormField for ubicacion_inicial
+                const SizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'ubicacion_inicial',
-                  decoration: InputDecoration(labelText: 'Ciudad Inicial'),
+                  decoration: const InputDecoration(labelText: 'Ciudad Inicial'),
                   validator: FormBuilderValidators.required(),
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'ubicacion_final',
-                  decoration: InputDecoration(labelText: 'Ciudad Fin'),
+                  decoration: const InputDecoration(labelText: 'Ciudad Fin'),
                   validator: FormBuilderValidators.required(),
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'precio',
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  decoration: InputDecoration(labelText: 'Precio (Euros)'),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(labelText: 'Precio (Euros)'),
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(),
                     FormBuilderValidators.numeric()
                   ]),        
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'num_plazas',
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: 'Plazas Disponibles'),
+                  decoration: const InputDecoration(labelText: 'Plazas Disponibles'),
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(),
                     FormBuilderValidators.numeric()
                   ]),
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 FormBuilderDateTimePicker(
                   name: 'fecha',
                   inputType: InputType.date,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Fecha y Hora',
                     suffixIcon: Icon(Icons.calendar_today),
                   ),
@@ -156,7 +154,7 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
                     });
                   },
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState?.saveAndValidate() ?? false ) {
@@ -168,10 +166,10 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
                     
                   },
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(Color(0xff4d5e6b)), // Aquí estableces el color deseado
+                    backgroundColor: MaterialStateProperty.all<Color>(const Color(0xff4d5e6b)),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                  child: const Padding(
+                    padding: EdgeInsets.all(16.0),
                     child: Text(
                       'Crear Viaje',
                       style: TextStyle(fontSize: 20.0, color: Colors.white),

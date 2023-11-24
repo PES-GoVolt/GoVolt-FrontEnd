@@ -52,7 +52,7 @@ class ChargersService {
 class Coordenada {
   final double latitud;
   final double longitud;
-  final String chargerId; // Nuevo campo para el chargerID
+  final String chargerId;
 
   Coordenada(this.latitud, this.longitud, this.chargerId);
 
@@ -61,7 +61,7 @@ class Coordenada {
       json['latitude'] as double,
       json['longitude'] as double,
       json['charger_id']
-          as String, // Asegúrate de que el nombre coincida con el JSON
+          as String,
     );
   }
 }

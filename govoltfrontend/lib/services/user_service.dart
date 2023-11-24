@@ -43,7 +43,6 @@ class EditUserService {
         'last_name': lastName,
         'phone': phoneNumber,
         'photo_url': photo
-        // Otros campos...
       };
 
       final response = await http.post(
@@ -59,11 +58,9 @@ class EditUserService {
       } else {
         print(
             "Error al guardar los cambios. Código de estado: ${response.statusCode}");
-        // Puedes manejar el error de acuerdo a tus necesidades
       }
     } catch (error) {
       print("Error al realizar la solicitud HTTP: $error");
-      // Puedes manejar el error de acuerdo a tus necesidades
     }
   }
 

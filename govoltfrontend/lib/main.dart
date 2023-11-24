@@ -7,13 +7,12 @@ import 'package:govoltfrontend/menu.dart';
 import 'package:govoltfrontend/pages/registro/registro.dart';
 import 'package:govoltfrontend/config.dart';
 
-import 'package:firebase_auth/firebase_auth.dart'; // Agrega esta importación
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 void main() async {
-  // Cambia la función main para inicializar Firebase
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -48,7 +47,7 @@ class MyApp extends StatelessWidget {
         '/registro': (context) => RegisterScreen(),
         '/login': (context) => const Scaffold(
               body:
-                  MyStatefulWidget(), // El contenido de tu pantalla de inicio de sesión
+                  MyStatefulWidget(),
             ),
       },
     );
@@ -65,7 +64,7 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  //final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -88,8 +87,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   alignment: Alignment.center,
                   padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                   child: Image.asset(
-                    'assets/images/logo-govolt.png', // Ruta de la imagen en assets
-                    height: 200, // Altura deseada
+                    'assets/images/logo-govolt.png',
+                    height: 200,
                   ),
                 ),
                 Container(
@@ -187,8 +186,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                       child: Container(
                         margin: const EdgeInsets.only(
                             right: 10, top: 10, bottom: 10),
-                        height: 1, // Altura de la línea (grosor)
-                        color: Colors.grey, // Color de la línea
+                        height: 1,
+                        color: Colors.grey, 
                       ),
                     ),
                     Text(" Or "),
@@ -196,8 +195,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                       child: Container(
                         margin: const EdgeInsets.only(
                             left: 10, top: 10, bottom: 10),
-                        height: 1, // Altura de la línea (grosor)
-                        color: Colors.grey, // Color de la línea
+                        height: 1,
+                        color: Colors.grey, 
                       ),
                     ),
                   ],
@@ -213,7 +212,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xff3b5998),
                           minimumSize:
-                              const Size(double.infinity, 50), // Altura de 50
+                              const Size(double.infinity, 50),
                         ),
                         icon: Image.asset(
                           'assets/images/facebook_logo.png',
@@ -229,7 +228,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
                           minimumSize:
-                              const Size(double.infinity, 50), // Altura de 50
+                              const Size(double.infinity, 50),
                         ),
                         icon: Image.asset(
                           'assets/images/google_logo_2.png',
@@ -248,7 +247,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     try {
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
-        return null; // El usuario canceló la autenticación
+        return null;
       }
 
       final GoogleSignInAuthentication googleAuth =

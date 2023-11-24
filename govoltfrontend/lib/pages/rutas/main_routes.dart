@@ -163,9 +163,9 @@ class _RoutesState extends State<RoutesScreen> {
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xff4d5e6b), // Define el color de fondo del botón
+                          backgroundColor: const Color(0xff4d5e6b),
                         ),
-                        child: const Text('Aplicar'),
+                        child: const Text('Aplicar', style: TextStyle(color: Colors.white),),
                       ),
                       ElevatedButton(
                         onPressed: () {
@@ -173,9 +173,9 @@ class _RoutesState extends State<RoutesScreen> {
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xff4d5e6b), // Define el color de fondo del botón
+                          backgroundColor: const Color(0xff4d5e6b),
                         ),
-                        child: const Text('Quitar'),
+                        child: const Text('Quitar', style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),
@@ -272,7 +272,7 @@ class _RoutesState extends State<RoutesScreen> {
               fixedSize: const Size.fromHeight(50),
               backgroundColor: const Color(0xff4d5e6b),
             ),
-            child: const Icon(Icons.filter_list),
+            child: const Icon(Icons.filter_list, color: Colors.white,),
           ),
         ],
       ),
@@ -280,24 +280,20 @@ class _RoutesState extends State<RoutesScreen> {
   }
 
   Future<void> _loadMyRutas() async {
-    // Tu lógica para cargar las rutas combinadas
     List<Ruta> combinedRutas = await _loadCombinedRutas();
 
     setState(() {
-      // Inicializar la lista de fechas
       List<DateTime> dateList = [];
 
       combinedRutas.forEach((ruta) {
         List<int> dateParts = ruta.date.split('-').map(int.parse).toList();
         DateTime date = DateTime(dateParts[0], dateParts[1], dateParts[2]);
 
-        // Agregar la fecha a la lista si no está presente
         if (!dateList.contains(date)) {
           dateList.add(date);
         }
       });
 
-      // Asignar la lista de fechas a la variable _events
       _events = dateList;
     });
   }
@@ -391,7 +387,7 @@ Future<List<Ruta>> _filterRutas() async {
       style: ElevatedButton.styleFrom(
         shape: const CircleBorder(),
         fixedSize: const Size.square(50),
-        backgroundColor: const Color(0xff4d5e6b), // Cambiar el color del botón
+        backgroundColor: const Color(0xff4d5e6b),
       ),
       child: const SizedBox(
         width: 50,
@@ -438,7 +434,7 @@ Future<List<Ruta>> _filterRutas() async {
           },
           calendarStyle: const CalendarStyle(
             selectedDecoration: BoxDecoration(
-              color: const Color(0xff4d5e6b),
+              color: Color(0xff4d5e6b),
             ),
           ),
           headerStyle: const HeaderStyle(
@@ -461,14 +457,13 @@ Future<List<Ruta>> _filterRutas() async {
                   child: Center(
                     child: Text(
                       '${date.day}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                       ),
                     ),
                   ),
                 );
               } else {
-                // Devuelve un contenedor vacío si no necesitas marcar esta fecha
                 return Container();
               }
             },

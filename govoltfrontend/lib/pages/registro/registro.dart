@@ -67,11 +67,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
 
     if (response.statusCode == 200) {
-      // Registro exitoso, redirige a la pantalla de inicio de sesión
       await Future.delayed(Duration.zero);
       Navigator.pushNamed(context, '/login');
     } else {
-      // Error en el registro, muestra un mensaje de error
       final data = jsonDecode(response.body);
       final errorMessage = data['message'];
       showSnackbar(errorMessage);
@@ -82,7 +80,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     try {
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
-        return null; // El usuario canceló la autenticación
+        return null;
       }
 
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
