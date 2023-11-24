@@ -6,7 +6,8 @@ class Ruta {
   final int seats;
   final String date;
   final String creator;
-  final List? participants; // Ahora es una lista opcional
+  final List? participants;
+  final String creatorMail;
 
   Ruta({
     required this.id,
@@ -16,7 +17,8 @@ class Ruta {
     required this.seats,
     required this.date,
     required this.creator,
-    this.participants, // Marcar como opcional con el operador '?'
+    this.participants,
+    required this.creatorMail
   });
 
   factory Ruta.fromJson(Map<String, dynamic> json) {
@@ -28,7 +30,8 @@ class Ruta {
       seats: json['num_plazas'] as int,
       date: json['fecha'] as String,
       creator: json['creador'] as String,
-      participants: json['participantes'] as List?, // Asignación nula opcional
+      participants: json['participantes'] as List?,
+      creatorMail: json['creador_email'] as String
     );
   }
 

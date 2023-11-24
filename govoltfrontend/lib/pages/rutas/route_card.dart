@@ -21,17 +21,17 @@ class RouteCard extends StatelessWidget {
             onPressed: () {
               applicationBloc.createChat(ruta.id, ruta.creator, ruta.creator);
             },
-            child: const Text('Solicitar unirse'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xff4d5e6b),
+              backgroundColor: const Color(0xff4d5e6b),
             ),
+            child: const Text('Solicitar unirse'),
           )
         : null,
       title: Text('Inicio: ${ruta.beginning} Destino: ${ruta.destination}'),
       subtitle: Text('Fecha: ${ruta.date}'),
       children: [
         ListTile(
-          title: Text('Conductor: ${ruta.creator}'),
+          title: Text('Conductor: ${ruta.creatorMail}'),
         ),
         ListTile(
           title: Text('Número de plazas: ${ruta.seats}'),

@@ -68,16 +68,17 @@ class _VolterScreenState extends State<VolterScreen> {
       phoneNumber = userData.phoneNumber;
       setState(() {
         if (userData.email != "") emailController.text = userData.email;
-        if (userData.phoneNumber != "")
+        if (userData.phoneNumber != "") {
           phoneNumberController.text = userData.phoneNumber;
-        if (userData.firstName != "")
+        }
+        if (userData.firstName != "") {
           firstNameController.text = userData.firstName;
-        if (userData.lastName != "")
+        }
+        if (userData.lastName != "") {
           lastNameController.text = userData.lastName;
-        // Otros campos del perfil...
+        }
       });
     } else {
-      // Si la solicitud no fue exitosa, maneja el error
       print("Error al obtener el perfil: ${response.statusCode}");
     }
   }
@@ -85,7 +86,6 @@ class _VolterScreenState extends State<VolterScreen> {
   @override
   void initState() {
     super.initState();
-    // Llama a la función fetchProfileData al iniciar la pantalla
     fetchProfileData();
 
     emailController.text = email;
@@ -178,30 +178,31 @@ class _VolterScreenState extends State<VolterScreen> {
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      // Cambia el estado "edit" al contrario cuando se presione el botón
                       edit = !edit;
 
                       if (edit == false) {
                         if (email != "") emailController.text = email;
-                        if (phoneNumber != "")
+                        if (phoneNumber != "") {
                           phoneNumberController.text = phoneNumber;
-                        if (firstName != "")
+                        }
+                        if (firstName != "") {
                           firstNameController.text = firstName;
+                        }
                         if (lastName != "") lastNameController.text = lastName;
                       }
                     });
                   },
-                  child: Text(edit
-                      ? 'Cancel'
-                      : 'Edit Profile'), // Etiqueta dependiendo de "edit"
                   style: ElevatedButton.styleFrom(
                     backgroundColor: edit
                         ? Colors.red
-                        : Colors.green, // Color dependiendo de "edit"
+                        : Colors.green,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                   ),
+                  child: Text(edit
+                      ? 'Cancel'
+                      : 'Edit Profile'),
                 )
               ],
             ),
@@ -231,13 +232,13 @@ class _VolterScreenState extends State<VolterScreen> {
                         edit = !edit;
                       });
                     },
-                    child: Text('Save Changes'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue, // Color de fondo azul
+                      backgroundColor: Colors.blue,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                     ),
+                    child: Text('Save Changes'),
                   ),
                 ],
               )

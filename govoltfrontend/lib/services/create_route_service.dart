@@ -19,7 +19,7 @@ class CreateRoutesService {
         Map<String, dynamic> jsonMap = json.decode(response.body);
         String messageValue = jsonMap['message'];
         return messageValue;
-        
+
       } else {
         return "";
       }

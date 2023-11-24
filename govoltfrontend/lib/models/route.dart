@@ -24,9 +24,9 @@ class RouteVolt {
 
       Polyline polyline = Polyline(
         polylineId: id,
-        color: const Color.fromRGBO(185, 15, 219, 0.612),  // Color de la línea
-        points: polylineCoordinates, // Lista de coordenadas de la polilínea
-        width: 5, // Ancho de la línea en píxeles
+        color: const Color.fromRGBO(185, 15, 219, 0.612), 
+        points: polylineCoordinates,
+        width: 5,
       );
       route.add(polyline);
   }

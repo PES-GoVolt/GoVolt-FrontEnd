@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/place_search.dart';
 import 'package:govoltfrontend/services/create_route_service.dart';
@@ -37,11 +38,10 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
 
   Widget hiddenFormField() {
     return TextFormField(
-      // The name of the field
-      initialValue: _ubicacionInicial, // Set initial value
-      style: TextStyle(color: Colors.transparent), // Make text color transparent
-      decoration: InputDecoration.collapsed(
-        hintText: '', // An empty hint text
+      initialValue: _ubicacionInicial,
+      style: const TextStyle(color: Colors.transparent),
+      decoration: const InputDecoration.collapsed(
+        hintText: '',
       ),
     );
   }
@@ -82,6 +82,7 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
           padding: const EdgeInsets.all(16.0),
           child: FormBuilder(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -96,27 +97,36 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
                   ),
                   */
                 const SizedBox(height: 16.0),
-                // TextFormField for ubicacion_inicial
                 FormBuilderTextField(
                   name: 'ubicacion_inicial',
                   decoration: const InputDecoration(labelText: 'Ciudad Inicial'),
+                  validator: FormBuilderValidators.required(),
                 ),
                 const SizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'ubicacion_final',
                   decoration: const InputDecoration(labelText: 'Ciudad Fin'),
+                  validator: FormBuilderValidators.required(),
                 ),
                 const SizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'precio',
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   decoration: const InputDecoration(labelText: 'Precio (Euros)'),
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                    FormBuilderValidators.numeric()
+                  ]),        
                 ),
                 const SizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'num_plazas',
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(labelText: 'Plazas Disponibles'),
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                    FormBuilderValidators.numeric()
+                  ]),
                 ),
                 const SizedBox(height: 16.0),
                 FormBuilderDateTimePicker(
@@ -147,18 +157,16 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
                 const SizedBox(height: 16.0),
                 ElevatedButton(
                   onPressed: () async {
-                    if (_formKey.currentState?.saveAndValidate() ?? false) {
+                    if (_formKey.currentState?.saveAndValidate() ?? false ) {
                       var formData = Map<String, dynamic>.from(_formKey.currentState!.value);
                       formData['fecha'] = (_selectedDate != null) ? _selectedDate!.toString().split(' ')[0] : null;
-                      String idRuta = await CreateRoutesService.createRuta(formData);
-                      if (idRuta != "") {
-                        await applicationBloc.createRouteListener(idRuta);
-                      }
+                      await CreateRoutesService.createRuta(formData);
+                      Navigator.of(context).pop();
                     }
-                    Navigator.of(context).pop();
+                    
                   },
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(const Color(0xff4d5e6b)), // Aquí estableces el color deseado
+                    backgroundColor: MaterialStateProperty.all<Color>(const Color(0xff4d5e6b)),
                   ),
                   child: const Padding(
                     padding: EdgeInsets.all(16.0),
