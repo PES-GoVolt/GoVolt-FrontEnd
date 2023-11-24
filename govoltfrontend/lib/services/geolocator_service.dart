@@ -11,6 +11,7 @@ class GeolocatiorService {
   }
 
   Future<LocationPermission> askForPermissions() async {
+    try{
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever ||
@@ -23,5 +24,7 @@ class GeolocatiorService {
       }
     }
     return permission;
+    }
+    catch(error){return LocationPermission.denied;}
   }
 }

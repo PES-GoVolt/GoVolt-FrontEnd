@@ -7,6 +7,7 @@ class EditUserService {
   EditUserService();
 
   Future<dynamic> getCurrentUserData() async {
+    try{
     final response =
         await http.get(Uri.http(Config.apiURL, Config.seeMyProfileAPI));
 
@@ -32,7 +33,13 @@ class EditUserService {
       }
       return user;
     }
-    return null;
+      return null;
+    }
+    catch(error)
+    {
+      return null;
+    }
+    
   }
 
   saveChanges(String firstName, String lastName, String email,
@@ -65,6 +72,7 @@ class EditUserService {
   }
 
   Future<bool> logOut() async {
+    try{
     final response = await http.post(
       Uri.http(Config.apiURL, Config.logoutAPI),
       headers: {
@@ -76,5 +84,9 @@ class EditUserService {
       return true;
     }
     return false;
+  }
+  catch(error){
+      return true;
+  }
   }
 }

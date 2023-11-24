@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:govoltfrontend/services/notifications_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/markers_data.dart';
 import 'package:http/http.dart' as http;
@@ -8,6 +10,9 @@ import 'package:govoltfrontend/pages/registro/registro.dart';
 import 'package:govoltfrontend/config.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart'; // Agrega esta importación
+
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -17,7 +22,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  loadData();
+  //loadData();
+  await LocalNotificationService().init();
   runApp(const MyApp());
 }
 
@@ -62,7 +68,7 @@ class MyStatefulWidget extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
-  
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   //final GoogleSignIn _googleSignIn = GoogleSignIn();
 
@@ -77,7 +83,18 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   final headers = {"Content-Type": "application/json;charset=UTF-8"};
 
   @override
-  Widget build(BuildContext context) {    
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    // Suscríbete al stream en el método initState
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
         body: Padding(
             padding: const EdgeInsets.all(10),
@@ -187,7 +204,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                         margin: const EdgeInsets.only(
                             right: 10, top: 10, bottom: 10),
                         height: 1,
-                        color: Colors.grey, 
+                        color: Colors.grey,
                       ),
                     ),
                     Text(" Or "),
@@ -196,7 +213,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                         margin: const EdgeInsets.only(
                             left: 10, top: 10, bottom: 10),
                         height: 1,
-                        color: Colors.grey, 
+                        color: Colors.grey,
                       ),
                     ),
                   ],

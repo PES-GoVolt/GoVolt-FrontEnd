@@ -14,7 +14,6 @@ class RegisterScreen extends StatefulWidget {
   _RegisterScreenState createState() => _RegisterScreenState();
 }
 
-
 class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
@@ -25,7 +24,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> register() async {
     final password = passwordController.text;
     final confirmPassword = confirmPasswordController.text;
-    
+
     if (emailController.text.isEmpty) {
       showSnackbar("Email required.");
       return;
@@ -83,13 +82,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
         return null;
       }
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      final UserCredential authResult = await _auth.signInWithCredential(credential);
+      final UserCredential authResult =
+          await _auth.signInWithCredential(credential);
       final User? user = authResult.user;
       return user;
     } catch (error) {
@@ -108,7 +109,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(10),
@@ -118,8 +118,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 alignment: Alignment.center,
                 padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
                 child: Image.asset(
-                  'assets/images/logo-govolt.png', 
-                  height: 50, 
+                  'assets/images/logo-govolt.png',
+                  height: 50,
                 ),
             ),
             Center(
@@ -227,8 +227,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Expanded(
                   child: Container(
                     margin: const EdgeInsets.only(right: 10, top: 10, bottom: 10),
-                    height: 1, 
-                    color: Colors.grey, 
+                    height: 1,
+                    color: Colors.grey,
                   ),
                 ),
                 const Text(" Or ",
@@ -239,8 +239,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Expanded(
                   child: Container(
                     margin: const EdgeInsets.only(left: 10, top: 10, bottom: 10),
-                    height: 1, 
-                    color: Colors.grey, 
+                    height: 1,
+                    color: Colors.grey,
                   ),
                 ),
               ],
@@ -255,7 +255,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xff3b5998),
-                      minimumSize: const Size(double.infinity, 50), 
+                      minimumSize: const Size(double.infinity, 50),
                     ),
                     icon: Image.asset(
                       'assets/images/facebook_logo.png',
@@ -271,7 +271,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
-                      minimumSize: const Size(double.infinity, 50), 
+                      minimumSize: const Size(double.infinity, 50),
                     ),
                     icon: Image.asset(
                       'assets/images/google_logo_2.png',

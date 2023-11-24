@@ -1,6 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:govoltfrontend/pages/chat/chat_list.dart';
 import 'package:govoltfrontend/pages/mapa/mapa.dart';
+//import 'package:govoltfrontend/pages/volter/volter.dart';
+import 'package:govoltfrontend/services/chat_service.dart';
+import 'package:govoltfrontend/services/notifications_service.dart';
 import 'package:govoltfrontend/pages/rutas/main_routes.dart';
 
 class Menu extends StatefulWidget {
@@ -12,12 +17,21 @@ class Menu extends StatefulWidget {
 
 class MenuState extends State<Menu> {
   int _selectDrawerItem = 0;
+  ChatService chatService = ChatService();
+  late StreamSubscription<String> messageArrivedSubscription;
+  late StreamSubscription<bool> showAppbarSubscription;
+  ChatListVolter chatList = ChatListVolter();
+  
   getDrawerItemWidget(int pos) {
     switch (pos) {
       case 0:
         return MapScreen();
       case 2:
         return const RoutesScreen();
+      case 3:
+        return ChatListVolter();
+      /*case 1:
+        return VolterScreen();*/
     }
   }
 
@@ -29,6 +43,23 @@ class MenuState extends State<Menu> {
   }
 
   @override
+  void initState() {
+    chatService.setupDatabaseAllListeners();
+    messageArrivedSubscription =
+        chatService.onMessageArrivedNotificationChanged.listen((messageArrived) {
+          List<String> parts = messageArrived.split("_");
+          LocalNotificationService.showNotificationAndroid(parts[0], parts[1]);
+        });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    messageArrivedSubscription.cancel();
+    super.dispose();
+  }
+
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
