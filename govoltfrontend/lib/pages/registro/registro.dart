@@ -50,13 +50,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    final url = Uri.http(Config.apiURL, Config.registroAPI);
+    final url = Uri.parse(Config.singupFIREBASE);
     final headers = {"Content-Type": "application/json;charset=UTF-8"};
 
     final userData = {
       "password": passwordController.text,
       "email": emailController.text,
       "phone": phoneNumber?.phoneNumber ?? "",
+      "returnSecureToken": true
     };
 
     final response = await http.post(
@@ -64,6 +65,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       headers: headers,
       body: jsonEncode(userData),
     );
+
+    final data = json.decode(response.body);
+
+    print("RESPUESTAA:");
+    print(data);
+
 
     if (response.statusCode == 200) {
       await Future.delayed(Duration.zero);

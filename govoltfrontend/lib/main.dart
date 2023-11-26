@@ -75,11 +75,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  //final urllogin = Uri.parse("http://192.168.1.108/api/login/");
-  final urllogin = Uri.http(Config.apiURL, Config.loginAPI);
-
   //final urlobtenertoken = Uri.parse("http://192.168.1.108/api/api-token-auth/");
-  final urlobtenertoken = Uri.http(Config.apiURL, Config.obtenertokenAPI);
+  final urllogin = Uri.parse(Config.loginFIREBASE);
+
   final headers = {"Content-Type": "application/json;charset=UTF-8"};
 
   @override
@@ -305,7 +303,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
     final datosdelposibleusuario = {
       "email": emailController.text,
-      "password": passwordController.text
+      "password": passwordController.text,
+      "returnSecureToken": true
     };
     final res = await http.post(urllogin,
         headers: headers, body: jsonEncode(datosdelposibleusuario));

@@ -20,4 +20,7 @@ class Config {
   static const chatAddMessage = "api/messages/";
   static const chats = "api/messages/chats/";
   static const addParticipantToRuta = "/rutas/add_participant/";
+
+  static const loginFIREBASE = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDQyP4_8RMlTgkOzV9rLIuGNB7sIcI3HLQ";
+  static const singupFIREBASE = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDQyP4_8RMlTgkOzV9rLIuGNB7sIcI3HLQ";
 }

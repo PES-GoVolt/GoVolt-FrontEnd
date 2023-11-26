@@ -1,46 +1,32 @@
 {
   "project_info": {
-    "project_number": "699229746495",
-    "firebase_url": "https://govolt-47ea1-default-rtdb.europe-west1.firebasedatabase.app",
-    "project_id": "govolt-47ea1",
-    "storage_bucket": "govolt-47ea1.appspot.com"
+    "project_number": "651822731614",
+    "firebase_url": "https://govolt-ea98b-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "govolt-ea98b",
+    "storage_bucket": "govolt-ea98b.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:699229746495:android:93429fb1e4a3cdf1360f8a",
+        "mobilesdk_app_id": "1:651822731614:android:6c6f09eda4c09d13a1ffcf",
         "android_client_info": {
-          "package_name": "com.example.apptest"
+          "package_name": "go.Volt"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD4CGpMmBrtiQxcSaYDwywSWVdUkqIN_5g"
+          "current_key": "AIzaSyBG5Yi7-u4zFHMB3Zs47bu9xrsNUGMrZyQ"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:699229746495:android:822f959e1c3c81ef360f8a",
-        "android_client_info": {
-          "package_name": "com.example.govoltfrontend"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD4CGpMmBrtiQxcSaYDwywSWVdUkqIN_5g"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "651822731614-bdcp19358avrht6r9hr3hthubv55brf7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
