@@ -5,6 +5,7 @@ import 'package:govoltfrontend/config.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:govoltfrontend/services/token_service.dart';
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -18,6 +19,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+  TextEditingController usernameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   PhoneNumber? phoneNumber;
 
@@ -26,6 +28,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final confirmPassword = confirmPasswordController.text;
 
     if (emailController.text.isEmpty) {
+      showSnackbar("Email required.");
+      return;
+    }
+    
+    if (usernameController.text.isEmpty) {
       showSnackbar("Email required.");
       return;
     }
@@ -49,13 +56,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
       showSnackbar("Passwords do not match.");
       return;
     }
-
+      
     final url = Uri.parse(Config.singupFIREBASE);
     final headers = {"Content-Type": "application/json;charset=UTF-8"};
 
     final userData = {
       "password": passwordController.text,
       "email": emailController.text,
+      "username": usernameController.text,
       "phone": phoneNumber?.phoneNumber ?? "",
       "returnSecureToken": true
     };
@@ -66,16 +74,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: jsonEncode(userData),
     );
 
-    final data = json.decode(response.body);
-
-    print("RESPUESTAA:");
-    print(data);
-
+    String token = json.decode(response.body)["idToken"];
 
     if (response.statusCode == 200) {
-      await Future.delayed(Duration.zero);
-      Navigator.pushNamed(context, '/login');
-    } else {
+      final userStored = {
+        "email": emailController.text,
+        "username": usernameController.text,
+        "phone": phoneNumber?.phoneNumber ?? ""
+      };
+
+      final urlStoreUser = Uri.http(Config.apiURL, Config.registroAPI);
+      final headersStoredUser = { 'Content-Type': 'application/json',"Authorization": "Bearer $token"};
+
+      final responseStoreUser = await http.post(
+        urlStoreUser,
+        headers: headersStoredUser,
+        body: jsonEncode(userStored),
+      );
+
+      if (responseStoreUser.statusCode == 200) {
+        await Future.delayed(Duration.zero);
+        Navigator.pushNamed(context, '/login');
+      }
+
       final data = jsonDecode(response.body);
       final errorMessage = data['message'];
       showSnackbar(errorMessage);
@@ -141,6 +162,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
+              child: TextField(
+                controller: usernameController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Username',
                 ),
               ),
             ),
