@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:govoltfrontend/services/notifications_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/markers_data.dart';
+import 'package:govoltfrontend/services/token_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:govoltfrontend/menu.dart';
 import 'package:govoltfrontend/pages/registro/registro.dart';
@@ -77,6 +78,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   //final urlobtenertoken = Uri.parse("http://192.168.1.108/api/api-token-auth/");
   final urllogin = Uri.parse(Config.loginFIREBASE);
+  final applicationBloc = AplicationBloc();
 
   final headers = {"Content-Type": "application/json;charset=UTF-8"};
 
@@ -306,10 +308,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       "password": passwordController.text,
       "returnSecureToken": true
     };
-    final res = await http.post(urllogin,
-        headers: headers, body: jsonEncode(datosdelposibleusuario));
-    //final data = Map.from(jsonDecode(res.body));
 
+    dynamic res = await applicationBloc.login(jsonEncode(datosdelposibleusuario));
     final data = json.decode(res.body);
     final message = data['message'];
 
