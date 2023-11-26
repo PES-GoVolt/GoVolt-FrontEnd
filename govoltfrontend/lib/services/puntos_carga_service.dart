@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:govoltfrontend/config.dart';
+import 'package:govoltfrontend/services/token_service.dart';
+
 
 class ChargersService {
   ChargersService();
@@ -9,7 +11,9 @@ class ChargersService {
   Future<List<Coordenada>> obtenerPuntosDeCarga() async {
     try {
       final url = Uri.http(Config.apiURL, Config.allChargers);
-      final response = await http.get(url);
+      final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
+      final response = await http.get(url, headers: headers);
+
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         List<Coordenada> puntosDeCarga = [];
@@ -34,13 +38,11 @@ class ChargersService {
     };
 
     final url = Uri.https(Config.apiURL, Config.chargersNearest);
-
+    final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
     String jsonData = json.encode(data);
     try {
       final response = await http.post(url,
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
+          headers: headers,
           body: jsonData);
       final jsonResponse = json.decode(response.body);
       return Coordenada.fromJson(jsonResponse);

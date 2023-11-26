@@ -4,6 +4,7 @@ import 'package:govoltfrontend/services/token_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:govoltfrontend/config.dart';
 
+
 class EditUserService {
   EditUserService();
 
@@ -55,11 +56,11 @@ class EditUserService {
         'photo_url': photo
       };
 
+      final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
       final response = await http.post(
+        
         Uri.http(Config.apiURL, Config.editMyProfileAPI),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: headers,
         body: jsonEncode(requestBody),
       );
 
@@ -76,6 +77,7 @@ class EditUserService {
 
   Future<bool> logOut() async {
     try{
+
     final response = await http.post(
       Uri.http(Config.apiURL, Config.logoutAPI),
       headers: {

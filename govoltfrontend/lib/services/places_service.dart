@@ -13,6 +13,7 @@ class PlacesService {
     apiKey = jsonData['apiKey'];
   }
 
+
   Future<List<PlaceSearch>> getAutoComplete(
       String search, double lat, double lng) async {
     if (apiKey == null) await loadJsonData();

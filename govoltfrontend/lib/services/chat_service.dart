@@ -7,6 +7,8 @@ import 'package:govoltfrontend/models/message.dart';
 import 'package:govoltfrontend/models/rutas.dart';
 import 'package:govoltfrontend/services/rutas_service.dart';
 import 'package:http/http.dart' as http;
+import 'package:govoltfrontend/services/token_service.dart';
+
 
 class ChatService {
   bool firstLoad = false;
@@ -39,9 +41,10 @@ class ChatService {
       "creator_uid" : creatorUid,
       "room_name": idRuta
     };
+    final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
 
     try{
-      dynamic response = await http.post(url, body: body);
+      dynamic response = await http.post(url, body: body, headers: headers);
       Map<String, dynamic> responseData = json.decode(response.body);
       String roomName = responseData['room_name'];
       if (roomName != null)
@@ -60,8 +63,9 @@ class ChatService {
       "sender": idUsuario
     };
     final url = Uri.http(Config.apiURL, Config.chatAddMessage);
+    final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
     try {
-      await http.post(url, body: body);
+      await http.post(url, body: body,headers: headers);
     }
     catch (error){}
   }
@@ -76,8 +80,9 @@ class ChatService {
       "sender": "Default"
     };
     final url = Uri.http(Config.apiURL, Config.chatAddMessage);
+    final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
     try {
-      await http.post(url, body: body);
+      await http.post(url, body: body, headers: headers);
       
     }
     catch (error){}
@@ -86,7 +91,8 @@ class ChatService {
   Future<dynamic> getChats() async{
     final url =
         Uri.http(Config.apiURL, Config.chats);
-    final response = await http.get(url);
+    final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};    
+    final response = await http.get(url,headers: headers);
     if (response.statusCode == 200) {
       return response.body;
     }
@@ -96,7 +102,8 @@ class ChatService {
   Future<void> getLastMessage(String idRoom) async {
     final url =
         Uri.http(Config.apiURL, Config.chatAddMessage, {'room_name': idRoom});
-    final response = await http.get(url);
+    final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
+    final response = await http.get(url, headers: headers);
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
       var data = jsonResponse["messages"] as List;
@@ -121,8 +128,9 @@ class ChatService {
       String room_name) async {
     final url = Uri.http(Config.apiURL, Config.chatAddMessage,
         {'room_name': room_name});
+    final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
     try {
-      final response = await http.get(url);
+      final response = await http.get(url, headers: headers);
       final jsonResponse = json.decode(response.body);
       var data = jsonResponse["messages"] as List;
       return data.map((mensaje) => MessageVolt.fromMap(mensaje)).toList();
@@ -137,9 +145,10 @@ class ChatService {
     final body = {
       "id_chat": roomName,
     };
+    final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
     try {
       //await
-      http.put(url, body: body);
+      http.put(url, body: body, headers: headers);
     }
     catch (e){}
   }
@@ -243,8 +252,9 @@ class ChatService {
   void addParticipantToRoute(String idUser, String idRuta) async {
     String urlInfo = "${Config.chatAddMessage}/$idRuta/$idUser/";
     final url = Uri.http(Config.apiURL, urlInfo);
+    final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
     try{
-    await http.post(url);
+    await http.post(url, headers: headers);
     }
     catch (error){}
   }

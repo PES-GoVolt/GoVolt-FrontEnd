@@ -15,6 +15,8 @@ class RouteService {
     return jsonData['apiKey'];
   }
 
+  //NO HACE FALTA
+
   Future<void> getRoute(
       List<LatLng> points, RouteVolt route, String mode) async {
     String? apiKeyGoogle = await loadJsonData();

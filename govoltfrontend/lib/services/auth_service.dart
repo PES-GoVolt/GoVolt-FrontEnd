@@ -8,7 +8,6 @@ import 'package:govoltfrontend/config.dart';
 class AuthService {
   String? apiKey;
   final headers = {"Content-Type": "application/json;charset=UTF-8"};
-
   Future<String?> loadJsonData() async {
     String jsonString = await rootBundle.loadString('lib/services/api.json');
     Map<String, dynamic> jsonData = convert.jsonDecode(jsonString);
