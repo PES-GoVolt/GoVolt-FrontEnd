@@ -1,20 +1,11 @@
-import 'dart:convert' as convert;
 import 'dart:convert';
 import 'package:govoltfrontend/config.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/services.dart';
 import 'package:govoltfrontend/models/rutas.dart';
 import 'package:govoltfrontend/services/token_service.dart';
 
 
 class RutaService {
-  String? apiKey;
-
-  Future<String?> loadJsonData() async {
-    String jsonString = await rootBundle.loadString('lib/services/api.json');
-    Map<String, dynamic> jsonData = convert.jsonDecode(jsonString);
-    return jsonData['apiKey'];
-  }
 
   Future<List<Ruta>> getRutasFromEndpoint(String endpoint) async {
     try {
