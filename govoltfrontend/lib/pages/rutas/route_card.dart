@@ -31,7 +31,7 @@ class RouteCard extends StatelessWidget {
       subtitle: Text('Fecha: ${ruta.date}'),
       children: [
         ListTile(
-          title: Text('Conductor: ${ruta.creatorMail}'),
+          title: Text('Conductor: LluisPetardo'),
         ),
         ListTile(
           title: Text('Número de plazas: ${ruta.seats}'),

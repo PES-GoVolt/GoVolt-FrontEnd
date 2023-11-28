@@ -41,7 +41,7 @@ class ChatService {
       "creator_uid" : creatorUid,
       "room_name": idRuta
     };
-    final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
+    final headers = { "Authorization": Token.token};
 
     try{
       dynamic response = await http.post(url, body: body, headers: headers);
@@ -53,7 +53,9 @@ class ChatService {
         subscribeToNewChat(roomName);
       }
     }
-    catch (e){}
+    catch (e){
+      print("PUTOPOL");
+    }
   }
   
   void sendMessage(String roomName, String idUsuario, String message) async {
