@@ -1,26 +1,15 @@
-import 'dart:convert' as convert;
 import 'dart:convert';
-import 'package:flutter/services.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:govoltfrontend/api_keys.dart';
 import 'package:govoltfrontend/models/route.dart';
 import 'package:http/http.dart' as http;
 
 class RouteService {
-  String? apiKey;
-
-  Future<String?> loadJsonData() async {
-    String jsonString = await rootBundle.loadString('lib/services/api.json');
-    Map<String, dynamic> jsonData = convert.jsonDecode(jsonString);
-    return jsonData['apiKey'];
-  }
-
-  //NO HACE FALTA
 
   Future<void> getRoute(
       List<LatLng> points, RouteVolt route, String mode) async {
-    String? apiKeyGoogle = await loadJsonData();
-    if (apiKeyGoogle != null) {
+    String apiKey = SecretKeys.googleApiKey;
       final url = Uri.parse(
           'https://routes.googleapis.com/directions/v2:computeRoutes');
       final body = {
@@ -58,7 +47,7 @@ class RouteService {
 
       final headers = {
         'Content-Type': 'application/json',
-        'X-Goog-Api-Key': apiKeyGoogle,
+        'X-Goog-Api-Key': apiKey,
         'X-Goog-FieldMask':
             'routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline'
       };
@@ -81,4 +70,3 @@ class RouteService {
       }
     }
   }
-}
