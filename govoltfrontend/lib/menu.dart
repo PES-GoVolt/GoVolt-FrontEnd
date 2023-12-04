@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:govoltfrontend/pages/chat/chat_list.dart';
 import 'package:govoltfrontend/pages/mapa/mapa.dart';
 import 'package:govoltfrontend/pages/rutas/volter.dart';
-//import 'package:govoltfrontend/pages/volter/volter.dart';
 import 'package:govoltfrontend/services/chat_service.dart';
 import 'package:govoltfrontend/services/notifications_service.dart';
 import 'package:govoltfrontend/pages/rutas/main_routes.dart';
@@ -27,12 +26,12 @@ class MenuState extends State<Menu> {
     switch (pos) {
       case 0:
         return MapScreen();
+      case 1:
+        return VolterScreen();
       case 2:
         return const RoutesScreen();
       case 3:
         return ChatListVolter();
-      case 1:
-        return VolterScreen();
     }
   }
 
