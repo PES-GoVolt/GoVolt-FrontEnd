@@ -90,7 +90,9 @@ class AplicationBloc with ChangeNotifier {
   }
 
 
-  Future<dynamic> login(String encodedData) async{
+  Future<dynamic> login(String encodedData) async {
+    print("entro en application_bloc.dart");
+    print(encodedData);
     return await authService.login(encodedData);
   }
 

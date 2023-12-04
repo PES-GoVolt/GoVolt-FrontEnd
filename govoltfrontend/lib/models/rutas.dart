@@ -7,7 +7,7 @@ class Ruta {
   final String date;
   final String creator;
   final List? participants;
-  final String creatorMail;
+  final String creatorUsername;
 
   Ruta({
     required this.id,
@@ -18,7 +18,7 @@ class Ruta {
     required this.date,
     required this.creator,
     this.participants,
-    required this.creatorMail
+    required this.creatorUsername
   });
 
   factory Ruta.fromJson(Map<String, dynamic> json) {
@@ -31,7 +31,7 @@ class Ruta {
       date: json['fecha'] as String,
       creator: json['creador'] as String,
       participants: json['participantes'] as List?,
-      creatorMail: json['creador_email'] as String
+      creatorUsername: json['username'] as String
     );
   }
 

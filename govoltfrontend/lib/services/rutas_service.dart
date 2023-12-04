@@ -19,8 +19,10 @@ class RutaService {
   Future<List<Ruta>> getRutasFromEndpoint(String endpoint) async {
     try {
       final url = Uri.http(Config.apiURL, endpoint);
+
       final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
       final response = await http.get(url, headers: headers);
+
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
         final List<dynamic> data = responseData['rutas'];

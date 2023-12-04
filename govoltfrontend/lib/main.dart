@@ -267,12 +267,21 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         return null;
       }
 
+      print(googleUser);
+
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
+      
+      print("Google Sign-In Authentication:");
+      print("ID Token: ${googleAuth.idToken}");
+      print("Access Token: ${googleAuth.accessToken}");
+
       final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
+        accessToken: googleAuth.accessToken
       );
+
+      print("credenciales");
+      print(credential);
 
       final UserCredential authResult =
           await _auth.signInWithCredential(credential);
@@ -309,12 +318,14 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       "returnSecureToken": true
     };
 
+    print(jsonEncode(datosdelposibleusuario));
+
     dynamic res = await applicationBloc.login(jsonEncode(datosdelposibleusuario));
-    final data = json.decode(res.body);
-    final message = data['message'];
 
     if (res.statusCode != 200) {
-      // final errorMessage = responseData['error']['message'];
+      final data = json.decode(res.body);
+      final message = data['error']['message'];
+
       showSnackbar(message);
       return;
     }

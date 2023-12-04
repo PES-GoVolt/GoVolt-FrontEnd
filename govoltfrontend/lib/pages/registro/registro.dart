@@ -27,12 +27,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final password = passwordController.text;
     final confirmPassword = confirmPasswordController.text;
 
-    if (emailController.text.isEmpty) {
-      showSnackbar("Email required.");
+    if (usernameController.text.isEmpty) {
+      showSnackbar("Username required.");
       return;
     }
-    
-    if (usernameController.text.isEmpty) {
+
+    if (emailController.text.isEmpty) {
       showSnackbar("Email required.");
       return;
     }
@@ -74,9 +74,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: jsonEncode(userData),
     );
 
-    String token = json.decode(response.body)["idToken"];
+    if (response.statusCode != 200) {
+      final data = json.decode(response.body);
+      final message = data['error']['message'];
+      showSnackbar(message);
+      return;
+    } else {
+      
+      String token = json.decode(response.body)["idToken"];
 
-    if (response.statusCode == 200) {
       final userStored = {
         "email": emailController.text,
         "username": usernameController.text,
@@ -95,34 +101,67 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (responseStoreUser.statusCode == 200) {
         await Future.delayed(Duration.zero);
         Navigator.pushNamed(context, '/login');
+      } else {
+        final data = jsonDecode(response.body);
+        final errorMessage = data['message'];
+        showSnackbar(errorMessage);
       }
 
-      final data = jsonDecode(response.body);
-      final errorMessage = data['message'];
-      showSnackbar(errorMessage);
+      
     }
   }
 
-  Future<User?> signInWithGoogle() async {
+  Future<void> signUpWithGoogle() async {
     try {
+      // Obtener credenciales de Google
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      
       if (googleUser == null) {
         return null;
       }
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
+      print("SIGN IN ACCOUNT: ");
+      print(googleUser);
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      String? idToken = googleAuth.accessToken;
+      // Registro con Google en Firebase
+      await signUpWithGoogleFirebase(idToken!);
+
+    } catch (error) {
+      print("Error en el signup con Google: $error");
+    }
+  }
+
+  Future<void> signUpWithGoogleFirebase(String idToken) async {
+    try {
+      final url = Uri.parse(Config.singupGoogleFIREBASE);
+      final headers = {'Content-Type': 'application/json'};
+      
+      print(idToken);
+
+      final requestData = {
+        "id_token": idToken,
+        "providerId": "google.com",
+        "requestUri": "http://localhost",
+        "returnIdpCredential": true,
+        "returnSecureToken": true,
+      };
+
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(requestData),
       );
 
-      final UserCredential authResult =
-          await _auth.signInWithCredential(credential);
-      final User? user = authResult.user;
-      return user;
+      final data = json.decode(response.body);
+      print("Respuesta de signup con Google en Firebase:");
+      print(data);
+
+      // Aquí puedes manejar la respuesta y extraer el token de autenticación si el signup fue exitoso.
     } catch (error) {
-      return null;
+      print("Error en el signup con Google en Firebase: $error");
     }
   }
 
@@ -305,7 +344,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ElevatedButton.icon(
                     onPressed: () {
                       // Iniciar sesión con Google
-                      signInWithGoogle();
+                      signUpWithGoogle();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
