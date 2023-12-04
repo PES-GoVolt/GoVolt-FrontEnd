@@ -1,15 +1,19 @@
 import 'dart:convert';
 import 'package:govoltfrontend/models/usuario.dart';
+import 'package:govoltfrontend/services/token_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:govoltfrontend/config.dart';
+
 
 class EditUserService {
   EditUserService();
 
   Future<dynamic> getCurrentUserData() async {
     try{
+    
+    final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
     final response =
-        await http.get(Uri.http(Config.apiURL, Config.seeMyProfileAPI));
+        await http.get(Uri.http(Config.apiURL, Config.seeMyProfileAPI), headers: headers);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
@@ -52,11 +56,11 @@ class EditUserService {
         'photo_url': photo
       };
 
+      final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
       final response = await http.post(
+        
         Uri.http(Config.apiURL, Config.editMyProfileAPI),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: headers,
         body: jsonEncode(requestBody),
       );
 
@@ -73,6 +77,7 @@ class EditUserService {
 
   Future<bool> logOut() async {
     try{
+
     final response = await http.post(
       Uri.http(Config.apiURL, Config.logoutAPI),
       headers: {

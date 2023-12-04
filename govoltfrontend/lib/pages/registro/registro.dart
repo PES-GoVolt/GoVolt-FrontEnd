@@ -5,6 +5,7 @@ import 'package:govoltfrontend/config.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:govoltfrontend/services/token_service.dart';
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -18,12 +19,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+  TextEditingController usernameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   PhoneNumber? phoneNumber;
 
   Future<void> register() async {
     final password = passwordController.text;
     final confirmPassword = confirmPasswordController.text;
+
+    if (usernameController.text.isEmpty) {
+      showSnackbar("Username required.");
+      return;
+    }
 
     if (emailController.text.isEmpty) {
       showSnackbar("Email required.");
@@ -49,14 +56,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
       showSnackbar("Passwords do not match.");
       return;
     }
-
-    final url = Uri.http(Config.apiURL, Config.registroAPI);
+      
+    final url = Uri.parse(Config.singupFIREBASE);
     final headers = {"Content-Type": "application/json;charset=UTF-8"};
 
     final userData = {
       "password": passwordController.text,
       "email": emailController.text,
+      "username": usernameController.text,
       "phone": phoneNumber?.phoneNumber ?? "",
+      "returnSecureToken": true
     };
 
     final response = await http.post(
@@ -65,36 +74,94 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: jsonEncode(userData),
     );
 
-    if (response.statusCode == 200) {
-      await Future.delayed(Duration.zero);
-      Navigator.pushNamed(context, '/login');
+    if (response.statusCode != 200) {
+      final data = json.decode(response.body);
+      final message = data['error']['message'];
+      showSnackbar(message);
+      return;
     } else {
-      final data = jsonDecode(response.body);
-      final errorMessage = data['message'];
-      showSnackbar(errorMessage);
+      
+      String token = json.decode(response.body)["idToken"];
+
+      final userStored = {
+        "email": emailController.text,
+        "username": usernameController.text,
+        "phone": phoneNumber?.phoneNumber ?? ""
+      };
+
+      final urlStoreUser = Uri.http(Config.apiURL, Config.registroAPI);
+      final headersStoredUser = { 'Content-Type': 'application/json',"Authorization": "Bearer $token"};
+
+      final responseStoreUser = await http.post(
+        urlStoreUser,
+        headers: headersStoredUser,
+        body: jsonEncode(userStored),
+      );
+
+      if (responseStoreUser.statusCode == 200) {
+        await Future.delayed(Duration.zero);
+        Navigator.pushNamed(context, '/login');
+      } else {
+        final data = jsonDecode(response.body);
+        final errorMessage = data['message'];
+        showSnackbar(errorMessage);
+      }
+
+      
     }
   }
 
-  Future<User?> signInWithGoogle() async {
+  Future<void> signUpWithGoogle() async {
     try {
+      // Obtener credenciales de Google
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      
       if (googleUser == null) {
         return null;
       }
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
+      print("SIGN IN ACCOUNT: ");
+      print(googleUser);
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      String? idToken = googleAuth.accessToken;
+      // Registro con Google en Firebase
+      await signUpWithGoogleFirebase(idToken!);
+
+    } catch (error) {
+      print("Error en el signup con Google: $error");
+    }
+  }
+
+  Future<void> signUpWithGoogleFirebase(String idToken) async {
+    try {
+      final url = Uri.parse(Config.singupGoogleFIREBASE);
+      final headers = {'Content-Type': 'application/json'};
+      
+      print(idToken);
+
+      final requestData = {
+        "id_token": idToken,
+        "providerId": "google.com",
+        "requestUri": "http://localhost",
+        "returnIdpCredential": true,
+        "returnSecureToken": true,
+      };
+
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(requestData),
       );
 
-      final UserCredential authResult =
-          await _auth.signInWithCredential(credential);
-      final User? user = authResult.user;
-      return user;
+      final data = json.decode(response.body);
+      print("Respuesta de signup con Google en Firebase:");
+      print(data);
+
+      // Aquí puedes manejar la respuesta y extraer el token de autenticación si el signup fue exitoso.
     } catch (error) {
-      return null;
+      print("Error en el signup con Google en Firebase: $error");
     }
   }
 
@@ -134,6 +201,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
+              child: TextField(
+                controller: usernameController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Username',
                 ),
               ),
             ),
@@ -267,7 +344,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ElevatedButton.icon(
                     onPressed: () {
                       // Iniciar sesión con Google
-                      signInWithGoogle();
+                      signUpWithGoogle();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,

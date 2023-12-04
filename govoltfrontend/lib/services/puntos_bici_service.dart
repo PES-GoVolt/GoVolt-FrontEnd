@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:govoltfrontend/models/bike_station.dart';
 import 'package:http/http.dart' as http;
 import 'package:govoltfrontend/config.dart';
+import 'package:govoltfrontend/services/token_service.dart';
+
 
 class BikeStationsService {
   BikeStationsService();
@@ -9,7 +11,9 @@ class BikeStationsService {
   Future<List<BikeStation>> getBikeStations() async {
     try {
       final url = Uri.http(Config.apiURL, Config.allBikeStations);
-      final response = await http.get(url);
+      final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
+      final response = await http.get(url, headers: headers);
+      
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         List<BikeStation> bikeStations = [];

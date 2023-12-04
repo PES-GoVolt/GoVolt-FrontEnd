@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:govoltfrontend/services/notifications_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/markers_data.dart';
+import 'package:govoltfrontend/services/token_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:govoltfrontend/menu.dart';
 import 'package:govoltfrontend/pages/registro/registro.dart';
@@ -75,11 +76,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  //final urllogin = Uri.parse("http://192.168.1.108/api/login/");
-  final urllogin = Uri.http(Config.apiURL, Config.loginAPI);
-
   //final urlobtenertoken = Uri.parse("http://192.168.1.108/api/api-token-auth/");
-  final urlobtenertoken = Uri.http(Config.apiURL, Config.obtenertokenAPI);
+  final urllogin = Uri.parse(Config.loginFIREBASE);
+  final applicationBloc = AplicationBloc();
+
   final headers = {"Content-Type": "application/json;charset=UTF-8"};
 
   @override
@@ -267,12 +267,21 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         return null;
       }
 
+      print(googleUser);
+
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
+      
+      print("Google Sign-In Authentication:");
+      print("ID Token: ${googleAuth.idToken}");
+      print("Access Token: ${googleAuth.accessToken}");
+
       final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
+        accessToken: googleAuth.accessToken
       );
+
+      print("credenciales");
+      print(credential);
 
       final UserCredential authResult =
           await _auth.signInWithCredential(credential);
@@ -305,17 +314,18 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
     final datosdelposibleusuario = {
       "email": emailController.text,
-      "password": passwordController.text
+      "password": passwordController.text,
+      "returnSecureToken": true
     };
-    final res = await http.post(urllogin,
-        headers: headers, body: jsonEncode(datosdelposibleusuario));
-    //final data = Map.from(jsonDecode(res.body));
 
-    final data = json.decode(res.body);
-    final message = data['message'];
+    print(jsonEncode(datosdelposibleusuario));
+
+    dynamic res = await applicationBloc.login(jsonEncode(datosdelposibleusuario));
 
     if (res.statusCode != 200) {
-      // final errorMessage = responseData['error']['message'];
+      final data = json.decode(res.body);
+      final message = data['error']['message'];
+
       showSnackbar(message);
       return;
     }
