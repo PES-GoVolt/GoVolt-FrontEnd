@@ -9,6 +9,8 @@ import 'package:govoltfrontend/models/place_search.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:govoltfrontend/models/mapa/geometry.dart';
 import 'package:govoltfrontend/models/mapa/location.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class MapScreen extends StatefulWidget {
   MapScreen();
@@ -551,8 +553,8 @@ class _MapaState extends State<MapScreen> {
 
   TextField printSearchBar() {
     return TextField(
-      decoration: const InputDecoration(
-          hintText: 'Busca tu trayecto ...',
+      decoration: InputDecoration(
+          hintText: AppLocalizations.of(context)!.searchYourRoute,
           prefixIcon: Icon(Icons.location_on)),
       onChanged: (value) {
         valueChanged(value);
