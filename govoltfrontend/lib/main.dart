@@ -20,7 +20,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 void main() async {
@@ -120,9 +119,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
                   child: TextField(
                     controller: emailController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Email',
+                      labelText: AppLocalizations.of(context)!.email,
                     ),
                   ),
                 ),
@@ -131,9 +130,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   child: TextField(
                     obscureText: true,
                     controller: passwordController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Password',
+                      labelText: AppLocalizations.of(context)!.password,
                     ),
                   ),
                 ),
@@ -243,7 +242,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                           'assets/images/facebook_logo.png',
                           height: 24,
                         ),
-                        label: const Text('Log in with Facebook'),
+                        label: Text(AppLocalizations.of(context)!.logInFacebook),
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton.icon(
@@ -259,7 +258,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                           'assets/images/google_logo_2.png',
                           height: 24,
                         ),
-                        label: const Text('Log in with Google'),
+                        label:  Text(AppLocalizations.of(context)!.logInGoogle),
                       ),
                     ],
                   ),
@@ -311,12 +310,12 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   Future<void> login() async {
     if (emailController.text.isEmpty) {
-      showSnackbar("Email required.");
+      showSnackbar(AppLocalizations.of(context)!.emailReq);
       return;
     }
 
     if (passwordController.text.isEmpty) {
-      showSnackbar("Password required.");
+      showSnackbar(AppLocalizations.of(context)!.passwordReq);
       return;
     }
 

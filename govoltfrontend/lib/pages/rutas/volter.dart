@@ -203,8 +203,8 @@ class _VolterScreenState extends State<VolterScreen> {
                     ),
                   ),
                   child: Text(edit
-                      ? 'Cancel'
-                      : 'Edit Profile'),
+                      ? AppLocalizations.of(context)!.cancel
+                      : AppLocalizations.of(context)!.editProfile),
                 )
               ],
             ),
