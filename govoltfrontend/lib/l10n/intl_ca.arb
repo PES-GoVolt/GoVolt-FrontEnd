@@ -30,5 +30,26 @@
     "lastName": "Cognom",
     "phoneNumber": "Número de telèfon",
     "dateSelect": "Selecciona data",
-    "apply": "Aplica"
+    "apply": "Aplica",
+    "logInFacebook": "Inicia sessió amb Facebook",
+    "logInGoogle": "Inicia la sessió amb Google",
+    "alreadyAccount": "Ja tens un compte?",
+    "username": "Nom d'usuari",
+    "email": "Correu electrònic",
+    "confirmPassword": "Confirma la contrasenya",
+    "or": "O",
+    "usernameReq": "Nom d'usuari obligatori",
+    "passwordReq": "Contrasenya obligatòria",
+    "emailReq": "Correu electrònic obligatori",
+    "confirmPassReq": "Confirmació de contrasenya obligatòria",
+    "phoneReq": "Número de telèfon obligatori",
+    "password": "Contrasenya",
+    "passDontMatch": "Les contrasenyes no coincideixen",
+    "reqToJoin": "Sol·licitar unir-se",
+    "changeFirstName": "Cambia el teu nom",
+    "changeLastName": "Cambia el teu cognom",
+    "changePhoneNumber": "Cambie el teu numero de telèfon"
+
+
+
 }

@@ -220,12 +220,12 @@ class _VolterScreenState extends State<VolterScreen> {
             if (edit) // Mostrar formularios si "edit" es verdadero
               Column(
                 children: [
-                  buildFormField(AppLocalizations.of(context)!.firstName, 'Change your first name',
+                  buildFormField(AppLocalizations.of(context)!.firstName, AppLocalizations.of(context)!.changeFirstName,
                       firstNameController),
                   buildFormField(
-                      AppLocalizations.of(context)!.lastName, 'Change your last name', 
+                      AppLocalizations.of(context)!.lastName, AppLocalizations.of(context)!.changeLastName, 
                       lastNameController),
-                  buildFormField(AppLocalizations.of(context)!.phoneNumber, 'Change your phone number',
+                  buildFormField(AppLocalizations.of(context)!.phoneNumber, AppLocalizations.of(context)!.changePhoneNumber,
                       phoneNumberController,
                       isNumeric: true),
                   ElevatedButton(
@@ -251,7 +251,6 @@ class _VolterScreenState extends State<VolterScreen> {
                 children: [
                   buildOption(AppLocalizations.of(context)!.changePassword, Icons.lock),
                   buildOption(AppLocalizations.of(context)!.achievements, Icons.emoji_events),
-                  buildOption('Idioma', Icons.language), //NO HACE FALTA
                   buildOption(AppLocalizations.of(context)!.logOut, Icons.logout, isRed: true),
                 ],
               ),

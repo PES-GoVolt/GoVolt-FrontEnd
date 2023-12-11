@@ -30,5 +30,24 @@
     "lastName": "Apellido",
     "phoneNumber": "Número de telefono",
     "dateSelect": "Seleccionar fecha",
-    "apply": "Apply"
+    "apply": "Apply",
+    "logInFacebook": "Inicia sesión con Facebook",
+    "logInGoogle": "Iniciar sesión con Google",
+    "alreadyAccount": "¿Ya tienes una cuenta?",
+    "username": "Nombre de usuario",
+    "email": "Correo electrónico",
+    "confirmPassword": "Confirmar contraseña",
+    "or": "O",
+    "usernameReq": "Nombre de usuario requerido",
+    "passwordReq": "Contraseña requerida",
+    "emailReq": "Correo electrónico requerido",
+    "confirmPassReq": "Confirmación de contraseña requerida",
+    "phoneReq": "Número de teléfono requerido",
+    "password": "Contraseña",
+    "passDontMatch": "Las contraseñas no coinciden",
+    "reqToJoin": "Solicitar unirse",
+    "changeFirstName": "Cambia tu nombre",
+    "changeLastName": "Cambia tu apellido",
+    "changePhoneNumber": "Cambia tu número de teléfono"
+
 }
