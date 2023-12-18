@@ -65,7 +65,7 @@ class ChatService {
       "sender": idUsuario
     };
     final url = Uri.http(Config.apiURL, Config.chatAddMessage);
-    final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
+    final headers = { "Authorization": Token.token};
     try {
       await http.post(url, body: body,headers: headers);
     }
