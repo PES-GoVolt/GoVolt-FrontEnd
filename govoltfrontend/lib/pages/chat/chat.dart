@@ -123,6 +123,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _handleSendPressed(types.PartialText message) {
+    //aqui enviamos mensaje llamar a trofeos
     final textMessage = types.TextMessage(
       author: types.User(id: myUserId),
       createdAt: DateTime.now().millisecondsSinceEpoch,
