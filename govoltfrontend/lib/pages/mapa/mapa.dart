@@ -73,7 +73,7 @@ class _MapaState extends State<MapScreen> {
   }
 
   void valueChanged(var value) async {
-    //AQUI llamada a back de trofeo buscar
+    //AQUI llamada a back de trofeo buscar --> mirar que sea en pressed!!
     await applicationBloc.searchPlaces(
         value, userPosition.latitude, userPosition.longitude);
     searchResults = applicationBloc.searchResults;
