@@ -17,7 +17,7 @@ class AchievementService {
     }
   }
 
-  Future<void> incrementAchievement(int achievementName) async {
+  Future<void> incrementAchievement(String achievementName) async {
     final url = Uri.http(Config.apiURL, Config.achievementsAPI);
     final response = await http.post(
       url,
