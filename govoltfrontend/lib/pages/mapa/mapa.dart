@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:govoltfrontend/models/markers_data.dart';
+import 'package:govoltfrontend/services/achievement_service.dart';
 import 'package:govoltfrontend/services/geolocator_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/mapa/place.dart';
@@ -21,6 +22,8 @@ class _MapaState extends State<MapScreen> {
 
 
   final GeolocatiorService geolocatiorService = GeolocatiorService();
+  final AchievementService achievementService = AchievementService();
+
   final Completer<GoogleMapController> _mapController = Completer();
   final applicationBloc = AplicationBloc();
   late StreamSubscription locationSubscription;
@@ -91,6 +94,7 @@ class _MapaState extends State<MapScreen> {
             applicationBloc.place!.geometry.location.lng)));
     _myLocMarker = myMarkers.toSet();
     setState(() {});
+    achievementService.incrementAchievement("search_loaction_achievement");
   }
 
   void placeRandomSelected(double lat, double lng) {

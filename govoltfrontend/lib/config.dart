@@ -24,7 +24,7 @@ class Config {
   static const chats = "api/messages/chats/";
   static const addParticipantToRuta = "/routes/add_participant/";
 
-  static const achievementsAPI = "api/users/achievements/";
+  static const achievementsAPI = "api/users/achievement/";
 
   //static const apiKey = "AIzaSyBisV7xClzwO5332af5dzMxo8AvZn7r4g4"; //marc
   //static const apiKey = "AIzaSyBAsdEsXKyQdZOVZYvdYCU4Vf5X6EAwMbA"; //pol
