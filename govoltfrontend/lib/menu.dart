@@ -7,6 +7,8 @@ import 'package:govoltfrontend/pages/rutas/volter.dart';
 import 'package:govoltfrontend/services/chat_service.dart';
 import 'package:govoltfrontend/services/notifications_service.dart';
 import 'package:govoltfrontend/pages/rutas/main_routes.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class Menu extends StatefulWidget {
   const Menu({super.key});
@@ -78,7 +80,7 @@ class MenuState extends State<Menu> {
               ),
             ),
             ListTile(
-              title: const Text('Perfil'),
+              title: Text(AppLocalizations.of(context)!.profile),
               leading: const Icon(Icons.person),
               selected: (1 == _selectDrawerItem),
               onTap: () {
@@ -87,7 +89,7 @@ class MenuState extends State<Menu> {
             ),
             const Divider(),
             ListTile(
-              title: const Text('Mapa'),
+              title: Text(AppLocalizations.of(context)!.map),
               leading: const Icon(Icons.map),
               selected: (0 == _selectDrawerItem),
               onTap: () {
@@ -103,7 +105,7 @@ class MenuState extends State<Menu> {
               },
             ),
             ListTile(
-              title: const Text('Chat'),
+              title: Text(AppLocalizations.of(context)!.chat),
               leading: const Icon(Icons.chat),
               selected: (3 == _selectDrawerItem),
               onTap: () {
@@ -112,7 +114,7 @@ class MenuState extends State<Menu> {
             ),
             const Divider(),
             ListTile(
-              title: const Text('Cerra Sessión'),
+              title: Text(AppLocalizations.of(context)!.logOut),
               leading: const Icon(Icons.touch_app_outlined),
               selected: (3 == _selectDrawerItem),
               onTap: () {

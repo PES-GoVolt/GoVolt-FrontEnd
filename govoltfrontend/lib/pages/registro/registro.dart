@@ -6,6 +6,8 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:govoltfrontend/services/token_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -28,32 +30,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final confirmPassword = confirmPasswordController.text;
 
     if (usernameController.text.isEmpty) {
-      showSnackbar("Username required.");
+      showSnackbar(AppLocalizations.of(context)!.usernameReq);
       return;
     }
 
     if (emailController.text.isEmpty) {
-      showSnackbar("Email required.");
+      showSnackbar(AppLocalizations.of(context)!.emailReq);
       return;
     }
 
     if (passwordController.text.isEmpty) {
-      showSnackbar("Password required.");
+      showSnackbar(AppLocalizations.of(context)!.passwordReq);
       return;
     }
 
     if (confirmPasswordController.text.isEmpty) {
-      showSnackbar("Password confirmation required.");
+      showSnackbar(AppLocalizations.of(context)!.confirmPassReq);
       return;
     }
 
     if (phoneNumber?.phoneNumber == null) {
-      showSnackbar("Phone number required.");
+      showSnackbar(AppLocalizations.of(context)!.phoneReq);
       return;
     }
 
     if (password != confirmPassword) {
-      showSnackbar("Passwords do not match.");
+      showSnackbar(AppLocalizations.of(context)!.passDontMatch); //FALTA ESTE
       return;
     }
       
@@ -194,8 +196,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: Container(
                   margin: const EdgeInsets.only(bottom: 10),
-                  child: const Text(
-                    'Sign Up',
+                  child: Text(
+                    AppLocalizations.of(context)!.signUp,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -208,9 +210,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
               child: TextField(
                 controller: usernameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Username',
+                  labelText: AppLocalizations.of(context)!.username,
                 ),
               ),
             ),
@@ -218,9 +220,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
               child: TextField(
                 controller: emailController,
-                decoration: const InputDecoration(
+                decoration:  InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Email',
+                  labelText: AppLocalizations.of(context)!.email,
                 ),
               ),
             ),
@@ -229,9 +231,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: TextField(
                 obscureText: true,
                 controller: passwordController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Password',
+                  labelText: AppLocalizations.of(context)!.password,
                 ),
               ),
             ),
@@ -240,9 +242,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: TextField(
                 obscureText: true,
                 controller: confirmPasswordController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Confirm Password',
+                  labelText: AppLocalizations.of(context)!.confirmPassword,
                 ),
               ),
             ),
@@ -257,9 +259,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 ignoreBlank: false,
                 autoValidateMode: AutovalidateMode.disabled,
-                inputDecoration: const InputDecoration(
+                inputDecoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Phone Number',
+                  labelText: AppLocalizations.of(context)!.phoneNumber,
                 ),
               ),
             ),
@@ -268,7 +270,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: ElevatedButton(
-                  child: const Text('Sign Up'),
+                  child: Text(AppLocalizations.of(context)!.signUp),
                   onPressed: () {
                     register();
                   },
@@ -284,12 +286,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Row(
               // ignore: sort_child_properties_last
               children: <Widget>[
-                const Text('Do you already have an account?', style: TextStyle(
+                 Text(AppLocalizations.of(context)!.alreadyAccount, style: TextStyle(
                       color: Colors.black,
                       ),),
                 TextButton(
-                  child: const Text(
-                    'Sign In',
+                  child: Text(
+                    AppLocalizations.of(context)!.logIn,
                     style: TextStyle(color: Color(0xff4d5e6b), decoration: TextDecoration.underline),
                   ),
                   onPressed: () {
@@ -308,7 +310,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: Colors.grey,
                   ),
                 ),
-                const Text(" Or ",
+                Text(AppLocalizations.of(context)!.or,
                   style: TextStyle(
                   color: Colors.black,
                   ),
@@ -338,7 +340,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       'assets/images/facebook_logo.png',
                       height: 24,
                     ),
-                    label: const Text('Sign Up with Facebook'),
+                    label: Text(AppLocalizations.of(context)!.logInFacebook),
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton.icon(
@@ -354,7 +356,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       'assets/images/google_logo_2.png',
                       height: 24,
                     ),
-                    label: const Text('Sign Up with Google',
+                    label: Text(AppLocalizations.of(context)!.logInGoogle,
                       style: TextStyle(
                       color: Colors.white,
                       ),

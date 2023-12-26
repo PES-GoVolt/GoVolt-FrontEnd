@@ -4,6 +4,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/place_search.dart';
 import 'package:govoltfrontend/services/create_route_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 class CrearViajeScreen extends StatefulWidget {
@@ -27,8 +28,8 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
 
   Widget customSearchBar() {
     return TextField(
-      decoration: const InputDecoration(
-        hintText: 'Busca tu trayecto ...',
+      decoration:  InputDecoration(
+        hintText: AppLocalizations.of(context)!.searchYourRoute,
       ),
       onChanged: (value) {
         valueChanged(value);
@@ -74,7 +75,7 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Creación de Viaje'),
+        title:  Text(AppLocalizations.of(context)!.routeCreation),
         backgroundColor: const Color.fromRGBO(125, 193, 165, 1),
       ),
       body: SingleChildScrollView(
@@ -99,20 +100,20 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
                 const SizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'ubicacion_inicial',
-                  decoration: const InputDecoration(labelText: 'Ciudad Inicial'),
+                  decoration: InputDecoration(labelText: AppLocalizations.of(context)!.initialCity),
                   validator: FormBuilderValidators.required(),
                 ),
                 const SizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'ubicacion_final',
-                  decoration: const InputDecoration(labelText: 'Ciudad Fin'),
+                  decoration: InputDecoration(labelText: AppLocalizations.of(context)!.finalCity),
                   validator: FormBuilderValidators.required(),
                 ),
                 const SizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'precio',
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(labelText: 'Precio (Euros)'),
+                  decoration:  InputDecoration(labelText: AppLocalizations.of(context)!.price),
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(),
                     FormBuilderValidators.numeric()
@@ -122,7 +123,7 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
                 FormBuilderTextField(
                   name: 'num_plazas',
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Plazas Disponibles'),
+                  decoration: InputDecoration(labelText: AppLocalizations.of(context)!.seatsAvailable),
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(),
                     FormBuilderValidators.numeric()
@@ -132,8 +133,8 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
                 FormBuilderDateTimePicker(
                   name: 'fecha',
                   inputType: InputType.date,
-                  decoration: const InputDecoration(
-                    labelText: 'Fecha y Hora',
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.date,
                     suffixIcon: Icon(Icons.calendar_today),
                   ),
                   onChanged: (dateTime) {
@@ -168,10 +169,10 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(const Color(0xff4d5e6b)),
                   ),
-                  child: const Padding(
+                  child: Padding(
                     padding: EdgeInsets.all(16.0),
                     child: Text(
-                      'Crear Viaje',
+                      AppLocalizations.of(context)!.createRoute,
                       style: TextStyle(fontSize: 20.0, color: Colors.white),
                     ),
                   ),

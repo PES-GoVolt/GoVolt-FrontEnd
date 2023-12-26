@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get/get.dart';
 import 'package:govoltfrontend/services/notifications_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/markers_data.dart';
@@ -17,6 +19,8 @@ import 'package:firebase_auth/firebase_auth.dart'; // Agrega esta importación
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,6 +61,9 @@ class MyApp extends StatelessWidget {
                   MyStatefulWidget(),
             ),
       },
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+
     );
   }
 }
@@ -112,9 +119,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
                   child: TextField(
                     controller: emailController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Email',
+                      labelText: AppLocalizations.of(context)!.email,
                     ),
                   ),
                 ),
@@ -123,19 +130,19 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   child: TextField(
                     obscureText: true,
                     controller: passwordController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Password',
+                      labelText: AppLocalizations.of(context)!.password,
                     ),
                   ),
                 ),
                 Row(
                   // ignore: sort_child_properties_last
                   children: <Widget>[
-                    const Text('Forgot your password?'),
+                    Text(AppLocalizations.of(context)!.forgotPassword),
                     TextButton(
-                      child: const Text(
-                        'Click here',
+                      child: Text(
+                        AppLocalizations.of(context)!.clickHere,
                         style: TextStyle(
                             color: Color(0xff4d5e6b),
                             decoration: TextDecoration.underline),
@@ -167,7 +174,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                                 RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
                         ))),
-                    child: const Text('Log In', style: TextStyle(
+                    child: Text(AppLocalizations.of(context)!.logIn, style: TextStyle(
                       color: Colors.white,
                       ),),
                   ),
@@ -192,7 +199,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                                 RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
                         ))),
-                    child: const Text('Sign Up',style: TextStyle(
+                    child: Text(AppLocalizations.of(context)!.signUp,style: TextStyle(
                       color: Color(0xff4d5e6b),
                       ),),
                   ),
@@ -235,7 +242,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                           'assets/images/facebook_logo.png',
                           height: 24,
                         ),
-                        label: const Text('Log in with Facebook'),
+                        label: Text(AppLocalizations.of(context)!.logInFacebook),
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton.icon(
@@ -251,7 +258,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                           'assets/images/google_logo_2.png',
                           height: 24,
                         ),
-                        label: const Text('Log in with Google'),
+                        label:  Text(AppLocalizations.of(context)!.logInGoogle),
                       ),
                     ],
                   ),
@@ -303,12 +310,12 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   Future<void> login() async {
     if (emailController.text.isEmpty) {
-      showSnackbar("Email required.");
+      showSnackbar(AppLocalizations.of(context)!.emailReq);
       return;
     }
 
     if (passwordController.text.isEmpty) {
-      showSnackbar("Password required.");
+      showSnackbar(AppLocalizations.of(context)!.passwordReq);
       return;
     }
 
