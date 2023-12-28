@@ -21,6 +21,7 @@ class Config {
   static const participantRutas = "api/routes/my_current_routes";
 
   static const chatAddMessage = "api/messages/";
+  static const notifications = "api/notifications/";
   static const chats = "api/messages/chats/";
   static const addParticipantToRuta = "/routes/add_participant/";
 

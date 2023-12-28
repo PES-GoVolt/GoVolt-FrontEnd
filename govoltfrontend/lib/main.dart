@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
-import 'package:govoltfrontend/services/notifications_service.dart';
+import 'package:govoltfrontend/services/local_notifications_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/markers_data.dart';
 import 'package:govoltfrontend/services/token_service.dart';

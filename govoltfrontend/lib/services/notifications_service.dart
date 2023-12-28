@@ -1,44 +1,29 @@
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'dart:async';
+import 'package:govoltfrontend/config.dart';
+import 'package:http/http.dart' as http;
+import 'package:govoltfrontend/services/token_service.dart';
 
-class LocalNotificationService {
-  
-  static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
 
-  Future<void> init() async {
-    // Initialize native android notification
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+class NotificationService {
 
-    // Initialize native Ios Notifications
-    const DarwinInitializationSettings initializationSettingsIOS =
-        DarwinInitializationSettings();
+  static final _messageArrivedNotificationController =
+      StreamController<String>.broadcast();
 
-    const InitializationSettings initializationSettings =
-        InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
+  Stream<String> get onMessageArrivedNotificationChanged =>
+      _messageArrivedNotificationController.stream;
 
-    await flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-    );
+
+  void sendMessage(String idUsuario, String message) async {
+    final body = {
+      "content": message,
+      "user_id": idUsuario
+    };
+    final url = Uri.http(Config.apiURL, Config.notifications);
+    final headers = { "Authorization": Token.token};
+    try {
+      await http.post(url, body: body,headers: headers);
+    }
+    catch (error){}
   }
 
-  static void showNotificationAndroid(String title, String value) async {
-    const AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails('channel_id', 'Channel Name',
-            channelDescription: 'Channel Description',
-            importance: Importance.max,
-            priority: Priority.high,
-            ticker: 'ticker');
-
-    int notification_id = 1;
-    const NotificationDetails notificationDetails =
-        NotificationDetails(android: androidNotificationDetails);
-
-    await flutterLocalNotificationsPlugin
-        .show(notification_id, title, value, notificationDetails, payload: 'Not present');
-  }
 }
-

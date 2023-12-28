@@ -5,7 +5,7 @@ import 'package:govoltfrontend/pages/chat/chat_list.dart';
 import 'package:govoltfrontend/pages/mapa/mapa.dart';
 import 'package:govoltfrontend/pages/rutas/volter.dart';
 import 'package:govoltfrontend/services/chat_service.dart';
-import 'package:govoltfrontend/services/notifications_service.dart';
+import 'package:govoltfrontend/services/local_notifications_service.dart';
 import 'package:govoltfrontend/pages/rutas/main_routes.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 

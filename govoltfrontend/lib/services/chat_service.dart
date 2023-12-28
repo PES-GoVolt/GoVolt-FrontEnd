@@ -54,7 +54,6 @@ class ChatService {
       }
     }
     catch (e){
-      print("PUTOPOL");
     }
   }
   

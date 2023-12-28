@@ -25,7 +25,9 @@ class RouteCard extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xff4d5e6b),
             ),
-            child: Text(AppLocalizations.of(context)!.reqToJoin),
+            child: Text(AppLocalizations.of(context)!.reqToJoin, style: TextStyle(
+                      color: Colors.white,
+                      )),
           )
         : null,
       title: Text('Inicio: ${ruta.beginning} Destino: ${ruta.destination}'),

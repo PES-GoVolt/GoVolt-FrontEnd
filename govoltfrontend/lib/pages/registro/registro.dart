@@ -270,7 +270,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: ElevatedButton(
-                  child: Text(AppLocalizations.of(context)!.signUp),
+                  child: Text(AppLocalizations.of(context)!.signUp, style: TextStyle(
+                      color: Colors.white),),
                   onPressed: () {
                     register();
                   },
@@ -340,7 +341,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       'assets/images/facebook_logo.png',
                       height: 24,
                     ),
-                    label: Text(AppLocalizations.of(context)!.logInFacebook),
+                    label: Text(AppLocalizations.of(context)!.logInFacebook, style: TextStyle(
+                      color: Colors.white)),
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton.icon(
