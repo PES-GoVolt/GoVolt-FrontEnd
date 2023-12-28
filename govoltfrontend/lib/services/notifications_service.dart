@@ -13,7 +13,7 @@ class NotificationService {
       _messageArrivedNotificationController.stream;
 
 
-  void sendMessage(String idUsuario, String message) async {
+  void sendNotification(String idUsuario, String message) async {
     final body = {
       "content": message,
       "user_id": idUsuario
