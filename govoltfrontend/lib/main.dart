@@ -21,6 +21,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+const List<String> scopes = <String>[
+  'email',
+  'https://www.googleapis.com/auth/contacts.readonly',
+];
+
+GoogleSignIn _googleSignIn = GoogleSignIn(
+  scopes: scopes,
+);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -78,7 +86,7 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  //final GoogleSignIn _googleSignIn = GoogleSignIn();
+  GoogleSignInAccount? _currentUser;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -96,12 +104,64 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   @override
   void initState() {
-    // Suscríbete al stream en el método initState
     super.initState();
+
+    _googleSignIn.onCurrentUserChanged
+        .listen((GoogleSignInAccount? account) async {
+      setState(() {
+        _currentUser = account;
+      });
+    });
   }
+
+  Future<void> _handleSignIn() async {
+    try {
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return;
+      _currentUser = googleUser;
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken
+      );
+      final UserCredential authResult = await _auth.signInWithCredential(credential);
+      User? mUser = _auth.currentUser;
+      String? token = await mUser?.getIdToken();
+      Token.token = 'Bearer $token';
+      print(Token.token);
+      await Future.delayed(Duration.zero);
+      Navigator.pushNamed(
+        context,
+        '/home',
+      );
+    } catch (error) {
+      print(error);
+    }
+    setState(() {
+    });
+  }
+
+  Future<void> _handleSignOut() => _googleSignIn.disconnect();
 
   @override
   Widget build(BuildContext context) {
+    final GoogleSignInAccount? user = _currentUser;
+    if (user != null)
+    {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          ListTile(
+            leading: GoogleUserCircleAvatar(
+              identity: user,
+            ),
+            title: Text(user.displayName ?? ''),
+            subtitle: Text(user.email),
+          ),
+        ],
+      );
+    }
+    else{
     return Scaffold(
         body: Padding(
             padding: const EdgeInsets.all(10),
@@ -119,9 +179,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
                   child: TextField(
                     controller: emailController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: AppLocalizations.of(context)!.email,
+                      labelText: 'Email',
                     ),
                   ),
                 ),
@@ -130,19 +190,19 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   child: TextField(
                     obscureText: true,
                     controller: passwordController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: AppLocalizations.of(context)!.password,
+                      labelText: 'Password',
                     ),
                   ),
                 ),
                 Row(
                   // ignore: sort_child_properties_last
                   children: <Widget>[
-                    Text(AppLocalizations.of(context)!.forgotPassword),
+                    const Text('Forgot your password?'),
                     TextButton(
-                      child: Text(
-                        AppLocalizations.of(context)!.clickHere,
+                      child: const Text(
+                        'Click here',
                         style: TextStyle(
                             color: Color(0xff4d5e6b),
                             decoration: TextDecoration.underline),
@@ -174,7 +234,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                                 RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
                         ))),
-                    child: Text(AppLocalizations.of(context)!.logIn, style: TextStyle(
+                    child: const Text('Log In', style: TextStyle(
                       color: Colors.white,
                       ),),
                   ),
@@ -199,7 +259,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                                 RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
                         ))),
-                    child: Text(AppLocalizations.of(context)!.signUp,style: TextStyle(
+                    child: const Text('Sign Up',style: TextStyle(
                       color: Color(0xff4d5e6b),
                       ),),
                   ),
@@ -231,7 +291,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                     children: <Widget>[
                       ElevatedButton.icon(
                         onPressed: () {
-                          // Iniciar sesión con Facebook
+                          //_handleFaceBookSignIn();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xff3b5998),
@@ -242,12 +302,14 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                           'assets/images/facebook_logo.png',
                           height: 24,
                         ),
-                        label: Text(AppLocalizations.of(context)!.logInFacebook),
+                        label: const Text('Log in with Facebook',
+                          style: TextStyle(
+                            color: Colors.white),),
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton.icon(
                         onPressed: () {
-                          signInWithGoogle();
+                          _handleSignIn();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
@@ -258,47 +320,19 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                           'assets/images/google_logo_2.png',
                           height: 24,
                         ),
-                        label:  Text(AppLocalizations.of(context)!.logInGoogle),
+                        label: const Text('Log in with Google',
+                        style: TextStyle(
+                            color: Colors.white,),),
                       ),
                     ],
                   ),
                 ),
               ],
             )));
-  }
-
-  Future<User?> signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      if (googleUser == null) {
-        return null;
-      }
-
-      print(googleUser);
-
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-      
-      print("Google Sign-In Authentication:");
-      print("ID Token: ${googleAuth.idToken}");
-      print("Access Token: ${googleAuth.accessToken}");
-
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken
-      );
-
-      print("credenciales");
-      print(credential);
-
-      final UserCredential authResult =
-          await _auth.signInWithCredential(credential);
-      final User? user = authResult.user;
-      return user;
-    } catch (error) {
-      return null;
     }
   }
 
+  
   void showSnackbar(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
