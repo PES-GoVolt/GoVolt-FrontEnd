@@ -176,7 +176,7 @@ class _RoutesState extends State<RoutesScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xff4d5e6b),
                         ),
-                        child: Text(AppLocalizations.of(context)!.cancel),
+                        child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: Colors.white),),
                       ),
                     ],
                   ),
