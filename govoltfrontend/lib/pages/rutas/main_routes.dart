@@ -41,10 +41,15 @@ class _RoutesState extends State<RoutesScreen> {
     List<DateTime> _events = [];
     List<Ruta> combinedRutas=[];
     List<Ruta> filteredRutas=[];
+    List<Ruta> myRutas=[];
 
   @override
   void initState() {
     super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
     _loadRoutes();
     _loadMyRutas();
   }
@@ -58,27 +63,27 @@ class _RoutesState extends State<RoutesScreen> {
   }
 
   void filterRoutes(String query, {DateTime? selectedDateFilter, double? selectedPriceFilter}) {
-  setState(() {
-    if (query.isNotEmpty || selectedDateFilter != null || selectedPriceFilter != null) {
-      filteredRoutes = _routes.where((ruta) {
-        bool matchesQuery = query.isEmpty ||
-            ruta.beginning.toLowerCase().contains(query.toLowerCase()) ||
-            ruta.destination.toLowerCase().contains(query.toLowerCase());
+    setState(() {
+      if (query.isNotEmpty || selectedDateFilter != null || selectedPriceFilter != null) {
+        filteredRoutes = _routes.where((ruta) {
+          bool matchesQuery = query.isEmpty ||
+              ruta.beginning.toLowerCase().contains(query.toLowerCase()) ||
+              ruta.destination.toLowerCase().contains(query.toLowerCase());
 
-        bool matchesDateFilter = selectedDateFilter == null ||
-            (ruta.date ==
-                "${selectedDateFilter.year}-${selectedDateFilter.month}-${selectedDateFilter.day}");
+          bool matchesDateFilter = selectedDateFilter == null ||
+              (ruta.date ==
+                  "${selectedDateFilter.year}-${selectedDateFilter.month}-${selectedDateFilter.day}");
 
-        bool matchesPriceFilter = selectedPriceFilter == null ||
-            double.parse(ruta.price) <= selectedPriceFilter;
+          bool matchesPriceFilter = selectedPriceFilter == null ||
+              double.parse(ruta.price) <= selectedPriceFilter;
 
-        return matchesQuery && matchesDateFilter && matchesPriceFilter;
-      }).toList();
-    } else {
-      filteredRoutes = List.from(_routes);
-    }
-  });
-}
+          return matchesQuery && matchesDateFilter && matchesPriceFilter;
+        }).toList();
+      } else {
+        filteredRoutes = List.from(_routes);
+      }
+    });
+  }
 
   void _showFilterOptions(BuildContext context) {
     showModalBottomSheet(
@@ -213,6 +218,7 @@ class _RoutesState extends State<RoutesScreen> {
             GestureDetector(
               onTap: () {
                 setState(() {
+                  _loadData();
                   _selectedIndex = 0;
                 });
               },
@@ -223,13 +229,20 @@ class _RoutesState extends State<RoutesScreen> {
             ),
             _buildCircleButton(
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => CrearViajeScreen()));
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => CrearViajeScreen()))
+                .then((value) {
+                  _loadRoutes();
+                  setState(() {
+                    _selectedIndex = 1; 
+                  });
+                });
               },
               icon: Icons.add_circle_outline_outlined,
             ),
             GestureDetector(
               onTap: () {
                 setState(() {
+                  _loadData();
                   _selectedIndex = 1;
                 });
               },
@@ -280,7 +293,9 @@ class _RoutesState extends State<RoutesScreen> {
   }
 
   Future<void> _loadMyRutas() async {
-    List<Ruta> combinedRutas = await _loadCombinedRutas();
+    myRutas = await _loadMyCreatedRutas();
+    List<Ruta> partRutas = await _loadMyPartRutas();
+    combinedRutas = await _loadAllMyRutas(myRutas, partRutas);
 
     setState(() {
       List<DateTime> dateList = [];
@@ -297,7 +312,8 @@ class _RoutesState extends State<RoutesScreen> {
       _events = dateList;
     });
   }
-Future<List<Ruta>> _filterRutas() async {
+
+  Future<List<Ruta>> _filterRutas() async {
 
     filteredRutas = combinedRutas
         .where((ruta) =>
@@ -311,14 +327,21 @@ Future<List<Ruta>> _filterRutas() async {
     return filteredRutas;
   }
 
-  Future<List<Ruta>> _loadCombinedRutas() async {
-    List<Ruta> myRutas = await rutaService.getMyRutas();
-    List<Ruta> partRutas = await rutaService.getPartRutas();
-
+  Future<List<Ruta>> _loadAllMyRutas(myRutas, partRutas) async {
     combinedRutas = [...myRutas, ...partRutas];
-
-
     return combinedRutas;
+  }
+
+  Future<List<Ruta>> _loadMyCreatedRutas() async {
+    List<Ruta> myRutas = await rutaService.getMyRutas();
+    return myRutas;
+    
+  }
+
+  Future<List<Ruta>> _loadMyPartRutas() async {
+    List<Ruta> partRutas = await rutaService.getPartRutas();
+    return partRutas;
+    
   }
 
    Widget _buildRouteCards() {
@@ -357,7 +380,8 @@ Future<List<Ruta>> _filterRutas() async {
       }
 
   Widget _buildRouteCard({required Ruta ruta}) {
-    return RouteCard(ruta: ruta ,showJoin: _selectedIndex==1);
+    final bool showCancel = _selectedIndex == 0 && myRutas.contains(ruta);
+    return RouteCard(ruta: ruta, showJoin: _selectedIndex == 1, showCancel: showCancel);
   }
 
   Widget _buildBottomButton({required String text, required bool selected}) {

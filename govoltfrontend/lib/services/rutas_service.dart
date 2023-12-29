@@ -12,7 +12,6 @@ class RutaService {
       final url = Uri.http(Config.apiURL, endpoint);
 
       final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
-      print(Token.token);
       final response = await http.get(url, headers: headers);
 
       if (response.statusCode == 200) {
@@ -51,4 +50,20 @@ class RutaService {
   Future<List<Ruta>> getPartRutas() async {
     return await getRutasFromEndpoint(Config.participantRutas);
   }
+
+  Future<void> cancelRoute(String rutaId) async {
+    try {
+      final url = Uri.http(Config.apiURL, Config.deleteRutas);
+      final bodyRoute= {"route_id": rutaId};
+      final headers = {"Authorization": Token.token};
+      final response = await http.delete(url, headers: headers, body:bodyRoute );
+      if (response.statusCode != 200) {
+        throw Exception('Failed to cancel route');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
+  
 }
