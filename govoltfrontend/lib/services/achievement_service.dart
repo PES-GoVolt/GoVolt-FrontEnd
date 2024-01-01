@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:govoltfrontend/services/token_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:govoltfrontend/config.dart';
 
@@ -7,7 +8,8 @@ class AchievementService {
 
   Future<List<Achievement>> getAchievements() async {
     final url = Uri.http(Config.apiURL, Config.achievementsAPI);
-    final response = await http.get(url);
+    final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
+    final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
@@ -22,7 +24,7 @@ class AchievementService {
     final response = await http.post(
       url,
       body: json.encode({'achievement': achievementName}),
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json',"Authorization": Token.token},
     );
 
     if (response.statusCode != 200) {

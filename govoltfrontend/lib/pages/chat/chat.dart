@@ -138,6 +138,7 @@ class _ChatPageState extends State<ChatPage> {
     chatService.sendMessage(roomName, myUserId, message.text);
     _addMessage(textMessage);
     achievementService.incrementAchievement("messages_achievement");  
+    print(achievementService.getAchievements());
   }
 
   void _handleAttachmentPressed() { 
