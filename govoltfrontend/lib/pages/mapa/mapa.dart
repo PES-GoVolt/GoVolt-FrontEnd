@@ -94,7 +94,9 @@ class _MapaState extends State<MapScreen> {
             applicationBloc.place!.geometry.location.lng)));
     _myLocMarker = myMarkers.toSet();
     setState(() {});
-    achievementService.incrementAchievement("search_loaction_achievement");
+    await achievementService.incrementAchievement("search_location_achievement");
+    final Map<String, dynamic> achievementsMap = await achievementService.getAchievements();
+    print('Achievements Map: $achievementsMap');
   }
 
   void placeRandomSelected(double lat, double lng) {

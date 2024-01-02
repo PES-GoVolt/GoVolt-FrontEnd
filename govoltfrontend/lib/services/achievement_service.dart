@@ -6,14 +6,14 @@ import 'package:govoltfrontend/config.dart';
 class AchievementService {
   static const String baseUrl = Config.apiURL; // Replace with your API endpoint
 
-  Future<List<Achievement>> getAchievements() async {
+  Future<Map<String, dynamic>> getAchievements() async {
     final url = Uri.http(Config.apiURL, Config.achievementsAPI);
     final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
     final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((json) => Achievement.fromJson(json)).toList();
+      final Map<String, dynamic> data = json.decode(response.body);
+      return data;//.map((json) => Achievement.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load achievements');
     }
