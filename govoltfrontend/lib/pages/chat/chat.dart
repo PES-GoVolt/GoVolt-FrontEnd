@@ -142,7 +142,7 @@ class _ChatPageState extends State<ChatPage> {
     return [
       TextButton(
         onPressed: () {
-          applicationBloc.addParticipant(idUserReciever, roomName.split("/")[0]);
+          applicationBloc.addParticipant(idUserReciever, roomName.split("/")[1]);
           Navigator.of(context).pop();
         },
         child: const Row(
@@ -156,8 +156,10 @@ class _ChatPageState extends State<ChatPage> {
       ),
       const SizedBox(height: 10),
       TextButton(
-        onPressed: () {
-
+        onPressed: () async {
+            await applicationBloc.deleteRequestParticipant(idUserReciever, roomName.split("/")[1], roomName);
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
         },
         child: const Row(
           children: <Widget>[
@@ -175,7 +177,10 @@ class _ChatPageState extends State<ChatPage> {
   {
     return [
       TextButton(
-        onPressed: () {
+        onPressed: () async {
+            await applicationBloc.deleteRequestParticipant(idUserReciever, roomName.split("/")[1], roomName);
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
         },
         child: const Row(
           children: <Widget>[

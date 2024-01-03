@@ -102,7 +102,10 @@ class _ChatListState extends State<ChatListVolter> {
                 refreshChats: () {
                   getChatsMethod();
                 }))
-              );
+              ).then((result) async {
+                  await getChatsMethod();
+                  setState(() {});
+              });
               setState(() {});
             },
           ),

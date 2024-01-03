@@ -11,7 +11,7 @@ import 'package:govoltfrontend/services/places_service.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:govoltfrontend/services/puntos_bici_service.dart';
 import 'package:govoltfrontend/services/puntos_carga_service.dart';
-import 'package:govoltfrontend/services/routes_service.dart';
+import 'package:govoltfrontend/services/google_routes_service.dart';
 
 class AplicationBloc with ChangeNotifier {
   final placesService = PlacesService();
@@ -87,6 +87,11 @@ class AplicationBloc with ChangeNotifier {
   addParticipant(String userId, String idRuta)
   {
       rutasService.addParticipant(userId, idRuta);
+  }
+
+  deleteRequestParticipant(String userId, String idRuta, String roomName) async
+  {
+    await rutasService.deleteRequestParticipant(userId, idRuta, roomName);
   }
 
 
