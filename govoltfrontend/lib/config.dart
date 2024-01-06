@@ -19,7 +19,6 @@ class Config {
   static const allRutas = "api/routes";
   static const myRutas = "api/routes/my_routes";
   static const participantRutas = "api/routes/my_current_routes";
-  static const deleteRutas = "api/routes";
 
   static const chatAddMessage = "api/messages/";
   static const chats = "api/messages/chats/";
