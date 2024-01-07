@@ -58,17 +58,19 @@ class AplicationBloc with ChangeNotifier {
   }*/
 
   Future<List<Coordenada>> getChargers() async {
-    try
-    {
+    try {
       return await chargersService.obtenerPuntosDeCarga();
-    }
-    catch(e){
+    } catch (e) {
       return [];
     }
   }
 
   Future<List<BikeStation>> getBikeStations() async {
     return await bikeService.getBikeStations();
+  }
+
+  foundMarker(Place p) {
+    place = p;
   }
 
   searchNearestCharger(LatLng coord) async {
@@ -83,12 +85,9 @@ class AplicationBloc with ChangeNotifier {
     notifyListeners();
   }
 
-
-  addParticipant(String userId, String idRuta)
-  {
-      rutasService.addParticipant(userId, idRuta);
+  addParticipant(String userId, String idRuta) {
+    rutasService.addParticipant(userId, idRuta);
   }
-
 
   Future<dynamic> login(String encodedData) async {
     print("entro en application_bloc.dart");
@@ -115,11 +114,10 @@ class AplicationBloc with ChangeNotifier {
   }
 
   createRouteListener(String roomName) async {
-      chatService.createChatRouteListener(roomName);
+    chatService.createChatRouteListener(roomName);
   }
 
-  createChat(String idRuta, String userUid, String creatorUid){
-      chatService.createChat(idRuta, userUid, creatorUid);
+  createChat(String idRuta, String userUid, String creatorUid) {
+    chatService.createChat(idRuta, userUid, creatorUid);
   }
-
 }
