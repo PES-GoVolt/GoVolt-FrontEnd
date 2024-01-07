@@ -55,8 +55,6 @@ class _MapaState extends State<MapScreen> {
   Set<Marker> _chargers = {};
   Set<Polyline> emptyRoute = {};
   Set<Marker> _bikeStations = {};
-  Coordenada? coordSelected;
-  BikeStation? bikeStation;
 
   bool showChargers = true;
   bool showBikeStations = true;
@@ -201,6 +199,83 @@ class _MapaState extends State<MapScreen> {
       }
     }
 
+  Future<void> _showEventBottomSheet() async {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Eventos Cercanos',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                FutureBuilder(
+                  future: fetchDataFromApi(
+                    coordSelected?.latitud,
+                    coordSelected?.longitud,
+                  ),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      final data = snapshot.data as List<Map<String, dynamic>>?;
+                      if (data?.isEmpty ?? true) {
+                        return Text(
+                            'No hay eventos cercanos en la próxima semana.');
+                      }
+                      return Column(
+                        children: data?.map((item) {
+                              // Formatear la fecha usando DateFormat
+                              DateTime fechaInicio =
+                                  DateTime.parse(item['dataIni']);
+                              String fechaFormateada =
+                                  DateFormat.yMMMMd('es_ES')
+                                      .format(fechaInicio);
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${item['nom']}',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    '$fechaFormateada',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Dirección: ${item['adreca']}',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  const Divider(),
+                                ],
+                              );
+                            }).toList() ??
+                            [],
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+  
   Container ChargerInfoDisplay()
   {
     return Container(
@@ -283,6 +358,28 @@ class _MapaState extends State<MapScreen> {
               "${coordSelected!.tipus_connexi}, ${coordSelected!.ac_dc}",
               style: const TextStyle(fontSize: 16),
             ),
+            const SizedBox(height: 10,),
+            ElevatedButton.icon(
+                  onPressed: () async {
+                    // Cuando se presiona el botón, muestra un BottomSheet vacío
+                    await _showEventBottomSheet();
+                  },
+                  icon: const Icon(
+                    Icons.event,
+                    color: Colors.white,
+                  ),
+                  label: const Text(
+                    'Ver Eventos',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.orange,
+                  ),
+                ),
           ],
         ),
       ),
