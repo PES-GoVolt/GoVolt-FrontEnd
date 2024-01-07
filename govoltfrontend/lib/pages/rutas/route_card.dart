@@ -128,8 +128,8 @@ void _showConfirmationDialog(BuildContext context, String participant) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Eliminar participante', style: TextStyle(color: Colors.white)),
-        content: Text('¿Estás seguro que quieres eliminar a $participant de la ruta?', style: TextStyle(color: Colors.white)),
+        title: Text('Eliminar participante', style: TextStyle(color: Colors.black)),
+        content: Text('¿Estás seguro que quieres eliminar a $participant de la ruta?', style: TextStyle(color: Colors.black)),
         actions: <Widget>[
           TextButton(
             onPressed: () {
