@@ -51,5 +51,13 @@
     "changePhoneNumber": "Change your phone number",
     "payment": "Payment Type: ",
     "changePhoneNumber": "Change your phone number",
-    "noChats": "No chats available"
+    "noChats": "No chats available",
+    "messages_achievement": "Messenger",
+    "messages_achievement_description": "You have sent someone a message!",
+    "nearest_charger_achievement": "Optimizer",
+    "nearest_charger_achievement_description": "You have redirected your route to a near charger",
+    "search_location_achievement": "Explorer",
+    "search_location_achievement_description": "You have searched a location",
+    "search_event_achievement": "When and Where?",
+    "search_event_achievement_description": "You have searched an event"
 }
