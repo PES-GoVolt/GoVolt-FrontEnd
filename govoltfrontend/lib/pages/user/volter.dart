@@ -192,7 +192,8 @@ class _VolterScreenState extends State<VolterScreen> {
                     });
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: edit ? Colors.red : Colors.green,
+                    backgroundColor:
+                        edit ? Colors.red : Color.fromRGBO(125, 193, 165, 1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
@@ -223,11 +224,6 @@ class _VolterScreenState extends State<VolterScreen> {
                       AppLocalizations.of(context)!.lastName,
                       AppLocalizations.of(context)!.changeLastName,
                       lastNameController),
-                  buildFormField(
-                      AppLocalizations.of(context)!.phoneNumber,
-                      AppLocalizations.of(context)!.changePhoneNumber,
-                      phoneNumberController,
-                      isNumeric: true),
                   ElevatedButton(
                     onPressed: () {
                       saveChanges();
@@ -249,8 +245,6 @@ class _VolterScreenState extends State<VolterScreen> {
               ListView(
                 shrinkWrap: true,
                 children: [
-                  buildOption(
-                      AppLocalizations.of(context)!.changePassword, Icons.lock),
                   buildOption(AppLocalizations.of(context)!.achievements,
                       Icons.emoji_events),
                   buildOption(
