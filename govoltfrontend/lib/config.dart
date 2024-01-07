@@ -2,7 +2,11 @@ import "package:govoltfrontend/api_keys.dart";
 
 class Config {
   static const String appName = "Go Volt";
-  static const String apiURL = '10.0.2.2:8000'; 
+  static const String apiURL = '10.0.2.2:8000'; // api de cada ordenador
+  static const String eventsURL = 'cultucat.hemanuelpc.es';
+
+  static const eventosAPI = "events";
+
   static const productosAPI = "api/producto";
   static const clientesAPI = "api/cliente";
   static const puntosCargaAPI = "api/puntocarga";
@@ -24,8 +28,8 @@ class Config {
   static const chatAddMessage = "api/messages/";
   static const chats = "api/messages/chats/";
 
-  static const achievementsAPI = "api/users/achievement/";
- 
+ static const achievementsAPI = "api/users/achievement/";
+
   static const apiKey = SecretKeys.apiKey;
   static const loginFIREBASE = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$apiKey";
   static const singupFIREBASE = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$apiKey";

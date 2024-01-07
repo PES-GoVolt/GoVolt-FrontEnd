@@ -14,7 +14,11 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:govoltfrontend/models/mapa/geometry.dart';
 import 'package:govoltfrontend/models/mapa/location.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:govoltfrontend/models/bike_station.dart';
+import 'package:govoltfrontend/services/puntos_carga_service.dart';
+import 'package:govoltfrontend/config.dart';
+import 'package:intl/intl.dart';
 
 class MapScreen extends StatefulWidget {
   MapScreen();
@@ -164,6 +168,114 @@ class _MapaState extends State<MapScreen> {
     setState(() {});
   }
 
+  Future<List<Map<String, dynamic>>> fetchDataFromApi(
+        double? latitud, double? longitud) async {
+      DateTime now = DateTime.now();
+      DateTime maxDate = now.add(Duration(days: 7));
+      String formattedNow = DateFormat('dd-MM-yyyy').format(now);
+      String formattedMaxDate = DateFormat('dd-MM-yyyy').format(maxDate);
+      final Uri uri = Uri.https(
+        Config.eventsURL,
+        Config.eventosAPI,
+        {
+          'latitud': longitud.toString(),
+          'longitud': latitud.toString(),
+          'distancia': '2',
+          'data_min': formattedNow,
+          'data_max': formattedMaxDate,
+        },
+      );
+
+      try {
+        final response = await http.get(uri);
+        // Procesa la respuesta y devuelve una lista de objetos
+        final List<Map<String, dynamic>> data =
+            List<Map<String, dynamic>>.from(json.decode(utf8.decode(response.bodyBytes)));
+        return data;
+      } catch (e) {
+        // Maneja cualquier error que pueda ocurrir durante la solicitud
+        print("Error en la solicitud: $e");
+        return []; // Retorna una lista vacía en caso de error
+      }
+    }
+
+  Future<void> _showEventBottomSheet() async {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Eventos Cercanos',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                FutureBuilder(
+                  future: fetchDataFromApi(
+                    coordSelected?.latitud,
+                    coordSelected?.longitud,
+                  ),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      final data = snapshot.data as List<Map<String, dynamic>>?;
+                      if (data?.isEmpty ?? true) {
+                        return Text(
+                            'No hay eventos cercanos en la próxima semana.');
+                      }
+                      return Column(
+                        children: data?.map((item) {
+                              // Formatear la fecha usando DateFormat
+                              DateTime fechaInicio =
+                                  DateTime.parse(item['dataIni']);
+                              String fechaFormateada =
+                                  DateFormat.yMMMMd('es_ES')
+                                      .format(fechaInicio);
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${item['nom']}',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    '$fechaFormateada',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Dirección: ${item['adreca']}',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  const Divider(),
+                                ],
+                              );
+                            }).toList() ??
+                            [],
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+  
   Container ChargerInfoDisplay()
   {
     return Container(
@@ -246,6 +358,28 @@ class _MapaState extends State<MapScreen> {
               "${coordSelected!.tipus_connexi}, ${coordSelected!.ac_dc}",
               style: const TextStyle(fontSize: 16),
             ),
+            const SizedBox(height: 10,),
+            ElevatedButton.icon(
+                  onPressed: () async {
+                    // Cuando se presiona el botón, muestra un BottomSheet vacío
+                    await _showEventBottomSheet();
+                  },
+                  icon: const Icon(
+                    Icons.event,
+                    color: Colors.white,
+                  ),
+                  label: const Text(
+                    'Ver Eventos',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.orange,
+                  ),
+                ),
           ],
         ),
       ),
@@ -297,7 +431,6 @@ class _MapaState extends State<MapScreen> {
       print('Error loading markers: $e');
     }
   }
-
 
   Future<void> centerScreen() async {
     final GoogleMapController controller = await _mapController.future;
@@ -603,8 +736,7 @@ class _MapaState extends State<MapScreen> {
                     setState(() {});
                   },
                   icon: const Icon(
-                    Icons
-                        .directions,
+                    Icons.directions,
                     color: Colors.white,
                   ),
                   label: const Text(
@@ -746,8 +878,7 @@ class _MapaState extends State<MapScreen> {
                     setState(() {});
                   },
                   icon: const Icon(
-                    Icons
-                        .directions,
+                    Icons.directions,
                     color: Colors.white,
                   ),
                   label: !goToNearestChargerEnable
@@ -767,7 +898,7 @@ class _MapaState extends State<MapScreen> {
                         ),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Colors.blue, 
+                    backgroundColor: Colors.blue,
                   ),
                 ),
                 const SizedBox(width: 10),
