@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:govoltfrontend/pages/chat/chat_list.dart';
 import 'package:govoltfrontend/pages/mapa/mapa.dart';
-import 'package:govoltfrontend/pages/rutas/volter.dart';
+import 'package:govoltfrontend/pages/user/volter.dart';
 import 'package:govoltfrontend/services/chat_service.dart';
 import 'package:govoltfrontend/services/notifications_service.dart';
 import 'package:govoltfrontend/pages/rutas/main_routes.dart';
@@ -35,6 +35,11 @@ class MenuState extends State<Menu> {
       case 3:
         return ChatListVolter();
     }
+  }
+
+  void logout() {
+    Navigator.pop(context);
+    Navigator.pop(context);
   }
 
   _onSelectItem(int pos) {
@@ -118,7 +123,7 @@ class MenuState extends State<Menu> {
               leading: const Icon(Icons.touch_app_outlined),
               selected: (3 == _selectDrawerItem),
               onTap: () {
-                exit(0);
+                logout();
               },
             ),
           ],

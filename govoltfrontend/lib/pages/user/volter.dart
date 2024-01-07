@@ -28,11 +28,8 @@ class _VolterScreenState extends State<VolterScreen> {
   String lastName = '';
   String photo = '';
 
-  void logout() async {
-    bool allOkey = await applicationBloc.logOutUser();
-    if (allOkey) {
-      Navigator.pushNamed(context, '/login');
-    }
+  void logout() {
+    Navigator.pop(context);
   }
 
   Future<void> _getImage() async {

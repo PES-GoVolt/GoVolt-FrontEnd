@@ -48,8 +48,8 @@
     "reqToJoin": "Sol·licitar unir-se",
     "changeFirstName": "Cambia el teu nom",
     "changeLastName": "Cambia el teu cognom",
-    "changePhoneNumber": "Cambie el teu numero de telèfon"
-
+    "changePhoneNumber": "Cambie el teu numero de telèfon",
+    "noChats": "No hi han xats disponibles"
 
 
 }

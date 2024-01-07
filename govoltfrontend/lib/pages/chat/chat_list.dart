@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:govoltfrontend/pages/chat/chat.dart';
 import 'package:govoltfrontend/services/chat_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ChatListVolter extends StatefulWidget {
   const ChatListVolter({super.key});
@@ -130,8 +131,14 @@ class _ChatListState extends State<ChatListVolter> {
   
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: listChats(),
-    );
+    if (itemList.length != 0)
+    {
+      return Scaffold(
+        body: listChats(),
+      );
+    }
+    else{
+      return Scaffold( body: Center(child: Text(AppLocalizations.of(context)!.noChats)));
+    }
   }
 }
