@@ -34,8 +34,8 @@ void main() async {
 
 void loadData() async {
   final applicationBloc = AplicationBloc();
-  //final puntosDeCarga = await applicationBloc.getChargers();
-  //MarkersData.chargers = puntosDeCarga;
+  final puntosDeCarga = await applicationBloc.getChargers();
+  MarkersData.chargers = puntosDeCarga;
   final bikeStations = await applicationBloc.getBikeStations();
   MarkersData.bikeStation = bikeStations;
 }
