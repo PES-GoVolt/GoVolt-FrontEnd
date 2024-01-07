@@ -179,7 +179,7 @@ class _MapaState extends State<MapScreen> {
       final response = await http.get(uri);
       // Procesa la respuesta y devuelve una lista de objetos
       final List<Map<String, dynamic>> data =
-          List<Map<String, dynamic>>.from(json.decode(response.body));
+          List<Map<String, dynamic>>.from(json.decode(utf8.decode(response.bodyBytes)));
       return data;
     } catch (e) {
       // Maneja cualquier error que pueda ocurrir durante la solicitud
@@ -188,7 +188,8 @@ class _MapaState extends State<MapScreen> {
     }
   }
 
-  Container ChargerInfoDisplay() {
+  Container ChargerInfoDisplay()
+  {
     return Container(
       height: MediaQuery.of(context).size.height * 0.25,
       padding: const EdgeInsets.all(16),
@@ -208,7 +209,7 @@ class _MapaState extends State<MapScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    "Marker",
+                    coordSelected!.adre_a,
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -217,15 +218,19 @@ class _MapaState extends State<MapScreen> {
                 ),
                 ElevatedButton.icon(
                   onPressed: () async {
-                    // Cuando se presiona el botón, muestra un BottomSheet vacío
-                    await _showEventBottomSheet();
+                    chargerIsSelected = false;
+                    rutaChargerBike = true;
+                    await _calculateRoute();
+                    await _changeCameraToRoutePreview();
+                    setState(() {});
                   },
                   icon: const Icon(
-                    Icons.event,
+                    Icons
+                        .directions,
                     color: Colors.white,
                   ),
                   label: const Text(
-                    'Ver Eventos',
+                    'Ruta',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white,
@@ -233,15 +238,14 @@ class _MapaState extends State<MapScreen> {
                   ),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Colors.orange,
+                    backgroundColor: Colors.blue,
                   ),
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
                   style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.red),
-                  ),
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.red)),
                   onPressed: () {
                     chargerIsSelected = false;
                     setState(() {});
@@ -250,6 +254,21 @@ class _MapaState extends State<MapScreen> {
                       style: TextStyle(color: Colors.black, fontSize: 16)),
                 ),
               ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              coordSelected!.municipi + ", " + coordSelected!.provincia,
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              AppLocalizations.of(context)!.payment + coordSelected!.acces,
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              "${coordSelected!.tipus_connexi}, ${coordSelected!.ac_dc}",
+              style: const TextStyle(fontSize: 16),
             ),
           ],
         ),
