@@ -5,7 +5,6 @@ import 'package:govoltfrontend/config.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:govoltfrontend/services/token_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
@@ -55,7 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     if (password != confirmPassword) {
-      showSnackbar(AppLocalizations.of(context)!.passDontMatch); //FALTA ESTE
+      showSnackbar(AppLocalizations.of(context)!.passDontMatch);
       return;
     }
       
@@ -201,6 +200,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -251,26 +251,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Container(
               padding: const EdgeInsets.fromLTRB(20, 5, 10, 0),
               child: InternationalPhoneNumberInput(
-                onInputChanged: (PhoneNumber number) {
-                  phoneNumber = number;
-                },
-                selectorConfig: const SelectorConfig(
-                  selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-                ),
-                ignoreBlank: false,
-                autoValidateMode: AutovalidateMode.disabled,
-                inputDecoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: AppLocalizations.of(context)!.phoneNumber,
-                ),
+              onInputChanged: (PhoneNumber number) {
+                phoneNumber = number;
+              },
+              initialValue: PhoneNumber(isoCode: 'ES'), // Establecer España (código ISO 'ES') como valor predeterminado
+              selectorConfig: const SelectorConfig(
+                selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
               ),
+              ignoreBlank: false,
+              autoValidateMode: AutovalidateMode.disabled,
+              inputDecoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: AppLocalizations.of(context)!.phoneNumber,
+              ),
+            ),
+
             ),
             Container(
                 height: 50,
                 margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: ElevatedButton(
-                  child: Text(AppLocalizations.of(context)!.signUp),
+                  child: Text(AppLocalizations.of(context)!.signUp, style: TextStyle(color: Colors.white),),
                   onPressed: () {
                     register();
                   },
@@ -300,70 +302,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 )
               ],
               mainAxisAlignment: MainAxisAlignment.center,
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.only(right: 10, top: 10, bottom: 10),
-                    height: 1,
-                    color: Colors.grey,
-                  ),
-                ),
-                Text(AppLocalizations.of(context)!.or,
-                  style: TextStyle(
-                  color: Colors.black,
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.only(left: 10, top: 10, bottom: 10),
-                    height: 1,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              child: Column(
-                children: <Widget>[
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      // Iniciar sesión con Facebook
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xff3b5998),
-                      minimumSize: const Size(double.infinity, 50),
-                    ),
-                    icon: Image.asset(
-                      'assets/images/facebook_logo.png',
-                      height: 24,
-                    ),
-                    label: Text(AppLocalizations.of(context)!.logInFacebook),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      // Iniciar sesión con Google
-                      signUpWithGoogle();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      minimumSize: const Size(double.infinity, 50),
-                    ),
-                    icon: Image.asset(
-                      'assets/images/google_logo_2.png',
-                      height: 24,
-                    ),
-                    label: Text(AppLocalizations.of(context)!.logInGoogle,
-                      style: TextStyle(
-                      color: Colors.white,
-                      ),
-                    )
-                  ),
-                ],
-              ),
             ),
           ],
         )));

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/usuario.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
@@ -21,12 +20,23 @@ class _VolterScreenState extends State<VolterScreen> {
   bool edit = false; // Estado para controlar si se está editando
   final applicationBloc = AplicationBloc();
 
-  XFile? _imageFile;
   String email = '';
   String phoneNumber = '';
   String firstName = '';
   String lastName = '';
   String photo = '';
+    static const colors = [
+  Color(0xffff6767),
+  Color(0xff66e0da),
+  Color(0xfff5a2d9),
+  Color(0xfff0c722),
+  Color(0xff6a85e5),
+  Color(0xfffd9a6f),
+  Color(0xff92db6e),
+  Color(0xff73b8e5),
+  Color(0xfffd7590),
+  Color(0xffc78ae5),
+];
 
   void logout() {
     Navigator.pop(context);
@@ -39,7 +49,6 @@ class _VolterScreenState extends State<VolterScreen> {
 
     if (pickedFile != null) {
       setState(() {
-        _imageFile = XFile(pickedFile.path);
       });
     }
   }
@@ -54,21 +63,46 @@ class _VolterScreenState extends State<VolterScreen> {
         firstName, lastName, email, phoneNumber, photo);
   }
 
+  Widget circleColorCustom(String username){
+    if (username != "")
+    {
+    String usernameLastCharacter = username.characters.first;
+    final initialsNumber = usernameLastCharacter.codeUnitAt(0) % 10;
+    return CircleAvatar(
+                  radius: 50,
+                  backgroundColor: colors[initialsNumber],
+                  child: Text(
+                    username.characters.first.toUpperCase(),
+                    style:
+                        const TextStyle(color: Colors.white, fontSize: 40),
+                  ),
+                );
+    }
+    return CircleAvatar(
+                  radius: 50,
+                  backgroundColor: colors[0],
+                  child: Text(
+                    "",
+                    style:
+                        const TextStyle(color: Colors.white, fontSize: 40),
+                  ),
+                );
+  }
+
   Future<void> fetchProfileData() async {
     dynamic response = await applicationBloc.getCurrentUserData();
 
     if (response != null) {
       final userData = response as Usuario;
       email = userData.email;
-      phoneNumber = userData.phoneNumber;
+      phoneNumber = userData.username;
       firstName = userData.firstName;
       lastName = userData.lastName;
       email = userData.email;
-      phoneNumber = userData.phoneNumber;
       setState(() {
         if (userData.email != "") emailController.text = userData.email;
         if (userData.phoneNumber != "") {
-          phoneNumberController.text = userData.phoneNumber;
+          phoneNumberController.text = userData.username;
         }
         if (userData.firstName != "") {
           firstNameController.text = userData.firstName;
@@ -83,7 +117,7 @@ class _VolterScreenState extends State<VolterScreen> {
   }
 
   @override
-  void initState() {
+  void initState(){
     super.initState();
     fetchProfileData();
 
@@ -99,6 +133,7 @@ class _VolterScreenState extends State<VolterScreen> {
     phoneNumberController.dispose();
     super.dispose();
   }
+  
 
   @override
   StatefulWidget build(BuildContext context) {
@@ -116,38 +151,7 @@ class _VolterScreenState extends State<VolterScreen> {
                 Stack(
                   alignment: Alignment.bottomRight,
                   children: [
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundColor: Colors.grey,
-                      child: _imageFile != null
-                          ? ClipOval(
-                              child: Image.file(
-                                File(_imageFile!.path),
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : Icon(
-                              Icons.person,
-                              size: 50,
-                              color: Colors.white,
-                            ),
-                    ),
-                    if (edit)
-                      GestureDetector(
-                        onTap: () async {
-                          await _getImage();
-                        },
-                        child: CircleAvatar(
-                          radius: 20,
-                          backgroundColor: Colors.blue,
-                          child: Icon(
-                            Icons.edit,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
+                    circleColorCustom(phoneNumber)
                   ],
                 ),
                 SizedBox(width: 20),
@@ -155,15 +159,15 @@ class _VolterScreenState extends State<VolterScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '$firstName $lastName',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    Text(
                       phoneNumber,
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold,),
                     ),
                     Text(
                       email,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    Text(
+                      '$firstName $lastName',
                       style: TextStyle(fontSize: 16),
                     ),
                   ],
@@ -194,14 +198,14 @@ class _VolterScreenState extends State<VolterScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: edit
                         ? Colors.red
-                        : Colors.green,
+                        : Color.fromRGBO(125, 193, 165, 1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                   ),
                   child: Text(edit
                       ? AppLocalizations.of(context)!.cancel
-                      : AppLocalizations.of(context)!.editProfile),
+                      : AppLocalizations.of(context)!.editProfile, style: TextStyle(color: Colors.white),),
                 )
               ],
             ),
@@ -222,9 +226,6 @@ class _VolterScreenState extends State<VolterScreen> {
                   buildFormField(
                       AppLocalizations.of(context)!.lastName, AppLocalizations.of(context)!.changeLastName, 
                       lastNameController),
-                  buildFormField(AppLocalizations.of(context)!.phoneNumber, AppLocalizations.of(context)!.changePhoneNumber,
-                      phoneNumberController,
-                      isNumeric: true),
                   ElevatedButton(
                     onPressed: () {
                       saveChanges();
@@ -233,12 +234,12 @@ class _VolterScreenState extends State<VolterScreen> {
                       });
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: Color.fromRGBO(125, 193, 165, 1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                     ),
-                    child: Text(AppLocalizations.of(context)!.saveChanges),
+                    child: Text(AppLocalizations.of(context)!.saveChanges, style: TextStyle(color: Colors.white),),
                   ),
                 ],
               )
@@ -246,7 +247,6 @@ class _VolterScreenState extends State<VolterScreen> {
               ListView(
                 shrinkWrap: true,
                 children: [
-                  buildOption(AppLocalizations.of(context)!.changePassword, Icons.lock),
                   buildOption(AppLocalizations.of(context)!.achievements, Icons.emoji_events),
                   buildOption(AppLocalizations.of(context)!.logOut, Icons.logout, isRed: true),
                 ],

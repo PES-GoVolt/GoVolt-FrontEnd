@@ -6,7 +6,6 @@ import 'package:govoltfrontend/models/markers_data.dart';
 import 'package:govoltfrontend/menu.dart';
 import 'package:govoltfrontend/pages/registro/registro.dart';
 import 'package:govoltfrontend/config.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -78,8 +77,6 @@ class MyStatefulWidget extends StatefulWidget {
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  GoogleSignInAccount? _currentUser;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -102,7 +99,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     _googleSignIn.onCurrentUserChanged
         .listen((GoogleSignInAccount? account) async {
       setState(() {
-        _currentUser = account;
       });
     });
   }
@@ -111,17 +107,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     try {
       final googleUser = await _googleSignIn.signIn();
       if (googleUser == null) return;
-      _currentUser = googleUser;
-      final googleAuth = await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken
-      );
-      final UserCredential authResult = await _auth.signInWithCredential(credential);
-      User? mUser = _auth.currentUser;
-      String? token = await mUser?.getIdToken();
-      Token.token = 'Bearer $token';
-      print(Token.token);
       await Future.delayed(Duration.zero);
       Navigator.pushNamed(
         context,
@@ -138,23 +123,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final GoogleSignInAccount? user = _currentUser;
-    if (user != null)
-    {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          ListTile(
-            leading: GoogleUserCircleAvatar(
-              identity: user,
-            ),
-            title: Text(user.displayName ?? ''),
-            subtitle: Text(user.email),
-          ),
-        ],
-      );
-    }
-    else{
     return Scaffold(
         body: Padding(
             padding: const EdgeInsets.all(10),
@@ -189,27 +157,18 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 10),
                 Row(
-                  // ignore: sort_child_properties_last
                   children: <Widget>[
-                    const Text('Forgot your password?'),
-                    TextButton(
-                      child: const Text(
-                        'Click here',
-                        style: TextStyle(
-                            color: Color(0xff4d5e6b),
-                            decoration: TextDecoration.underline),
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.only(
+                            right: 10, top: 10, bottom: 10),
+                        height: 1,
+                        color: Colors.grey,
                       ),
-                      onPressed: () {
-                        //signup screen change later(this is a instalogin)
-                        Navigator.pushNamed(
-                          context,
-                          '/home',
-                        );
-                      },
-                    )
+                    ),
                   ],
-                  mainAxisAlignment: MainAxisAlignment.center,
                 ),
                 Container(
                   height: 50,
@@ -284,22 +243,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                     children: <Widget>[
                       ElevatedButton.icon(
                         onPressed: () {
-                          //_handleFaceBookSignIn();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xff3b5998),
-                          minimumSize:
-                              const Size(double.infinity, 50),
-                        ),
-                        icon: Image.asset(
-                          'assets/images/facebook_logo.png',
-                          height: 24,
-                        ),
-                        label: Text(AppLocalizations.of(context)!.logInFacebook, style: TextStyle(color: Colors.white),),
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton.icon(
-                        onPressed: () {
                           _handleSignIn();
                         },
                         style: ElevatedButton.styleFrom(
@@ -318,7 +261,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 ),
               ],
             )));
-    }
   }
 
   

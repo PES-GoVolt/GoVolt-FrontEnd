@@ -60,13 +60,13 @@ class RouteCard extends StatelessWidget {
           )
         else if (showCancel)
           ElevatedButton(
-            onPressed: () {
+            onPressed: () {   
               RutaService().cancelRoute(ruta.id);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xff4d5e6b),
             ),
-            child: const Text('Cancelar Ruta'),
+            child: const Text('Cancelar Ruta', style: TextStyle(color: Colors.white)),
           ),
       ],
     );
@@ -91,7 +91,7 @@ class RouteCard extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xff4d5e6b),
               ),
-              child: Text('Cerrar'),
+              child: Text('Cerrar', style: TextStyle(color: Colors.white)),
             ),
           ],
         );
@@ -128,8 +128,8 @@ void _showConfirmationDialog(BuildContext context, String participant) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Eliminar participante'),
-        content: Text('¿Estás seguro que quieres eliminar a $participant de la ruta?'),
+        title: Text('Eliminar participante', style: TextStyle(color: Colors.white)),
+        content: Text('¿Estás seguro que quieres eliminar a $participant de la ruta?', style: TextStyle(color: Colors.white)),
         actions: <Widget>[
           TextButton(
             onPressed: () {

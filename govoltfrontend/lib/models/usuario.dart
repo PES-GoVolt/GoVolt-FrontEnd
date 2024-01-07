@@ -4,6 +4,7 @@ class Usuario {
   String firstName = '';
   String lastName = '';
   String photo = '';
+  String username = '';
 
   Usuario();
 }

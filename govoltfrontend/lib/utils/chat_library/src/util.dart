@@ -165,7 +165,7 @@ List<Object> calculateChatMessages(
           ((DateTime.fromMillisecondsSinceEpoch(nextMessage!.createdAt!).hour !=
                   DateTime.fromMillisecondsSinceEpoch(message.createdAt!)
                       .hour) ||
-              (DateTime.fromMillisecondsSinceEpoch(nextMessage!.createdAt!)
+              (DateTime.fromMillisecondsSinceEpoch(nextMessage.createdAt!)
                       .minute !=
                   DateTime.fromMillisecondsSinceEpoch(message.createdAt!)
                       .minute));

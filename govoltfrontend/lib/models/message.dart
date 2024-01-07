@@ -28,7 +28,7 @@ class MessageVolt {
     return MessageVolt(
       userid: map['sender'] ?? "",
       content: map['content'] ?? "",
-      timestamp: map['timestamp'].toString() ?? "",
+      timestamp: map['timestamp'].toString(),
       roomName: map['room_name'] ?? "",
       chatId: map['id_chat'] ?? ""
     );

@@ -15,8 +15,6 @@ import 'package:govoltfrontend/models/mapa/geometry.dart';
 import 'package:govoltfrontend/models/mapa/location.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
-import 'package:govoltfrontend/models/bike_station.dart';
-import 'package:govoltfrontend/services/puntos_carga_service.dart';
 import 'package:govoltfrontend/config.dart';
 import 'package:intl/intl.dart';
 

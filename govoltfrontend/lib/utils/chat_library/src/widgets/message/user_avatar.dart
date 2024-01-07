@@ -43,10 +43,6 @@ class UserAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = getUserAvatarNameColor(
-      author,
-      InheritedChatTheme.of(context).theme.userAvatarNameColors,
-    );
     final hasImage = author.imageUrl != null;
     final initials = getUserInitials(author);
     String usernameLastCharacter = author.id.characters.first;

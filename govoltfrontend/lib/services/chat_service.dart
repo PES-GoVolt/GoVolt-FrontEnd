@@ -47,14 +47,11 @@ class ChatService {
       dynamic response = await http.post(url, body: body, headers: headers);
       Map<String, dynamic> responseData = json.decode(response.body);
       String roomName = responseData['room_name'];
-      if (roomName != null)
-      {
-        sendMessage(roomName as String, "DefaultUser", "Me gustaria unirme a tu ruta");
-        subscribeToNewChat(roomName);
-      }
+      sendMessage(roomName, "DefaultUser", "Me gustaria unirme a tu ruta");
+      subscribeToNewChat(roomName);
     }
     catch (e){
-      print("PUTOPOL");
+      print("Error 400");
     }
   }
   

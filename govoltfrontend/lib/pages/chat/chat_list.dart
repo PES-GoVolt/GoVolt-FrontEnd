@@ -74,7 +74,7 @@ class _ChatListState extends State<ChatListVolter> {
             contentPadding: const EdgeInsets.all(16.0),
             title: Row(
               children: [
-                circleColorCustom(userName, idUserReciever),
+                circleColorCustom(userName),
                 const SizedBox(width: 16.0),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,8 +115,8 @@ class _ChatListState extends State<ChatListVolter> {
     );
   }
 
-  Widget circleColorCustom(String username, String id){
-    String usernameLastCharacter = id.characters.first;
+  Widget circleColorCustom(String username){
+    String usernameLastCharacter = username.characters.first;
     final initialsNumber = usernameLastCharacter.codeUnitAt(0) % 10;
     return CircleAvatar(
                   radius: 16,

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:govoltfrontend/pages/chat/chat_list.dart';
 import 'package:govoltfrontend/pages/mapa/mapa.dart';

@@ -22,6 +22,7 @@ class EditUserService {
 
       user.email = data['email'];
       user.phoneNumber = data['phone'];
+      user.username = data['username'];
       dynamic firstNameValue = data['first_name'];
       if (firstNameValue != null) {
         user.firstName = firstNameValue;
