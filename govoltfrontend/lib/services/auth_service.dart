@@ -18,7 +18,6 @@ class AuthService {
     try {
       final urllogin = Uri.parse(Config.loginFIREBASE);
       final res = await http.post(urllogin, headers: headers, body: encodedData);
-      print("RESPUESTAAA");
       print(res);
       final data = json.decode(res.body);
       final token = data['idToken'];

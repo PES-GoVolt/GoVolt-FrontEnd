@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:govoltfrontend/models/bike_station.dart';
 import 'package:govoltfrontend/models/markers_data.dart';
+import 'package:govoltfrontend/services/achievement_service.dart';
 import 'package:govoltfrontend/services/geolocator_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/mapa/place.dart';
@@ -23,9 +24,9 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapaState extends State<MapScreen> {
-
-
   final GeolocatiorService geolocatiorService = GeolocatiorService();
+  final AchievementService achievementService = AchievementService();
+
   final Completer<GoogleMapController> _mapController = Completer();
   final applicationBloc = AplicationBloc();
   late StreamSubscription locationSubscription;
@@ -50,6 +51,10 @@ class _MapaState extends State<MapScreen> {
   Set<Marker> _chargers = {};
   Set<Polyline> emptyRoute = {};
   Set<Marker> _bikeStations = {};
+
+  bool showChargers = true;
+  bool showBikeStations = true;
+
 
   @override
   void initState() {
@@ -99,6 +104,9 @@ class _MapaState extends State<MapScreen> {
             applicationBloc.place!.geometry.location.lng)));
     _myLocMarker = myMarkers.toSet();
     setState(() {});
+    await achievementService.incrementAchievement("search_location_achievement");
+    final Map<String, dynamic> achievementsMap = await achievementService.getAchievements();
+    print('Achievements Map: $achievementsMap');
   }
 
   void placeRandomSelected(double lat, double lng) {
@@ -286,6 +294,7 @@ class _MapaState extends State<MapScreen> {
     }
   }
 
+
   Future<void> centerScreen() async {
     final GoogleMapController controller = await _mapController.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
@@ -309,6 +318,8 @@ class _MapaState extends State<MapScreen> {
   Future<void> _changeCameraToRoutePreview() async {
     placeIsSelected = false;
     showRouteDetails = true;
+    showBikeStations = false;
+    showChargers = false;
     routeStarted = false;
     zoomMap = 14;
     final GoogleMapController controller = await _mapController.future;
@@ -581,6 +592,8 @@ class _MapaState extends State<MapScreen> {
                 ElevatedButton.icon(
                   onPressed: () async {
                     routeStarted = true;
+                    showBikeStations = false;
+                    showChargers = false;
                     showRouteDetails = false;
                     await _changeCameraToRouteMode();
                     setState(() {});
@@ -648,10 +661,10 @@ class _MapaState extends State<MapScreen> {
         cargarMarcadores();
       },
       myLocationEnabled: true,
-      
+
       markers: {
-        ..._chargers,
-        ..._bikeStations,
+        if (showChargers) ..._chargers,
+        if (showBikeStations) ..._bikeStations,
         ..._myLocMarker,
       },
       initialCameraPosition: CameraPosition(target: userPosition, zoom: 15.0),
@@ -773,29 +786,99 @@ class _MapaState extends State<MapScreen> {
     );
   }
 
-  Widget getMapScreen() {
-    return Scaffold(
-      bottomSheet: (placeIsSelected || showRouteDetails || routeStarted || chargerIsSelected)
-          ? bottomSheetInfo()
-          : null,
-      resizeToAvoidBottomInset: false,
-      body: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                  child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: !routeStarted ? _chooseSearchBarOrRouteDetails() : null,
-              ))
-            ],
-          ),
-          Expanded(
-              child: Stack(
+Widget getMapScreen() {
+  return Scaffold(
+    bottomSheet: (placeIsSelected || showRouteDetails || routeStarted || chargerIsSelected)
+        ? bottomSheetInfo()
+        : null,
+    resizeToAvoidBottomInset: false,
+    body: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _chooseSearchBarOrRouteDetails(),
+        ),
+        Expanded(
+          child: Stack(
             children: [
               SizedBox(
-                  height: MediaQuery.of(context).size.height - 100,
-                  child: mapWidget()),
+                height: MediaQuery.of(context).size.height - 100,
+                child: mapWidget(),
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 60, right: 11),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.7),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 1,
+                              blurRadius: 4,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        width: 39,
+                        height: 40,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                showChargers = !showChargers;
+                              });
+                            },
+                            icon: Icon(
+                              Icons.ev_station,
+                              color: showChargers ? Colors.green : const Color(0xff4d5e6b),
+                            ),
+                            iconSize: 26,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.7),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 1,
+                              blurRadius: 4,
+                              offset: Offset(0, 2), // Cambia el offset según necesites
+                            ),
+                          ],
+                        ),
+                        width: 39,
+                        height: 40,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                showBikeStations = !showBikeStations;
+                              });
+                            },
+                            icon: Icon(
+                              Icons.directions_bike,
+                              color: showBikeStations ? Colors.blue : const Color(0xff4d5e6b),
+                            ),
+                            iconSize: 26,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               if (applicationBloc.searchResults != null &&
                   applicationBloc.searchResults!.isNotEmpty)
                 blackPageForSearch(),
@@ -806,11 +889,13 @@ class _MapaState extends State<MapScreen> {
                   child: printListView(),
                 ),
             ],
-          )),
-        ],
-      ),
-    );
-  }
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {

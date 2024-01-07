@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/message.dart';
+import 'package:govoltfrontend/services/achievement_service.dart';
 import 'package:govoltfrontend/utils/chat_library/flutter_chat_ui.dart';
 import 'package:govoltfrontend/services/chat_service.dart';
 import 'package:uuid/uuid.dart';
@@ -29,11 +30,15 @@ class ChatPage extends StatefulWidget {
   final int lastConection;
   final String chatId;
   final Function refreshChats;
+  
+
 
   @override
   State<ChatPage> createState() => _ChatPageState();
   
 }
+
+final AchievementService achievementService = AchievementService();
 
 class _ChatPageState extends State<ChatPage> {
   List<types.Message> messages = [];
@@ -123,6 +128,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _handleSendPressed(types.PartialText message) {
+    
     final textMessage = types.TextMessage(
       author: types.User(id: myUserId),
       createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -131,6 +137,8 @@ class _ChatPageState extends State<ChatPage> {
     );
     chatService.sendMessage(roomName, myUserId, message.text);
     _addMessage(textMessage);
+    achievementService.incrementAchievement("messages_achievement");  
+    print(achievementService.getAchievements());
   }
 
   void _handleAttachmentPressed() { 
@@ -142,7 +150,7 @@ class _ChatPageState extends State<ChatPage> {
     return [
       TextButton(
         onPressed: () {
-          applicationBloc.addParticipant(idUserReciever, roomName.split("/")[0]);
+          applicationBloc.addParticipant(idUserReciever, roomName.split("/")[1]);
           Navigator.of(context).pop();
         },
         child: const Row(
@@ -156,8 +164,10 @@ class _ChatPageState extends State<ChatPage> {
       ),
       const SizedBox(height: 10),
       TextButton(
-        onPressed: () {
-
+        onPressed: () async {
+            await applicationBloc.deleteRequestParticipant(idUserReciever, roomName.split("/")[1], roomName);
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
         },
         child: const Row(
           children: <Widget>[
@@ -175,7 +185,10 @@ class _ChatPageState extends State<ChatPage> {
   {
     return [
       TextButton(
-        onPressed: () {
+        onPressed: () async {
+            await applicationBloc.deleteRequestParticipant(idUserReciever, roomName.split("/")[1], roomName);
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
         },
         child: const Row(
           children: <Widget>[

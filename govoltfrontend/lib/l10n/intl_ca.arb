@@ -50,4 +50,8 @@
     "changeLastName": "Cambia el teu cognom",
     "changePhoneNumber": "Cambie el teu numero de telèfon",
     "payment": "Tipus de pagament: "
+    "changePhoneNumber": "Cambie el teu numero de telèfon",
+    "noChats": "No hi han xats disponibles"
+
+
 }
