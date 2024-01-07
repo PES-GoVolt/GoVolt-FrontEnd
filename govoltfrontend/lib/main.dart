@@ -18,15 +18,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-const List<String> scopes = <String>[
-  'email',
-  'https://www.googleapis.com/auth/contacts.readonly',
-];
-
-GoogleSignIn _googleSignIn = GoogleSignIn(
-  scopes: scopes,
-);
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -80,7 +71,6 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  GoogleSignInAccount? _currentUser;
   //final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   TextEditingController emailController = TextEditingController();
@@ -97,57 +87,14 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     super.dispose();
   }
 
-   @override
+  @override
   void initState() {
+    // Suscríbete al stream en el método initState
     super.initState();
-
-    _googleSignIn.onCurrentUserChanged
-        .listen((GoogleSignInAccount? account) async {
-      setState(() {
-        _currentUser = account;
-      });
-    });
   }
-
-  Future<void> _handleSignIn() async {
-    try {
-      final googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return;
-      _currentUser = googleUser;
-      final googleAuth = await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken
-      );
-      await _auth.signInWithCredential(credential);
-    } catch (error) {
-      print(error);
-    }
-    setState(() {
-    });
-  }
-
-  Future<void> _handleSignOut() => _googleSignIn.disconnect();
 
   @override
   Widget build(BuildContext context) {
-    final GoogleSignInAccount? user = _currentUser;
-    if (user != null)
-    {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          ListTile(
-            leading: GoogleUserCircleAvatar(
-              identity: user,
-            ),
-            title: Text(user.displayName ?? ''),
-            subtitle: Text(user.email),
-          ),
-        ],
-      );
-    }
-    else{
     return Scaffold(
         body: Padding(
             padding: const EdgeInsets.all(10),
@@ -293,7 +240,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                       const SizedBox(height: 10),
                       ElevatedButton.icon(
                         onPressed: () {
-                          _handleSignIn();
+                          signInWithGoogle();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
@@ -311,6 +258,37 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 ),
               ],
             )));
+  }
+
+  Future<User?> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        return null;
+      }
+
+      print(googleUser);
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      
+      print("Google Sign-In Authentication:");
+      print("ID Token: ${googleAuth.idToken}");
+      print("Access Token: ${googleAuth.accessToken}");
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken
+      );
+
+      print("credenciales");
+      print(credential);
+
+      final UserCredential authResult =
+          await _auth.signInWithCredential(credential);
+      final User? user = authResult.user;
+      return user;
+    } catch (error) {
+      return null;
     }
   }
 
