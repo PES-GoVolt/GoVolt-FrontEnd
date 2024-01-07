@@ -361,7 +361,7 @@ class _MapaState extends State<MapScreen> {
             const SizedBox(height: 10,),
             ElevatedButton.icon(
                   onPressed: () async {
-                    // Cuando se presiona el botón, muestra un BottomSheet vacío
+                    achievementService.incrementAchievement("search_event_achievement");
                     await _showEventBottomSheet();
                   },
                   icon: const Icon(
@@ -871,6 +871,7 @@ class _MapaState extends State<MapScreen> {
               children: [
                 ElevatedButton.icon(
                   onPressed: () async {
+                    achievementService.incrementAchievement("nearest_charger_achievement");
                     goToNearestChargerEnable
                         ? applicationBloc.changePointer(0)
                         : await _goToNearestCharger();
