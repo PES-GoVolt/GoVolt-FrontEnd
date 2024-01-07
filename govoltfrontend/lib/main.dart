@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
+import 'package:govoltfrontend/models/rutas.dart';
 import 'package:govoltfrontend/services/local_notifications_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/markers_data.dart';
+import 'package:govoltfrontend/services/rutas_service.dart';
 import 'package:govoltfrontend/services/token_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:govoltfrontend/menu.dart';
@@ -18,6 +20,7 @@ import 'package:firebase_auth/firebase_auth.dart'; // Agrega esta importación
 
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:timezone/timezone.dart';
 import 'firebase_options.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -27,6 +30,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await createNotifications();
   //loadData();
   await LocalNotificationService().init();
   runApp(const MyApp());
@@ -39,6 +43,29 @@ void loadData() async {
   final bikeStations = await applicationBloc.getBikeStations();
   MarkersData.bikeStation = bikeStations;
 }
+
+Future<void> createNotifications() async{
+    RutaService rutaService = RutaService();
+    List<Ruta> myRutas = await rutaService.getMyRutas();
+    List<Ruta> partRutas = await rutaService.getPartRutas();
+
+    List<Ruta> combinedRutas = [...myRutas, ...partRutas];
+    for (Ruta ruta in combinedRutas){
+      final fechaString = ruta.date;
+      final DateTime fechaDateTime = DateTime.parse("$fechaString 08:00:00");
+      final DateTime fechaAUnDiaAntes = fechaDateTime.subtract(const Duration(days: 1));
+     final TZDateTime tzDateTime = TZDateTime(
+        local,
+        fechaAUnDiaAntes.year,
+        fechaAUnDiaAntes.month,
+        fechaAUnDiaAntes.day,
+        fechaAUnDiaAntes.hour,
+        fechaAUnDiaAntes.minute,
+        fechaAUnDiaAntes.second,
+      );
+      LocalNotificationService.zonedScheduleNotification(ruta.hashCode, "Remember", "petardo", tzDateTime);
+    }
+  }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);

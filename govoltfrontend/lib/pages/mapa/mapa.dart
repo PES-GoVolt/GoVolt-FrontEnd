@@ -60,15 +60,6 @@ class _MapaState extends State<MapScreen> {
     super.dispose();
   }
 
-/*
-  Future<BitmapDescriptor> createCustomMarkerIcon() async {
-  return BitmapDescriptor.fromAssetImage(
-    ImageConfiguration(size: Size(1000, 1000)),
-    'assets/images/bike_icon.png', 
-  );
-}
-*/
-
   void getMarkers() async {
     await cargarMarcadores();
     await cargarBicis();
