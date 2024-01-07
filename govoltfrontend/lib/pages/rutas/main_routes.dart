@@ -4,6 +4,8 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:govoltfrontend/models/rutas.dart';
 import 'package:govoltfrontend/pages/rutas/route_card.dart';
 import 'package:govoltfrontend/services/rutas_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class RoutesScreen extends StatefulWidget {
   const RoutesScreen({super.key});
@@ -14,10 +16,9 @@ class RoutesScreen extends StatefulWidget {
 
 TextField printSearchBar(Function(String) onSearch) {
   String query = '';
-
   return TextField(
-    decoration: const InputDecoration(
-      hintText: 'Busca tu trayecto ...',
+    decoration: InputDecoration(
+      //hintText: AppLocalizations.of(context)!.searchYourRoute,    ESTA NO VA?????????????????
       prefixIcon: Icon(Icons.search),
     ),
     onChanged: (value) {
@@ -98,8 +99,8 @@ class _RoutesState extends State<RoutesScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   const SizedBox(height: 20.0),
-                  const Text(
-                    'Precio',
+                  Text(
+                    AppLocalizations.of(context)!.price,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
                   ),
                   Row(
@@ -126,8 +127,8 @@ class _RoutesState extends State<RoutesScreen> {
                     },
                   ),
                   const SizedBox(height: 20.0),
-                  const Text(
-                    'Fecha',
+                  Text(
+                    AppLocalizations.of(context)!.date,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
                   ),
                   const SizedBox(height: 10.0),
@@ -151,7 +152,7 @@ class _RoutesState extends State<RoutesScreen> {
                         Text(
                           _selectedDateFilter != null
                               ? "${_selectedDateFilter!.year}-${_selectedDateFilter!.month}-${_selectedDateFilter!.day}"
-                              : 'Selecciona una fecha',
+                              : AppLocalizations.of(context)!.dateSelect,
                           style: const TextStyle(fontSize: 18.0),
                         ),
                         const Icon(Icons.calendar_today),
@@ -170,7 +171,7 @@ class _RoutesState extends State<RoutesScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xff4d5e6b),
                         ),
-                        child: const Text('Aplicar', style: TextStyle(color: Colors.white),),
+                        child: Text(AppLocalizations.of(context)!.apply, style: TextStyle(color: Colors.white),),
                       ),
                       ElevatedButton(
                         onPressed: () {
@@ -180,7 +181,7 @@ class _RoutesState extends State<RoutesScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xff4d5e6b),
                         ),
-                        child: const Text('Quitar'),
+                        child: Text(AppLocalizations.of(context)!.cancel),
                       ),
                     ],
                   ),
@@ -223,7 +224,7 @@ class _RoutesState extends State<RoutesScreen> {
                 });
               },
               child: _buildBottomButton(
-                text: 'My Routes',
+                text: AppLocalizations.of(context)!.myRoutes, //myRoutes
                 selected: _selectedIndex == 0,
               ),
             ),
@@ -247,7 +248,7 @@ class _RoutesState extends State<RoutesScreen> {
                 });
               },
               child: _buildBottomButton(
-                text: 'Search Routes',
+                text: AppLocalizations.of(context)!.searchRoutes,
                 selected: _selectedIndex == 1,
               ),
             ),
@@ -266,8 +267,8 @@ class _RoutesState extends State<RoutesScreen> {
         children: [
           Expanded(
             child: TextField(
-              decoration: const InputDecoration(
-                hintText: 'Busca tu trayecto ...',
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context)!.searchYourRoute,
                 prefixIcon: Icon(Icons.search),
               ),
               onChanged: (value) {
@@ -365,7 +366,7 @@ class _RoutesState extends State<RoutesScreen> {
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Center(child: Text('No se encontraron rutas.'));
+                return Center(child: Text(AppLocalizations.of(context)!.noRoutes));
               } else {
                 return ListView.builder(
                   itemCount: snapshot.data!.length,

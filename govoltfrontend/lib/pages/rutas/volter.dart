@@ -5,6 +5,8 @@ import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/usuario.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class VolterScreen extends StatefulWidget {
   @override
@@ -201,14 +203,14 @@ class _VolterScreenState extends State<VolterScreen> {
                     ),
                   ),
                   child: Text(edit
-                      ? 'Cancel'
-                      : 'Edit Profile'),
+                      ? AppLocalizations.of(context)!.cancel
+                      : AppLocalizations.of(context)!.editProfile),
                 )
               ],
             ),
             SizedBox(height: 20),
             Text(
-              'Opciones:',
+              AppLocalizations.of(context)!.options, //options
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -218,11 +220,12 @@ class _VolterScreenState extends State<VolterScreen> {
             if (edit) // Mostrar formularios si "edit" es verdadero
               Column(
                 children: [
-                  buildFormField('First Name', 'Change your first name',
+                  buildFormField(AppLocalizations.of(context)!.firstName, AppLocalizations.of(context)!.changeFirstName,
                       firstNameController),
                   buildFormField(
-                      'Last Name', 'Change your last name', lastNameController),
-                  buildFormField('Phone Number', 'Change your phone number',
+                      AppLocalizations.of(context)!.lastName, AppLocalizations.of(context)!.changeLastName, 
+                      lastNameController),
+                  buildFormField(AppLocalizations.of(context)!.phoneNumber, AppLocalizations.of(context)!.changePhoneNumber,
                       phoneNumberController,
                       isNumeric: true),
                   ElevatedButton(
@@ -238,7 +241,7 @@ class _VolterScreenState extends State<VolterScreen> {
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                     ),
-                    child: Text('Save Changes'),
+                    child: Text(AppLocalizations.of(context)!.saveChanges),
                   ),
                 ],
               )
@@ -246,10 +249,9 @@ class _VolterScreenState extends State<VolterScreen> {
               ListView(
                 shrinkWrap: true,
                 children: [
-                  buildOption('Cambiar contraseña', Icons.lock),
-                  buildOption('Logros', Icons.emoji_events),
-                  buildOption('Idioma', Icons.language),
-                  buildOption('Cerrar sesión', Icons.logout, isRed: true),
+                  buildOption(AppLocalizations.of(context)!.changePassword, Icons.lock),
+                  buildOption(AppLocalizations.of(context)!.achievements, Icons.emoji_events),
+                  buildOption(AppLocalizations.of(context)!.logOut, Icons.logout, isRed: true),
                 ],
               ),
           ],

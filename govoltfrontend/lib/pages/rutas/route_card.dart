@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/rutas.dart';
 import 'package:govoltfrontend/services/rutas_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RouteCard extends StatelessWidget {
   final Ruta ruta;
@@ -55,7 +56,7 @@ class RouteCard extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xff4d5e6b),
             ),
-            child: const Text('Solicitar unirse'),
+            child: Text(AppLocalizations.of(context)!.reqToJoin),
           )
         else if (showCancel)
           ElevatedButton(

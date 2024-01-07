@@ -1,29 +1,33 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:govoltfrontend/services/notifications_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/markers_data.dart';
-import 'package:govoltfrontend/services/token_service.dart';
-import 'package:http/http.dart' as http;
 import 'package:govoltfrontend/menu.dart';
 import 'package:govoltfrontend/pages/registro/registro.dart';
 import 'package:govoltfrontend/config.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
-import 'package:firebase_auth/firebase_auth.dart'; // Agrega esta importación
-
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+const List<String> scopes = <String>[
+  'email',
+  'https://www.googleapis.com/auth/contacts.readonly',
+];
+
+GoogleSignIn _googleSignIn = GoogleSignIn(
+  scopes: scopes,
+);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  //loadData();
+  loadData();
   await LocalNotificationService().init();
   runApp(const MyApp());
 }
@@ -57,6 +61,9 @@ class MyApp extends StatelessWidget {
                   MyStatefulWidget(),
             ),
       },
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+
     );
   }
 }
@@ -71,7 +78,7 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  //final GoogleSignIn _googleSignIn = GoogleSignIn();
+  GoogleSignInAccount? _currentUser;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -89,12 +96,64 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   @override
   void initState() {
-    // Suscríbete al stream en el método initState
     super.initState();
+
+    _googleSignIn.onCurrentUserChanged
+        .listen((GoogleSignInAccount? account) async {
+      setState(() {
+        _currentUser = account;
+      });
+    });
   }
+
+  Future<void> _handleSignIn() async {
+    try {
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return;
+      _currentUser = googleUser;
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken
+      );
+      final UserCredential authResult = await _auth.signInWithCredential(credential);
+      User? mUser = _auth.currentUser;
+      String? token = await mUser?.getIdToken();
+      Token.token = 'Bearer $token';
+      print(Token.token);
+      await Future.delayed(Duration.zero);
+      Navigator.pushNamed(
+        context,
+        '/home',
+      );
+    } catch (error) {
+      print(error);
+    }
+    setState(() {
+    });
+  }
+
+  Future<void> _handleSignOut() => _googleSignIn.disconnect();
 
   @override
   Widget build(BuildContext context) {
+    final GoogleSignInAccount? user = _currentUser;
+    if (user != null)
+    {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          ListTile(
+            leading: GoogleUserCircleAvatar(
+              identity: user,
+            ),
+            title: Text(user.displayName ?? ''),
+            subtitle: Text(user.email),
+          ),
+        ],
+      );
+    }
+    else{
     return Scaffold(
         body: Padding(
             padding: const EdgeInsets.all(10),
@@ -224,7 +283,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                     children: <Widget>[
                       ElevatedButton.icon(
                         onPressed: () {
-                          // Iniciar sesión con Facebook
+                          //_handleFaceBookSignIn();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xff3b5998),
@@ -235,12 +294,14 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                           'assets/images/facebook_logo.png',
                           height: 24,
                         ),
-                        label: const Text('Log in with Facebook'),
+                        label: const Text('Log in with Facebook',
+                          style: TextStyle(
+                            color: Colors.white),),
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton.icon(
                         onPressed: () {
-                          signInWithGoogle();
+                          _handleSignIn();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
@@ -251,47 +312,19 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                           'assets/images/google_logo_2.png',
                           height: 24,
                         ),
-                        label: const Text('Log in with Google'),
+                        label: const Text('Log in with Google',
+                        style: TextStyle(
+                            color: Colors.white,),),
                       ),
                     ],
                   ),
                 ),
               ],
             )));
-  }
-
-  Future<User?> signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      if (googleUser == null) {
-        return null;
-      }
-
-      print(googleUser);
-
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-      
-      print("Google Sign-In Authentication:");
-      print("ID Token: ${googleAuth.idToken}");
-      print("Access Token: ${googleAuth.accessToken}");
-
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken
-      );
-
-      print("credenciales");
-      print(credential);
-
-      final UserCredential authResult =
-          await _auth.signInWithCredential(credential);
-      final User? user = authResult.user;
-      return user;
-    } catch (error) {
-      return null;
     }
   }
 
+  
   void showSnackbar(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -303,12 +336,12 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   Future<void> login() async {
     if (emailController.text.isEmpty) {
-      showSnackbar("Email required.");
+      showSnackbar(AppLocalizations.of(context)!.emailReq);
       return;
     }
 
     if (passwordController.text.isEmpty) {
-      showSnackbar("Password required.");
+      showSnackbar(AppLocalizations.of(context)!.passwordReq);
       return;
     }
 

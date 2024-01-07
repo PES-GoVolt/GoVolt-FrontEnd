@@ -24,6 +24,8 @@ class Config {
   static const chats = "api/messages/chats/";
   static const addParticipantToRuta = "/routes/add_participant/";
 
+  static const achievementsAPI = "api/users/achievement/";
+ 
   static const apiKey = SecretKeys.apiKey;
   static const loginFIREBASE = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$apiKey";
   static const singupFIREBASE = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$apiKey";
