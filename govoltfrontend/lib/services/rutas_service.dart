@@ -12,7 +12,6 @@ class RutaService {
       final url = Uri.http(Config.apiURL, endpoint);
 
       final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
-      print(Token.token);
       final response = await http.get(url, headers: headers);
 
       if (response.statusCode == 200) {
@@ -51,4 +50,46 @@ class RutaService {
   Future<List<Ruta>> getPartRutas() async {
     return await getRutasFromEndpoint(Config.participantRutas);
   }
+  
+  String? getParticipantId(String participantName, Ruta ruta) {
+    if (ruta.participants != null && ruta.participantsName != null) {
+      int index = ruta.participantsName!.indexOf(participantName);
+      if (index != -1 && index < ruta.participants!.length) {
+        return ruta.participants![index];
+      }
+    }
+    return null;
+  }
+
+  Future<void> cancelRoute(String rutaId) async {
+    try {
+      final url = Uri.http(Config.apiURL, Config.allRutas);
+      final bodyRoute= {"route_id": rutaId};
+      final headers = {"Authorization": Token.token};
+      final response = await http.delete(url, headers: headers, body:bodyRoute );
+      if (response.statusCode != 200) {
+        throw Exception('Failed to cancel route');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
+  Future<void> deleteParticipant(String rutaId, String participantId, String participantName) async{
+    try {
+      final url = Uri.http(Config.apiURL, Config.myRutas);
+      final bodyRoute= {"route_id": rutaId, "participant_id": participantId, "participant_name":participantName};
+      final headers = {"Authorization": Token.token};
+      final response = await http.delete(url, headers: headers, body:bodyRoute );
+      if (response.statusCode != 200) {
+        throw Exception('Failed to remove participant');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+
+  }
+
+
+  
 }
