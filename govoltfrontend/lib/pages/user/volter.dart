@@ -193,8 +193,8 @@ class _VolterScreenState extends State<VolterScreen> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor:edit 
-                    ? Colors.red 
-                    : Color.fromRGBO(125, 193, 165, 1),
+                      ? Colors.red 
+                      : Color.fromRGBO(125, 193, 165, 1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
