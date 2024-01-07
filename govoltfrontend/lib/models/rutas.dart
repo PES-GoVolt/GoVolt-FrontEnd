@@ -7,6 +7,7 @@ class Ruta {
   final String date;
   final String creator;
   final List? participants;
+  final List? participantsName;
   final String creatorUsername;
 
   Ruta({
@@ -18,6 +19,7 @@ class Ruta {
     required this.date,
     required this.creator,
     this.participants,
+    this.participantsName,
     required this.creatorUsername
   });
 
@@ -31,6 +33,7 @@ class Ruta {
       date: json['fecha'] as String,
       creator: json['creador'] as String,
       participants: json['participantes'] as List?,
+      participantsName: json['nombreParticipantes'] as List?,
       creatorUsername: json['username'] as String
     );
   }
