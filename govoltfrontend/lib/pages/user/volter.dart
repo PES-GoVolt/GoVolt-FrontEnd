@@ -3,10 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/usuario.dart';
+import 'package:govoltfrontend/pages/user/user_achievements.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
 
 class VolterScreen extends StatefulWidget {
   @override
@@ -192,9 +192,7 @@ class _VolterScreenState extends State<VolterScreen> {
                     });
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: edit
-                        ? Colors.red
-                        : Colors.green,
+                    backgroundColor: edit ? Colors.red : Colors.green,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
@@ -217,12 +215,17 @@ class _VolterScreenState extends State<VolterScreen> {
             if (edit) // Mostrar formularios si "edit" es verdadero
               Column(
                 children: [
-                  buildFormField(AppLocalizations.of(context)!.firstName, AppLocalizations.of(context)!.changeFirstName,
+                  buildFormField(
+                      AppLocalizations.of(context)!.firstName,
+                      AppLocalizations.of(context)!.changeFirstName,
                       firstNameController),
                   buildFormField(
-                      AppLocalizations.of(context)!.lastName, AppLocalizations.of(context)!.changeLastName, 
+                      AppLocalizations.of(context)!.lastName,
+                      AppLocalizations.of(context)!.changeLastName,
                       lastNameController),
-                  buildFormField(AppLocalizations.of(context)!.phoneNumber, AppLocalizations.of(context)!.changePhoneNumber,
+                  buildFormField(
+                      AppLocalizations.of(context)!.phoneNumber,
+                      AppLocalizations.of(context)!.changePhoneNumber,
                       phoneNumberController,
                       isNumeric: true),
                   ElevatedButton(
@@ -246,9 +249,13 @@ class _VolterScreenState extends State<VolterScreen> {
               ListView(
                 shrinkWrap: true,
                 children: [
-                  buildOption(AppLocalizations.of(context)!.changePassword, Icons.lock),
-                  buildOption(AppLocalizations.of(context)!.achievements, Icons.emoji_events),
-                  buildOption(AppLocalizations.of(context)!.logOut, Icons.logout, isRed: true),
+                  buildOption(
+                      AppLocalizations.of(context)!.changePassword, Icons.lock),
+                  buildOption(AppLocalizations.of(context)!.achievements,
+                      Icons.emoji_events),
+                  buildOption(
+                      AppLocalizations.of(context)!.logOut, Icons.logout,
+                      isRed: true),
                 ],
               ),
           ],
@@ -259,22 +266,29 @@ class _VolterScreenState extends State<VolterScreen> {
 
   Widget buildOption(String text, IconData icon, {bool isRed = false}) {
     return ListTile(
-        leading: Icon(
-          icon,
+      leading: Icon(
+        icon,
+        color: isRed ? Colors.red : Colors.grey,
+      ),
+      title: Text(
+        text,
+        style: TextStyle(
+          fontSize: 16,
           color: isRed ? Colors.red : Colors.grey,
         ),
-        title: Text(
-          text,
-          style: TextStyle(
-            fontSize: 16,
-            color: isRed ? Colors.red : Colors.grey,
-          ),
-        ),
-        onTap: () {
-          if (isRed) {
-            logout();
-          }
-        });
+      ),
+      onTap: () {
+        if (isRed) {
+          logout();
+        } else if (text == AppLocalizations.of(context)!.achievements) {
+          // Navegar a la pantalla de logros
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AchievementsScreen()),
+          );
+        }
+      },
+    );
   }
 
   Widget buildFormField(
