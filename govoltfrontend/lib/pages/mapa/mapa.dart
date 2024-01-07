@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:govoltfrontend/models/bike_station.dart';
 import 'package:govoltfrontend/models/markers_data.dart';
 import 'package:govoltfrontend/services/achievement_service.dart';
 import 'package:govoltfrontend/services/geolocator_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/mapa/place.dart';
 import 'package:govoltfrontend/models/place_search.dart';
+import 'package:govoltfrontend/services/puntos_carga_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:govoltfrontend/models/mapa/geometry.dart';
 import 'package:govoltfrontend/models/mapa/location.dart';
@@ -37,6 +40,10 @@ class _MapaState extends State<MapScreen> {
   bool goToNearestChargerEnable = false;
   late BitmapDescriptor bikeStationIcon;
   bool allDataLoaded = false;
+  bool chargerIsSelected = false;
+  Coordenada? coordSelected;
+  BikeStation? bikeStation;
+  bool rutaChargerBike = false;
 
   List<PlaceSearch>? searchResults;
   List<Marker> myMarkers = [];
@@ -80,7 +87,6 @@ class _MapaState extends State<MapScreen> {
   }
 
   void valueChanged(var value) async {
-    //AQUI llamada a back de trofeo buscar --> mirar que sea en pressed!!
     await applicationBloc.searchPlaces(
         value, userPosition.latitude, userPosition.longitude);
     searchResults = applicationBloc.searchResults;
@@ -149,41 +155,148 @@ class _MapaState extends State<MapScreen> {
         CameraPosition(target: LatLng(lat, lng), zoom: 17)));
   }
 
-  cargarMarcadores() {
-  try {
-    final nuevosMarcadores = MarkersData.chargers.map((punto) {
-      return Marker(
-        markerId: MarkerId(punto.chargerId),
-        position: LatLng(punto.longitud, punto.latitud),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-        infoWindow: InfoWindow(title: 'Cargador ID: ${punto.chargerId}'),
-      );
-    }).toSet();
-    setState(() {
-      _chargers = nuevosMarcadores;
-    });
-  } catch (e) {
-    print('Error al cargar marcadores: $e');
+  void chargerSelected(double lat, double lng) async {
+    Location loc = Location(lat: lng, lng: lat);
+    Geometry geo = Geometry(location: loc);
+    Place place = Place(geometry: geo, address: "address", name: "name", uri: "uri");
+    applicationBloc.chargerFinded(place);
+    _goToPlace(place);
+    setState(() {});
   }
-}
 
-cargarBicis() {
-  try {
-    final newMarkers = MarkersData.bikeStation.map((station) {
-      return Marker(
-        markerId: MarkerId(station.stationId),
-        position: LatLng(station.latitude, station.longitude),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-        infoWindow: InfoWindow(title: 'Station ID: ${station.stationId}'),
-      );
-    }).toSet();
-    setState(() {
-      _bikeStations = newMarkers;
-    });
-  } catch (e) {
-    print('Error loading markers: $e');
+  Container ChargerInfoDisplay()
+  {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.25,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.0),
+        border: Border.all(
+          color: const Color.fromRGBO(77, 94, 107, 1),
+          width: 2.0,
+        ),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    coordSelected!.adre_a,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    chargerIsSelected = false;
+                    rutaChargerBike = true;
+                    await _calculateRoute();
+                    await _changeCameraToRoutePreview();
+                    setState(() {});
+                  },
+                  icon: const Icon(
+                    Icons
+                        .directions,
+                    color: Colors.white,
+                  ),
+                  label: const Text(
+                    'Ruta',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.blue,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.red)),
+                  onPressed: () {
+                    chargerIsSelected = false;
+                    setState(() {});
+                  },
+                  child: const Text('Salir',
+                      style: TextStyle(color: Colors.black, fontSize: 16)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              coordSelected!.municipi + ", " + coordSelected!.provincia,
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              AppLocalizations.of(context)!.payment + coordSelected!.acces,
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              "${coordSelected!.tipus_connexi}, ${coordSelected!.ac_dc}",
+              style: const TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
+      ),
+    );
   }
-}
+
+  cargarMarcadores() {
+    try {
+      final nuevosMarcadores = MarkersData.chargers.map((punto) {
+        return Marker(
+          markerId: MarkerId(punto.chargerId),
+          position: LatLng(punto.longitud, punto.latitud),
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+          onTap: () {
+            coordSelected = punto;
+            chargerIsSelected = true;
+            chargerSelected(punto.latitud, punto.longitud);
+            setState(() {});
+          }
+        );
+      }).toSet();
+      setState(() {
+        _chargers = nuevosMarcadores;
+      });
+    } catch (e) {
+      print('Error al cargar marcadores: $e');
+    }
+  }
+
+  cargarBicis() {
+    try {
+      final newMarkers = MarkersData.bikeStation.map((station) {
+        return Marker(
+          markerId:
+              MarkerId(station.stationId),
+          position: LatLng(station.latitude, station.longitude),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+          onTap: () {
+            chargerIsSelected = false;
+            setState(() {});
+          }
+        );
+      }).toSet(); 
+      setState(() {
+        _bikeStations = newMarkers;
+      });
+    } catch (e) {
+      print('Error loading markers: $e');
+    }
+  }
 
 
   Future<void> centerScreen() async {
@@ -229,6 +342,15 @@ cargarBicis() {
     await applicationBloc.calculateRoute(points);
   }
 
+  Future<void> _calculateRouteCharger(double lat, double lng) async {
+    List<LatLng> points = [
+      userPosition,
+      LatLng(lat,
+          lng)
+    ];
+    await applicationBloc.calculateRoute(points);
+  }
+
   Future<void> _changeCameraToRouteMode() async {
     final GoogleMapController controller = await _mapController.future;
     zoomMap = 19;
@@ -250,8 +372,6 @@ cargarBicis() {
 
     setState(() {});
   }
-
-
 
   Widget buildRouteDetailsContainer() {
     return Stack(
@@ -295,8 +415,6 @@ cargarBicis() {
     );
   }
 
-  
-
 
   Widget buildRouteModeButton(IconData icon, String label, int mode) {
     return ElevatedButton(
@@ -336,6 +454,8 @@ cargarBicis() {
 
   Container bottomSheetInfo() {
     if (placeIsSelected) return _showPlaceInfo();
+
+    if (chargerIsSelected) return ChargerInfoDisplay();
 
     if (routeStarted == true) return bottomSheetDisplayedDuringRoute();
 
@@ -508,7 +628,13 @@ cargarBicis() {
                     placeIsSelected = false;
                     setState(() {
                       showRouteDetails = false;
-                      placeIsSelected = true;
+                      if (rutaChargerBike){
+                        chargerIsSelected = true;
+                          rutaChargerBike = false;
+                      }
+                      else{
+                        placeIsSelected = true;
+                        }
                       applicationBloc.cleanRoute();
                       centerScreen();
                     });
@@ -539,6 +665,7 @@ cargarBicis() {
         cargarMarcadores();
       },
       myLocationEnabled: true,
+
       markers: {
         if (showChargers) ..._chargers,
         if (showBikeStations) ..._bikeStations,
@@ -581,6 +708,7 @@ cargarBicis() {
       itemBuilder: (context, index) {
         return ListTile(
             onTap: () {
+              chargerIsSelected = false;
               FocusScope.of(context).unfocus();
               placeSelected(applicationBloc.searchResults![index].placeId);
             },
@@ -664,7 +792,7 @@ cargarBicis() {
 
 Widget getMapScreen() {
   return Scaffold(
-    bottomSheet: (placeIsSelected || showRouteDetails || routeStarted)
+    bottomSheet: (placeIsSelected || showRouteDetails || routeStarted || chargerIsSelected)
         ? bottomSheetInfo()
         : null,
     resizeToAvoidBottomInset: false,
@@ -698,7 +826,7 @@ Widget getMapScreen() {
                               color: Colors.grey.withOpacity(0.5),
                               spreadRadius: 1,
                               blurRadius: 4,
-                              offset: Offset(0, 2), 
+                              offset: Offset(0, 2),
                             ),
                           ],
                         ),

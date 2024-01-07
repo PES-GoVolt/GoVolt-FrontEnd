@@ -49,5 +49,7 @@
     "changeFirstName": "Change your first name",
     "changeLastName": "Change your last name",
     "changePhoneNumber": "Change your phone number",
+    "payment": "Payment Type: ",
+    "changePhoneNumber": "Change your phone number",
     "noChats": "No chats available"
 }

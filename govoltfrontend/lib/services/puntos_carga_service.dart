@@ -15,7 +15,7 @@ class ChargersService {
       final response = await http.get(url, headers: headers);
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
+         final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
         List<Coordenada> puntosDeCarga = [];
 
         for (var punto in data) {
@@ -56,8 +56,15 @@ class Coordenada {
   final double latitud;
   final double longitud;
   final String chargerId;
+  final String ac_dc;
+  final String acces;
+  final String adre_a;
+  final String provincia;
+  final String municipi;
+  final String tipus_connexi;
 
-  Coordenada(this.latitud, this.longitud, this.chargerId);
+
+  Coordenada(this.latitud, this.longitud, this.chargerId, this.ac_dc, this.acces, this.adre_a, this.provincia, this.municipi, this.tipus_connexi);
 
   factory Coordenada.fromJson(Map<String, dynamic> json) {
     return Coordenada(
@@ -65,6 +72,13 @@ class Coordenada {
       json['longitude'] as double,
       json['charger_id']
           as String,
+      json["ac_dc"] as String,  
+      json["acces"] as String, 
+      json["adre_a"] as String,  
+      json["provincia"] as String,  
+      json["municipi"] as String,  
+      json["tipus_connexi"] as String,  
+      
     );
   }
 }
