@@ -258,7 +258,7 @@ class _MapaState extends State<MapScreen> {
             if (chargerIsSelected) // Muestra información solo si un cargador está seleccionado
               ExpansionTile(
                 title: const Text(
-                  'Información del Cargador',
+                  'Eventos cercanos',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 initiallyExpanded:
@@ -296,7 +296,12 @@ class _MapaState extends State<MapScreen> {
                                         'Fecha de Inicio: ${item['dataIni']}',
                                         style: const TextStyle(fontSize: 16),
                                       ),
-                                      const Divider(), // Separador entre cada objeto de la respuesta
+
+                                      Text(
+                                        'Dirección: ${item['adreca']}',
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                      const Divider(),
                                     ],
                                   );
                                 }).toList() ??
