@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:govoltfrontend/services/achievement_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AchievementsScreen extends StatefulWidget {
   @override
@@ -63,7 +64,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Achievements'),
+        title: Text(AppLocalizations.of(context)!.achievements),
         backgroundColor: Color.fromRGBO(125, 193, 165, 1),
       ),
       body: _achievements.isNotEmpty
@@ -80,24 +81,30 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
 
                 switch (achievementName) {
                   case 'messages_achievement':
-                    title = 'Messenger';
-                    description = 'You have sent someone a message!';
+                    title = AppLocalizations.of(context)!.messages_achievement;
+                    description = AppLocalizations.of(context)!
+                        .messages_achievement_description;
                     iconData = Icons.mail;
                     break;
                   case 'nearest_charger_achievement':
-                    title = 'Optimizer';
-                    description =
-                        'You have redirected your route to a near charger';
+                    title = AppLocalizations.of(context)!
+                        .nearest_charger_achievement;
+                    description = AppLocalizations.of(context)!
+                        .nearest_charger_achievement_description;
                     iconData = Icons.battery_full;
                     break;
                   case 'search_location_achievement':
-                    title = 'Explorer';
-                    description = 'You have searched a location';
+                    title = AppLocalizations.of(context)!
+                        .search_location_achievement;
+                    description = AppLocalizations.of(context)!
+                        .search_location_achievement_description;
                     iconData = Icons.search;
                     break;
                   case 'search_event_achievement':
-                    title = 'When and Where?';
-                    description = 'You have searched an event';
+                    title =
+                        AppLocalizations.of(context)!.search_event_achievement;
+                    description = AppLocalizations.of(context)!
+                        .search_event_achievement_description;
                     iconData = Icons.event;
                     break;
                 }
@@ -128,17 +135,10 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                                 _getIconColor(achievementName, progress)),
                           ),
                         ),
-                        Text(
-                          'Score: $progress',
-                          style: TextStyle(
-                            color: _getTextColor(
-                                _getIconColor(achievementName, progress)),
-                          ),
-                        ),
                       ],
                     ),
                     trailing: Text(
-                      'Progress: $progress',
+                      'Score: $progress',
                       style: TextStyle(
                         color: _getTextColor(
                             _getIconColor(achievementName, progress)),

@@ -51,5 +51,14 @@
     "changePhoneNumber": "Cambie el teu numero de telèfon",
     "payment": "Tipus de pagament: ",
     "changePhoneNumber": "Cambie el teu numero de telèfon",
-    "noChats": "No hi han xats disponibles"
+    "noChats": "No hi han xats disponibles",
+    "messages_achievement": "Missatger",
+    "messages_achievement_description": "Has enviat un missatge a algú",
+    "nearest_charger_achievement": "Optimitzador",
+    "nearest_charger_achievement_description": "Has redirigit la teva ruta a un carregador proper",
+    "search_location_achievement": "Explorador",
+    "search_location_achievement_description": "Has cercat una ubicació",
+    "search_event_achievement": "Quan i on?",
+    "search_event_achievement_description": "Has cercat un esdeveniment"
+
 }
