@@ -83,6 +83,10 @@ class AplicationBloc with ChangeNotifier {
     notifyListeners();
   }
 
+  chargerFinded(Place p) {
+    place = p;
+  }
+
 
   addParticipant(String userId, String idRuta)
   {

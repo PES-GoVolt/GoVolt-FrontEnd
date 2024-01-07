@@ -27,15 +27,15 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  //loadData();
+  loadData();
   await LocalNotificationService().init();
   runApp(const MyApp());
 }
 
 void loadData() async {
   final applicationBloc = AplicationBloc();
-  final puntosDeCarga = await applicationBloc.getChargers();
-  MarkersData.chargers = puntosDeCarga;
+  //final puntosDeCarga = await applicationBloc.getChargers();
+  //MarkersData.chargers = puntosDeCarga;
   final bikeStations = await applicationBloc.getBikeStations();
   MarkersData.bikeStation = bikeStations;
 }
