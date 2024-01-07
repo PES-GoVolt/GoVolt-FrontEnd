@@ -294,9 +294,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                           'assets/images/facebook_logo.png',
                           height: 24,
                         ),
-                        label: const Text('Log in with Facebook',
-                          style: TextStyle(
-                            color: Colors.white),),
+                        label: Text(AppLocalizations.of(context)!.logInFacebook, style: TextStyle(color: Colors.white),),
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton.icon(
@@ -312,9 +310,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                           'assets/images/google_logo_2.png',
                           height: 24,
                         ),
-                        label: const Text('Log in with Google',
-                        style: TextStyle(
-                            color: Colors.white,),),
+                        label:  Text(AppLocalizations.of(context)!.logInGoogle, style: TextStyle(color: Colors.white),),
                       ),
                     ],
                   ),
@@ -368,6 +364,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     Navigator.pushNamed(
       context,
       '/home',
-    );
+    ).then((result){
+      Token.token = "";
+    });
   }
 }
