@@ -11,7 +11,7 @@ import 'package:govoltfrontend/services/places_service.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:govoltfrontend/services/puntos_bici_service.dart';
 import 'package:govoltfrontend/services/puntos_carga_service.dart';
-import 'package:govoltfrontend/services/routes_service.dart';
+import 'package:govoltfrontend/services/google_routes_service.dart';
 
 class AplicationBloc with ChangeNotifier {
   final placesService = PlacesService();
@@ -58,19 +58,17 @@ class AplicationBloc with ChangeNotifier {
   }*/
 
   Future<List<Coordenada>> getChargers() async {
-    try {
+    try
+    {
       return await chargersService.obtenerPuntosDeCarga();
-    } catch (e) {
+    }
+    catch(e){
       return [];
     }
   }
 
   Future<List<BikeStation>> getBikeStations() async {
     return await bikeService.getBikeStations();
-  }
-
-  foundMarker(Place p) {
-    place = p;
   }
 
   searchNearestCharger(LatLng coord) async {
@@ -85,13 +83,23 @@ class AplicationBloc with ChangeNotifier {
     notifyListeners();
   }
 
-  addParticipant(String userId, String idRuta) {
-    rutasService.addParticipant(userId, idRuta);
+  chargerFinded(Place p) {
+    place = p;
   }
 
+
+  addParticipant(String userId, String idRuta)
+  {
+      rutasService.addParticipant(userId, idRuta);
+  }
+
+  deleteRequestParticipant(String userId, String idRuta, String roomName) async
+  {
+    await rutasService.deleteRequestParticipant(userId, idRuta, roomName);
+  }
+
+
   Future<dynamic> login(String encodedData) async {
-    print("entro en application_bloc.dart");
-    print(encodedData);
     return await authService.login(encodedData);
   }
 
@@ -114,10 +122,11 @@ class AplicationBloc with ChangeNotifier {
   }
 
   createRouteListener(String roomName) async {
-    chatService.createChatRouteListener(roomName);
+      chatService.createChatRouteListener(roomName);
   }
 
-  createChat(String idRuta, String userUid, String creatorUid) {
-    chatService.createChat(idRuta, userUid, creatorUid);
+  createChat(String idRuta, String userUid, String creatorUid){
+      chatService.createChat(idRuta, userUid, creatorUid);
   }
+
 }

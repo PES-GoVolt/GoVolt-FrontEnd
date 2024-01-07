@@ -1,4 +1,4 @@
-import 'package:govoltfrontend/api_keys.dart';
+import "package:govoltfrontend/api_keys.dart";
 
 class Config {
   static const String appName = "Go Volt";
@@ -23,22 +23,15 @@ class Config {
   static const allRutas = "api/routes";
   static const myRutas = "api/routes/my_routes";
   static const participantRutas = "api/routes/my_current_routes";
+  static const requestToRoute = "api/routes/requests";
 
   static const chatAddMessage = "api/messages/";
   static const chats = "api/messages/chats/";
-  static const addParticipantToRuta = "/routes/add_participant/";
 
-  //static const apiKey = "AIzaSyBisV7xClzwO5332af5dzMxo8AvZn7r4g4"; //marc
-  //static const apiKey = "AIzaSyBAsdEsXKyQdZOVZYvdYCU4Vf5X6EAwMbA"; //pol
-  //static const apiKey = "AIzaSyDQyP4_8RMlTgkOzV9rLIuGNB7sIcI3HLQ"; //esther
-  // static const apiKey = "AIzaSyAbkiu2xd6Atxm1LRBctEAGxe_UTt0LZKI"; //ruben
+ static const achievementsAPI = "api/users/achievement/";
 
   static const apiKey = SecretKeys.apiKey;
-  static const loginFIREBASE =
-      "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$apiKey";
-  static const singupFIREBASE =
-      "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$apiKey";
-
-  static const singupGoogleFIREBASE =
-      "https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=$apiKey";
+  static const loginFIREBASE = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$apiKey";
+  static const singupFIREBASE = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$apiKey";
+  static const singupGoogleFIREBASE = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=$apiKey";
 }

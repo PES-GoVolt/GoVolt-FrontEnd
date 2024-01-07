@@ -251,13 +251,4 @@ class ChatService {
       });
   }
 
-  void addParticipantToRoute(String idUser, String idRuta) async {
-    String urlInfo = "${Config.chatAddMessage}/$idRuta/$idUser/";
-    final url = Uri.http(Config.apiURL, urlInfo);
-    final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
-    try{
-    await http.post(url, headers: headers);
-    }
-    catch (error){}
-  }
 }

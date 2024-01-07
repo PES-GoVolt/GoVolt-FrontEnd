@@ -1,13 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:govoltfrontend/models/bike_station.dart';
 import 'package:govoltfrontend/models/markers_data.dart';
+import 'package:govoltfrontend/services/achievement_service.dart';
 import 'package:govoltfrontend/services/geolocator_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/mapa/place.dart';
 import 'package:govoltfrontend/models/place_search.dart';
+import 'package:govoltfrontend/services/puntos_carga_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:govoltfrontend/models/mapa/geometry.dart';
 import 'package:govoltfrontend/models/mapa/location.dart';
@@ -27,6 +29,8 @@ class MapScreen extends StatefulWidget {
 
 class _MapaState extends State<MapScreen> {
   final GeolocatiorService geolocatiorService = GeolocatiorService();
+  final AchievementService achievementService = AchievementService();
+
   final Completer<GoogleMapController> _mapController = Completer();
   final applicationBloc = AplicationBloc();
   late StreamSubscription locationSubscription;
@@ -41,7 +45,10 @@ class _MapaState extends State<MapScreen> {
   late BitmapDescriptor bikeStationIcon;
   bool allDataLoaded = false;
   bool chargerIsSelected = false;
-  bool showEventInfo = false;
+  Coordenada? coordSelected;
+  BikeStation? bikeStation;
+  bool rutaChargerBike = false;
+
   List<PlaceSearch>? searchResults;
   List<Marker> myMarkers = [];
   Set<Marker> _myLocMarker = {};
@@ -50,6 +57,10 @@ class _MapaState extends State<MapScreen> {
   Set<Marker> _bikeStations = {};
   Coordenada? coordSelected;
   BikeStation? bikeStation;
+
+  bool showChargers = true;
+  bool showBikeStations = true;
+
 
   @override
   void initState() {
@@ -99,6 +110,9 @@ class _MapaState extends State<MapScreen> {
             applicationBloc.place!.geometry.location.lng)));
     _myLocMarker = myMarkers.toSet();
     setState(() {});
+    await achievementService.incrementAchievement("search_location_achievement");
+    final Map<String, dynamic> achievementsMap = await achievementService.getAchievements();
+    print('Achievements Map: $achievementsMap');
   }
 
   void placeRandomSelected(double lat, double lng) {
@@ -141,52 +155,51 @@ class _MapaState extends State<MapScreen> {
     }
   }
 
-  void chargerSelected(double lat, double lng) async {
-    Location loc = Location(lat: lng, lng: lat);
-    Geometry geo = Geometry(location: loc);
-    Place place =
-        Place(geometry: geo, address: "address", name: "name", uri: "uri");
-    applicationBloc.foundMarker(place);
-    _goToPlace(place);
-    setState(() {});
-  }
-
   Future<void> _goToRandomPlace(double lat, double lng) async {
     final GoogleMapController controller = await _mapController.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(target: LatLng(lat, lng), zoom: 17)));
   }
 
-  Future<List<Map<String, dynamic>>> fetchDataFromApi(
-      double? latitud, double? longitud) async {
-    DateTime now = DateTime.now();
-    DateTime maxDate = now.add(Duration(days: 7));
-    String formattedNow = DateFormat('dd-MM-yyyy').format(now);
-    String formattedMaxDate = DateFormat('dd-MM-yyyy').format(maxDate);
-    final Uri uri = Uri.https(
-      Config.eventsURL,
-      Config.eventosAPI,
-      {
-        'latitud': longitud.toString(),
-        'longitud': latitud.toString(),
-        'distancia': '2',
-        'data_min': formattedNow,
-        'data_max': formattedMaxDate,
-      },
-    );
-
-    try {
-      final response = await http.get(uri);
-      // Procesa la respuesta y devuelve una lista de objetos
-      final List<Map<String, dynamic>> data =
-          List<Map<String, dynamic>>.from(json.decode(utf8.decode(response.bodyBytes)));
-      return data;
-    } catch (e) {
-      // Maneja cualquier error que pueda ocurrir durante la solicitud
-      print("Error en la solicitud: $e");
-      return []; // Retorna una lista vacía en caso de error
-    }
+  void chargerSelected(double lat, double lng) async {
+    Location loc = Location(lat: lng, lng: lat);
+    Geometry geo = Geometry(location: loc);
+    Place place = Place(geometry: geo, address: "address", name: "name", uri: "uri");
+    applicationBloc.chargerFinded(place);
+    _goToPlace(place);
+    setState(() {});
   }
+
+  Future<List<Map<String, dynamic>>> fetchDataFromApi(
+        double? latitud, double? longitud) async {
+      DateTime now = DateTime.now();
+      DateTime maxDate = now.add(Duration(days: 7));
+      String formattedNow = DateFormat('dd-MM-yyyy').format(now);
+      String formattedMaxDate = DateFormat('dd-MM-yyyy').format(maxDate);
+      final Uri uri = Uri.https(
+        Config.eventsURL,
+        Config.eventosAPI,
+        {
+          'latitud': longitud.toString(),
+          'longitud': latitud.toString(),
+          'distancia': '2',
+          'data_min': formattedNow,
+          'data_max': formattedMaxDate,
+        },
+      );
+
+      try {
+        final response = await http.get(uri);
+        // Procesa la respuesta y devuelve una lista de objetos
+        final List<Map<String, dynamic>> data =
+            List<Map<String, dynamic>>.from(json.decode(utf8.decode(response.bodyBytes)));
+        return data;
+      } catch (e) {
+        // Maneja cualquier error que pueda ocurrir durante la solicitud
+        print("Error en la solicitud: $e");
+        return []; // Retorna una lista vacía en caso de error
+      }
+    }
 
   Container ChargerInfoDisplay()
   {
@@ -280,16 +293,17 @@ class _MapaState extends State<MapScreen> {
     try {
       final nuevosMarcadores = MarkersData.chargers.map((punto) {
         return Marker(
-            markerId: MarkerId(punto.chargerId),
-            position: LatLng(punto.longitud, punto.latitud),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueGreen),
-            onTap: () {
-              coordSelected = punto;
-              chargerIsSelected = true;
-              chargerSelected(punto.latitud, punto.longitud);
-              setState(() {});
-            });
+          markerId: MarkerId(punto.chargerId),
+          position: LatLng(punto.longitud, punto.latitud),
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+          onTap: () {
+            coordSelected = punto;
+            chargerIsSelected = true;
+            chargerSelected(punto.latitud, punto.longitud);
+            setState(() {});
+          }
+        );
       }).toSet();
       setState(() {
         _chargers = nuevosMarcadores;
@@ -303,17 +317,16 @@ class _MapaState extends State<MapScreen> {
     try {
       final newMarkers = MarkersData.bikeStation.map((station) {
         return Marker(
-            markerId: MarkerId(station.stationId),
-            position: LatLng(station.latitude, station.longitude),
-            icon:
-                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-            onTap: () {
-              bikeStation = station;
-              chargerIsSelected = true;
-              chargerSelected(station.longitude, station.latitude);
-              setState(() {});
-            });
-      }).toSet();
+          markerId:
+              MarkerId(station.stationId),
+          position: LatLng(station.latitude, station.longitude),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+          onTap: () {
+            chargerIsSelected = false;
+            setState(() {});
+          }
+        );
+      }).toSet(); 
       setState(() {
         _bikeStations = newMarkers;
       });
@@ -345,6 +358,8 @@ class _MapaState extends State<MapScreen> {
   Future<void> _changeCameraToRoutePreview() async {
     placeIsSelected = false;
     showRouteDetails = true;
+    showBikeStations = false;
+    showChargers = false;
     routeStarted = false;
     zoomMap = 14;
     final GoogleMapController controller = await _mapController.future;
@@ -359,6 +374,15 @@ class _MapaState extends State<MapScreen> {
       userPosition,
       LatLng(applicationBloc.place!.geometry.location.lat,
           applicationBloc.place!.geometry.location.lng)
+    ];
+    await applicationBloc.calculateRoute(points);
+  }
+
+  Future<void> _calculateRouteCharger(double lat, double lng) async {
+    List<LatLng> points = [
+      userPosition,
+      LatLng(lat,
+          lng)
     ];
     await applicationBloc.calculateRoute(points);
   }
@@ -383,83 +407,6 @@ class _MapaState extends State<MapScreen> {
     await applicationBloc.calculateRouteToCharger(points);
 
     setState(() {});
-  }
-
-  Future<void> _showEventBottomSheet() async {
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return SingleChildScrollView(
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  'Eventos Cercanos',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                FutureBuilder(
-                  future: fetchDataFromApi(
-                    coordSelected?.latitud,
-                    coordSelected?.longitud,
-                  ),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else {
-                      final data = snapshot.data as List<Map<String, dynamic>>?;
-                      if (data?.isEmpty ?? true) {
-                        return Text(
-                            'No hay eventos cercanos en la próxima semana.');
-                      }
-                      return Column(
-                        children: data?.map((item) {
-                              // Formatear la fecha usando DateFormat
-                              DateTime fechaInicio =
-                                  DateTime.parse(item['dataIni']);
-                              String fechaFormateada =
-                                  DateFormat.yMMMMd('es_ES')
-                                      .format(fechaInicio);
-
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${item['nom']}',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    '$fechaFormateada',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Dirección: ${item['adreca']}',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                  const Divider(),
-                                ],
-                              );
-                            }).toList() ??
-                            [],
-                      );
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   Widget buildRouteDetailsContainer() {
@@ -503,6 +450,7 @@ class _MapaState extends State<MapScreen> {
       ],
     );
   }
+
 
   Widget buildRouteModeButton(IconData icon, String label, int mode) {
     return ElevatedButton(
@@ -584,7 +532,8 @@ class _MapaState extends State<MapScreen> {
                     setState(() {});
                   },
                   icon: const Icon(
-                    Icons.directions,
+                    Icons
+                        .directions,
                     color: Colors.white,
                   ),
                   label: const Text(
@@ -683,6 +632,8 @@ class _MapaState extends State<MapScreen> {
                 ElevatedButton.icon(
                   onPressed: () async {
                     routeStarted = true;
+                    showBikeStations = false;
+                    showChargers = false;
                     showRouteDetails = false;
                     await _changeCameraToRouteMode();
                     setState(() {});
@@ -712,7 +663,13 @@ class _MapaState extends State<MapScreen> {
                     placeIsSelected = false;
                     setState(() {
                       showRouteDetails = false;
-                      placeIsSelected = true;
+                      if (rutaChargerBike){
+                        chargerIsSelected = true;
+                          rutaChargerBike = false;
+                      }
+                      else{
+                        placeIsSelected = true;
+                        }
                       applicationBloc.cleanRoute();
                       centerScreen();
                     });
@@ -743,9 +700,10 @@ class _MapaState extends State<MapScreen> {
         cargarMarcadores();
       },
       myLocationEnabled: true,
+
       markers: {
-        ..._chargers,
-        ..._bikeStations,
+        if (showChargers) ..._chargers,
+        if (showBikeStations) ..._bikeStations,
         ..._myLocMarker,
       },
       initialCameraPosition: CameraPosition(target: userPosition, zoom: 15.0),
@@ -785,6 +743,7 @@ class _MapaState extends State<MapScreen> {
       itemBuilder: (context, index) {
         return ListTile(
             onTap: () {
+              chargerIsSelected = false;
               FocusScope.of(context).unfocus();
               placeSelected(applicationBloc.searchResults![index].placeId);
             },
@@ -865,32 +824,99 @@ class _MapaState extends State<MapScreen> {
     );
   }
 
-  Widget getMapScreen() {
-    return Scaffold(
-      bottomSheet: (placeIsSelected ||
-              showRouteDetails ||
-              routeStarted ||
-              chargerIsSelected)
-          ? bottomSheetInfo()
-          : null,
-      resizeToAvoidBottomInset: false,
-      body: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                  child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: !routeStarted ? _chooseSearchBarOrRouteDetails() : null,
-              ))
-            ],
-          ),
-          Expanded(
-              child: Stack(
+Widget getMapScreen() {
+  return Scaffold(
+    bottomSheet: (placeIsSelected || showRouteDetails || routeStarted || chargerIsSelected)
+        ? bottomSheetInfo()
+        : null,
+    resizeToAvoidBottomInset: false,
+    body: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _chooseSearchBarOrRouteDetails(),
+        ),
+        Expanded(
+          child: Stack(
             children: [
               SizedBox(
-                  height: MediaQuery.of(context).size.height - 100,
-                  child: mapWidget()),
+                height: MediaQuery.of(context).size.height - 100,
+                child: mapWidget(),
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 60, right: 11),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.7),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 1,
+                              blurRadius: 4,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        width: 39,
+                        height: 40,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                showChargers = !showChargers;
+                              });
+                            },
+                            icon: Icon(
+                              Icons.ev_station,
+                              color: showChargers ? Colors.green : const Color(0xff4d5e6b),
+                            ),
+                            iconSize: 26,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.7),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 1,
+                              blurRadius: 4,
+                              offset: Offset(0, 2), // Cambia el offset según necesites
+                            ),
+                          ],
+                        ),
+                        width: 39,
+                        height: 40,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                showBikeStations = !showBikeStations;
+                              });
+                            },
+                            icon: Icon(
+                              Icons.directions_bike,
+                              color: showBikeStations ? Colors.blue : const Color(0xff4d5e6b),
+                            ),
+                            iconSize: 26,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               if (applicationBloc.searchResults != null &&
                   applicationBloc.searchResults!.isNotEmpty)
                 blackPageForSearch(),
@@ -901,11 +927,13 @@ class _MapaState extends State<MapScreen> {
                   child: printListView(),
                 ),
             ],
-          )),
-        ],
-      ),
-    );
-  }
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {

@@ -48,6 +48,8 @@
     "reqToJoin": "Solicitar unirse",
     "changeFirstName": "Cambia tu nombre",
     "changeLastName": "Cambia tu apellido",
-    "changePhoneNumber": "Cambia tu número de teléfono"
-
+    "changePhoneNumber": "Cambia tu número de teléfono",
+    "payment": "Tipo de pago: ",
+    "changePhoneNumber": "Cambia tu número de teléfono",
+    "noChats": "No hay chats disponibles"
 }
