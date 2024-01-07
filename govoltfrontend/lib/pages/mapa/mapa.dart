@@ -49,6 +49,7 @@ class _MapaState extends State<MapScreen> {
   Set<Polyline> emptyRoute = {};
   Set<Marker> _bikeStations = {};
   Coordenada? coordSelected;
+  BikeStation? bikeStation;
 
   @override
   void initState() {
@@ -168,7 +169,7 @@ class _MapaState extends State<MapScreen> {
       {
         'latitud': longitud.toString(),
         'longitud': latitud.toString(),
-        'distancia': '0.89',
+        'distancia': '2',
         'data_min': formattedNow,
         'data_max': formattedMaxDate,
       },
@@ -207,7 +208,7 @@ class _MapaState extends State<MapScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    "Cargador",
+                    "Marker",
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -283,11 +284,16 @@ class _MapaState extends State<MapScreen> {
     try {
       final newMarkers = MarkersData.bikeStation.map((station) {
         return Marker(
-          markerId: MarkerId(station.stationId),
-          position: LatLng(station.latitude, station.longitude),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-          infoWindow: InfoWindow(title: 'Station ID: ${station.stationId}'),
-        );
+            markerId: MarkerId(station.stationId),
+            position: LatLng(station.latitude, station.longitude),
+            icon:
+                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+            onTap: () {
+              bikeStation = station;
+              chargerIsSelected = true;
+              chargerSelected(station.longitude, station.latitude);
+              setState(() {});
+            });
       }).toSet();
       setState(() {
         _bikeStations = newMarkers;
@@ -387,6 +393,10 @@ class _MapaState extends State<MapScreen> {
                       return Text('Error: ${snapshot.error}');
                     } else {
                       final data = snapshot.data as List<Map<String, dynamic>>?;
+                      if (data?.isEmpty ?? true) {
+                        return Text(
+                            'No hay eventos cercanos en la próxima semana.');
+                      }
                       return Column(
                         children: data?.map((item) {
                               // Formatear la fecha usando DateFormat
