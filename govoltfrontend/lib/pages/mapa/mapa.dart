@@ -207,7 +207,7 @@ class _MapaState extends State<MapScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    "hola",
+                    "Cargador",
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -216,8 +216,8 @@ class _MapaState extends State<MapScreen> {
                 ),
                 ElevatedButton.icon(
                   onPressed: () async {
-                    chargerIsSelected = false;
-                    setState(() {});
+                    // Cuando se presiona el botón, muestra un BottomSheet vacío
+                    await _showEventBottomSheet();
                   },
                   icon: const Icon(
                     Icons.event,
@@ -250,68 +250,6 @@ class _MapaState extends State<MapScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
-            Text(
-              "vamos a probar",
-              style: const TextStyle(fontSize: 16),
-            ),
-            if (chargerIsSelected) // Muestra información solo si un cargador está seleccionado
-              ExpansionTile(
-                title: const Text(
-                  'Eventos cercanos',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                initiallyExpanded:
-                    chargerIsSelected, // Expande el tile si un cargador está seleccionado
-                children: [
-                  if (chargerIsSelected)
-                    FutureBuilder(
-                      // Llama a la API y espera la respuesta
-                      future: fetchDataFromApi(
-                          coordSelected?.latitud, coordSelected?.longitud),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          // Muestra un indicador de carga mientras se espera la respuesta
-                          return CircularProgressIndicator();
-                        } else if (snapshot.hasError) {
-                          // Muestra un mensaje de error si ocurre un error durante la solicitud
-                          return Text('Error: ${snapshot.error}');
-                        } else {
-                          // Muestra la información obtenida de la API
-                          final data =
-                              snapshot.data as List<Map<String, dynamic>>?;
-                          return Column(
-                            children: data?.map((item) {
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Nombre: ${item['nom']}',
-                                        style: const TextStyle(fontSize: 16),
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Text(
-                                        'Fecha de Inicio: ${item['dataIni']}',
-                                        style: const TextStyle(fontSize: 16),
-                                      ),
-
-                                      Text(
-                                        'Dirección: ${item['adreca']}',
-                                        style: const TextStyle(fontSize: 16),
-                                      ),
-                                      const Divider(),
-                                    ],
-                                  );
-                                }).toList() ??
-                                [],
-                          );
-                        }
-                      },
-                    ),
-                ],
-              ),
           ],
         ),
       ),
@@ -420,6 +358,79 @@ class _MapaState extends State<MapScreen> {
     await applicationBloc.calculateRouteToCharger(points);
 
     setState(() {});
+  }
+
+  Future<void> _showEventBottomSheet() async {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Eventos Cercanos',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                FutureBuilder(
+                  future: fetchDataFromApi(
+                    coordSelected?.latitud,
+                    coordSelected?.longitud,
+                  ),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      final data = snapshot.data as List<Map<String, dynamic>>?;
+                      return Column(
+                        children: data?.map((item) {
+                              // Formatear la fecha usando DateFormat
+                              DateTime fechaInicio =
+                                  DateTime.parse(item['dataIni']);
+                              String fechaFormateada =
+                                  DateFormat.yMMMMd('es_ES')
+                                      .format(fechaInicio);
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${item['nom']}',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    '$fechaFormateada',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Dirección: ${item['adreca']}',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  const Divider(),
+                                ],
+                              );
+                            }).toList() ??
+                            [],
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget buildRouteDetailsContainer() {
