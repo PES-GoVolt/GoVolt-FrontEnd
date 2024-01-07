@@ -284,6 +284,10 @@ class _MapaState extends State<MapScreen> {
               MarkerId(station.stationId),
           position: LatLng(station.latitude, station.longitude),
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+          onTap: () {
+            chargerIsSelected = false;
+            setState(() {});
+          }
         );
       }).toSet(); 
       setState(() {
