@@ -42,14 +42,29 @@ class RutaService {
 
   Future <void> addParticipant(String userId, String idRuta) async{
     final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
-    String urlString = "api${Config.addParticipantToRuta}$idRuta/$userId/";
-    final url = Uri.http(Config.apiURL, urlString);
-    await http.post(url, headers: headers);
+    final body = jsonEncode({
+      "route_id": idRuta,
+      "participant_id": userId,
+    });
+    final url = Uri.http(Config.apiURL, Config.myRutas);
+    await http.post(url, headers: headers, body: body);
   }
 
   Future<List<Ruta>> getPartRutas() async {
     return await getRutasFromEndpoint(Config.participantRutas);
   }
+
+  Future <void> deleteRequestParticipant(String userId, String idRuta, String roomName) async{
+    final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
+    final body = jsonEncode({
+      "route_id": idRuta,
+      "participant_id": userId,
+      "room_name": roomName
+    });
+    final url = Uri.http(Config.apiURL, Config.requestToRoute);
+    await http.delete(url, headers: headers, body: body);
+  }
+
   
   String? getParticipantId(String participantName, Ruta ruta) {
     if (ruta.participants != null && ruta.participantsName != null) {
@@ -90,6 +105,4 @@ class RutaService {
 
   }
 
-
-  
 }

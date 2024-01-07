@@ -19,10 +19,10 @@ class Config {
   static const allRutas = "api/routes";
   static const myRutas = "api/routes/my_routes";
   static const participantRutas = "api/routes/my_current_routes";
+  static const requestToRoute = "api/routes/requests";
 
   static const chatAddMessage = "api/messages/";
   static const chats = "api/messages/chats/";
-  static const addParticipantToRuta = "/routes/add_participant/";
 
   static const achievementsAPI = "api/users/achievement/";
  
