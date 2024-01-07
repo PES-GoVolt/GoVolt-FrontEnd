@@ -12,7 +12,6 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
   final AchievementService _achievementService = AchievementService();
   Map<String, dynamic> _achievements = {};
 
-  // Thresholds para cambiar de color los iconos
   Map<String, List<int>> _thresholds = {
     'messages_achievement': [5, 10, 15],
     'nearest_charger_achievement': [20, 30, 50],
@@ -20,10 +19,10 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
     'search_event_achievement': [20, 30, 50],
   };
 
-  // Colores personalizados para oro, plata y bronce
   Color goldColor = Color(0xFFFFD700);
   Color silverColor = Color(0xFFC0C0C0);
   Color bronzeColor = Color(0xFFCD7F32);
+  Color darkGreyColor = Color(0xFF303030); // Gris oscuro
 
   @override
   void initState() {
@@ -42,19 +41,22 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
     }
   }
 
-  // Función para determinar el color del icono según el progreso
   Color _getIconColor(String achievementName, int progress) {
     List<int> thresholds = _thresholds[achievementName] ?? [0, 0, 0];
 
     if (progress >= thresholds[2]) {
-      return goldColor; // Oro
+      return goldColor;
     } else if (progress >= thresholds[1]) {
-      return silverColor; // Plata
+      return silverColor;
     } else if (progress >= thresholds[0]) {
-      return bronzeColor; // Bronce
+      return bronzeColor;
     } else {
-      return Colors.black; // Gris por defecto
+      return Colors.black;
     }
+  }
+
+  Color _getTextColor(Color iconColor) {
+    return iconColor == goldColor ? Colors.white : Colors.black;
   }
 
   @override
@@ -71,49 +73,77 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                 final achievementName = _achievements.keys.elementAt(index);
                 final progress = _achievements[achievementName];
 
-                // Títulos y descripciones personalizados para cada logro
                 String title = '';
                 String description = '';
-                IconData iconData = Icons.info; // Icono predeterminado
+                IconData iconData = Icons.info;
 
                 switch (achievementName) {
                   case 'messages_achievement':
                     title = 'Messenger';
                     description = 'You have sent someone a message!';
-                    iconData = Icons.mail; // Icono de mensaje
+                    iconData = Icons.mail;
                     break;
                   case 'nearest_charger_achievement':
                     title = 'Optimizer';
                     description =
                         'You have redirected your route to a near charger';
-                    iconData = Icons.battery_full; // Icono de batería
+                    iconData = Icons.battery_full;
                     break;
                   case 'search_location_achievement':
                     title = 'Explorer';
                     description = 'You have searched a location';
-                    iconData = Icons.search; // Icono de lupa
+                    iconData = Icons.search;
                     break;
                   case 'search_event_achievement':
                     title = 'When and Where?';
                     description = 'You have searched an event';
-                    iconData = Icons.event; // Icono de evento
+                    iconData = Icons.event;
                     break;
-                  // Puedes agregar más casos según sea necesario
                 }
 
-                return ListTile(
-                  leading: Icon(
-                    iconData,
-                    color: _getIconColor(achievementName, progress),
+                return Container(
+                  color: _getIconColor(achievementName, progress) == goldColor
+                      ? darkGreyColor
+                      : null,
+                  child: ListTile(
+                    leading: Icon(
+                      iconData,
+                      color: _getIconColor(achievementName, progress),
+                    ),
+                    title: Text(
+                      title,
+                      style: TextStyle(
+                        color: _getTextColor(
+                            _getIconColor(achievementName, progress)),
+                      ),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          description,
+                          style: TextStyle(
+                            color: _getTextColor(
+                                _getIconColor(achievementName, progress)),
+                          ),
+                        ),
+                        Text(
+                          'Score: $progress',
+                          style: TextStyle(
+                            color: _getTextColor(
+                                _getIconColor(achievementName, progress)),
+                          ),
+                        ),
+                      ],
+                    ),
+                    trailing: Text(
+                      'Progress: $progress',
+                      style: TextStyle(
+                        color: _getTextColor(
+                            _getIconColor(achievementName, progress)),
+                      ),
+                    ),
                   ),
-                  title: Text(title),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(description),
-                    ],
-                  ),
-                  trailing: Text('Progress: $progress'),
                 );
               },
             )
