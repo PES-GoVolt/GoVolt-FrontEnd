@@ -192,8 +192,9 @@ class _VolterScreenState extends State<VolterScreen> {
                     });
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        edit ? Colors.red : Color.fromRGBO(125, 193, 165, 1),
+                    backgroundColor:edit 
+                    ? Colors.red 
+                    : Color.fromRGBO(125, 193, 165, 1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
@@ -245,11 +246,8 @@ class _VolterScreenState extends State<VolterScreen> {
               ListView(
                 shrinkWrap: true,
                 children: [
-                  buildOption(AppLocalizations.of(context)!.achievements,
-                      Icons.emoji_events),
-                  buildOption(
-                      AppLocalizations.of(context)!.logOut, Icons.logout,
-                      isRed: true),
+                  buildOption(AppLocalizations.of(context)!.achievements, Icons.emoji_events),
+                  buildOption(AppLocalizations.of(context)!.logOut, Icons.logout, isRed: true),
                 ],
               ),
           ],
