@@ -64,6 +64,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Achievements'),
+        backgroundColor: Color.fromRGBO(125, 193, 165, 1),
       ),
       body: _achievements.isNotEmpty
           ? ListView.separated(
