@@ -140,9 +140,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
                   child: TextField(
                     controller: emailController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Email',
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: AppLocalizations.of(context)!.email,
                     ),
                   ),
                 ),
@@ -151,9 +151,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   child: TextField(
                     obscureText: true,
                     controller: passwordController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Password',
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: AppLocalizations.of(context)!.password,
                     ),
                   ),
                 ),
@@ -180,13 +180,13 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                     },
                     style: ButtonStyle(
                         backgroundColor:
-                            MaterialStateProperty.all<Color>(Color(0xff4d5e6b)),
+                            MaterialStateProperty.all<Color>(const Color(0xff4d5e6b)),
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
                         ))),
-                    child: const Text('Log In', style: TextStyle(
+                    child: Text(AppLocalizations.of(context)!.logIn, style: const TextStyle(
                       color: Colors.white,
                       ),),
                   ),
@@ -205,13 +205,13 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                         backgroundColor:
                             MaterialStateProperty.all<Color>(Colors.white),
                         side: MaterialStateProperty.all(
-                            BorderSide(color: Color(0xff4d5e6b), width: 1.0)),
+                            const BorderSide(color: Color(0xff4d5e6b), width: 1.0)),
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
                         ))),
-                    child: const Text('Sign Up',style: TextStyle(
+                    child: Text(AppLocalizations.of(context)!.signUp, style: const TextStyle(
                       color: Color(0xff4d5e6b),
                       ),),
                   ),
@@ -226,7 +226,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                         color: Colors.grey,
                       ),
                     ),
-                    Text(" Or "),
+                    Text( AppLocalizations.of(context)!.or),
                     Expanded(
                       child: Container(
                         margin: const EdgeInsets.only(
@@ -254,7 +254,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                           'assets/images/google_logo_2.png',
                           height: 24,
                         ),
-                        label:  Text(AppLocalizations.of(context)!.logInGoogle, style: TextStyle(color: Colors.white),),
+                        label:  Text(AppLocalizations.of(context)!.logInGoogle, style: const TextStyle(color: Colors.white),),
                       ),
                     ],
                   ),
@@ -301,8 +301,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       showSnackbar(message);
       return;
     }
-    //Navigator.push(context,MaterialPageRoute(builder: (context) => Home()),);
-    // ignore: use_build_context_synchronously
     await Future.delayed(Duration.zero);
     Navigator.pushNamed(
       context,

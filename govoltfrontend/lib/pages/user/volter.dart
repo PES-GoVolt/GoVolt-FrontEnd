@@ -17,7 +17,7 @@ class _VolterScreenState extends State<VolterScreen> {
   TextEditingController phoneNumberController = TextEditingController();
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
-  bool edit = false; // Estado para controlar si se está editando
+  bool edit = false; 
   final applicationBloc = AplicationBloc();
 
   String email = '';
@@ -211,14 +211,14 @@ class _VolterScreenState extends State<VolterScreen> {
             ),
             SizedBox(height: 20),
             Text(
-              AppLocalizations.of(context)!.options, //options
+              AppLocalizations.of(context)!.options,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.grey,
               ),
             ),
-            if (edit) // Mostrar formularios si "edit" es verdadero
+            if (edit) 
               Column(
                 children: [
                   buildFormField(

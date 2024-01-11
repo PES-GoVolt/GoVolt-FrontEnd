@@ -160,7 +160,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       print("Respuesta de signup con Google en Firebase:");
       print(data);
 
-      // Aquí puedes manejar la respuesta y extraer el token de autenticación si el signup fue exitoso.
     } catch (error) {
       print("Error en el signup con Google en Firebase: $error");
     }
@@ -197,7 +196,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   margin: const EdgeInsets.only(bottom: 10),
                   child: Text(
                     AppLocalizations.of(context)!.signUp,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -211,7 +210,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: TextField(
                 controller: usernameController,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   labelText: AppLocalizations.of(context)!.username,
                 ),
               ),
@@ -221,7 +220,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: TextField(
                 controller: emailController,
                 decoration:  InputDecoration(
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   labelText: AppLocalizations.of(context)!.email,
                 ),
               ),
@@ -232,7 +231,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 obscureText: true,
                 controller: passwordController,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   labelText: AppLocalizations.of(context)!.password,
                 ),
               ),
@@ -243,7 +242,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 obscureText: true,
                 controller: confirmPasswordController,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   labelText: AppLocalizations.of(context)!.confirmPassword,
                 ),
               ),
@@ -254,14 +253,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
               onInputChanged: (PhoneNumber number) {
                 phoneNumber = number;
               },
-              initialValue: PhoneNumber(isoCode: 'ES'), // Establecer España (código ISO 'ES') como valor predeterminado
+              initialValue: PhoneNumber(isoCode: 'ES'), 
               selectorConfig: const SelectorConfig(
                 selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
               ),
               ignoreBlank: false,
               autoValidateMode: AutovalidateMode.disabled,
               inputDecoration: InputDecoration(
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 labelText: AppLocalizations.of(context)!.phoneNumber,
               ),
             ),
@@ -272,29 +271,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: ElevatedButton(
-                  child: Text(AppLocalizations.of(context)!.signUp, style: TextStyle(color: Colors.white),),
                   onPressed: () {
                     register();
                   },
                   style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(Color(0xff4d5e6b)),
+                          MaterialStateProperty.all<Color>(const Color(0xff4d5e6b)),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12.0),
                       ))),
+                  child: Text(AppLocalizations.of(context)!.signUp, style: const TextStyle(color: Colors.white),),
                 ),
             ),
             Row(
               // ignore: sort_child_properties_last
               children: <Widget>[
-                 Text(AppLocalizations.of(context)!.alreadyAccount, style: TextStyle(
+                 Text(AppLocalizations.of(context)!.alreadyAccount, style: const TextStyle(
                       color: Colors.black,
                       ),),
                 TextButton(
                   child: Text(
                     AppLocalizations.of(context)!.logIn,
-                    style: TextStyle(color: Color(0xff4d5e6b), decoration: TextDecoration.underline),
+                    style: const TextStyle(color: Color(0xff4d5e6b), decoration: TextDecoration.underline),
                   ),
                   onPressed: () {
                     Navigator.pushNamed(context, '/login');

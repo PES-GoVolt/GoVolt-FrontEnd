@@ -20,17 +20,17 @@ class RouteCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: ExpansionTile(
         trailing: _buildTrailingButton(context),
-        title: Text('Inicio: ${ruta.beginning} Destino: ${ruta.destination}'),
-        subtitle: Text('Fecha: ${ruta.date}'),
+        title: Text('${AppLocalizations.of(context)!.start}: ${ruta.beginning} ${AppLocalizations.of(context)!.destination}: ${ruta.destination}'),
+        subtitle: Text('${AppLocalizations.of(context)!.date}: ${ruta.date}'),
         children: [
           ListTile(
-            title: Text('Conductor: ${ruta.creatorUsername}'),
+            title: Text('${AppLocalizations.of(context)!.driver}: ${ruta.creatorUsername}'),
           ),
           ListTile(
-            title: Text('Número de plazas: ${ruta.seats}'),
+            title: Text('${AppLocalizations.of(context)!.numberOfSeats}: ${ruta.seats}'),
           ),
           ListTile(
-            title: Text('Precio Aproximado: €${ruta.price}'),
+            title: Text('${AppLocalizations.of(context)!.approximatePrice}: €${ruta.price}'),
           ),
         ],
       ),
@@ -45,9 +45,9 @@ class RouteCard extends StatelessWidget {
           onPressed: () {
             _showParticipantsDialog(context);
           },
-          icon: Icon(Icons.group),
+          icon: const Icon(Icons.group),
         ),
-        SizedBox(width: 8), // Ajusta el espacio según sea necesario
+        const SizedBox(width: 8), 
         if (showJoin)
           ElevatedButton(
             onPressed: () {
@@ -66,7 +66,7 @@ class RouteCard extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xff4d5e6b),
             ),
-            child: const Text('Cancelar Ruta', style: TextStyle(color: Colors.white)),
+            child: Text(AppLocalizations.of(context)!.cancelRoute, style: const TextStyle(color: Colors.white)),
           ),
       ],
     );
@@ -77,7 +77,7 @@ class RouteCard extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Participantes Ruta de ${ruta.creatorUsername}'),
+          title: Text('${AppLocalizations.of(context)!.routeParticipants}: ${ruta.creatorUsername}'),
           content: SingleChildScrollView(
             child: Column(
               children: _buildParticipantsList(context),
@@ -91,7 +91,7 @@ class RouteCard extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xff4d5e6b),
               ),
-              child: Text('Cerrar', style: TextStyle(color: Colors.white)),
+              child: Text(AppLocalizations.of(context)!.close, style: const TextStyle(color: Colors.white)),
             ),
           ],
         );
@@ -101,7 +101,6 @@ class RouteCard extends StatelessWidget {
 
   List<Widget> _buildParticipantsList(BuildContext context) {
   List<String> participants = ruta.participantsName?.cast<String>() ?? [];
-
   return participants.map((participant) {
     return ListTile(
       title: Row(
@@ -113,7 +112,7 @@ class RouteCard extends StatelessWidget {
               onPressed: () {
                 _showConfirmationDialog(context, participant);
               },
-              icon: Icon(Icons.clear),
+              icon: const Icon(Icons.clear),
               color: const Color(0xff4d5e6b), 
             ),
         ],
@@ -128,8 +127,8 @@ void _showConfirmationDialog(BuildContext context, String participant) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Eliminar participante', style: TextStyle(color: Colors.black)),
-        content: Text('¿Estás seguro que quieres eliminar a $participant de la ruta?', style: TextStyle(color: Colors.black)),
+        title: Text(AppLocalizations.of(context)!.deleteParticipant, style: const TextStyle(color: Colors.black)),
+        content: Text('${AppLocalizations.of(context)!.areYouSureDelete} $participant?', style: const TextStyle(color: Colors.black)),
         actions: <Widget>[
           TextButton(
             onPressed: () {
@@ -138,10 +137,7 @@ void _showConfirmationDialog(BuildContext context, String participant) {
             style: TextButton.styleFrom(
               backgroundColor: const Color(0xff4d5e6b),
             ),
-            child: Text(
-              'Cancelar',
-              style: TextStyle(color: Colors.white), 
-            ),
+            child: Text(AppLocalizations.of(context)!.cancel, style: const TextStyle(color: Colors.white)),
           ),
           TextButton(
             onPressed: () {
@@ -151,9 +147,8 @@ void _showConfirmationDialog(BuildContext context, String participant) {
             style: TextButton.styleFrom(
               backgroundColor: const Color(0xff4d5e6b),
             ),
-            child: Text(
-              'Eliminar',
-              style: TextStyle(color: Colors.white), // Color del texto para Eliminar
+            child: Text(AppLocalizations.of(context)!.delete,
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ],

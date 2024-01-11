@@ -169,7 +169,7 @@ class _MapaState extends State<MapScreen> {
   Future<List<Map<String, dynamic>>> fetchDataFromApi(
         double? latitud, double? longitud) async {
       DateTime now = DateTime.now();
-      DateTime maxDate = now.add(Duration(days: 7));
+      DateTime maxDate = now.add(const Duration(days: 7));
       String formattedNow = DateFormat('dd-MM-yyyy').format(now);
       String formattedMaxDate = DateFormat('dd-MM-yyyy').format(maxDate);
       final Uri uri = Uri.https(
@@ -186,14 +186,12 @@ class _MapaState extends State<MapScreen> {
 
       try {
         final response = await http.get(uri);
-        // Procesa la respuesta y devuelve una lista de objetos
         final List<Map<String, dynamic>> data =
             List<Map<String, dynamic>>.from(json.decode(utf8.decode(response.bodyBytes)));
         return data;
       } catch (e) {
-        // Maneja cualquier error que pueda ocurrir durante la solicitud
         print("Error en la solicitud: $e");
-        return []; // Retorna una lista vacía en caso de error
+        return []; 
       }
     }
 
@@ -208,8 +206,8 @@ class _MapaState extends State<MapScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  'Eventos Cercanos',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context)!.nearbyEvent,
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
                 FutureBuilder(
@@ -219,18 +217,16 @@ class _MapaState extends State<MapScreen> {
                   ),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else {
                       final data = snapshot.data as List<Map<String, dynamic>>?;
                       if (data?.isEmpty ?? true) {
-                        return Text(
-                            'No hay eventos cercanos en la próxima semana.');
+                        return Text(AppLocalizations.of(context)!.noEvents);
                       }
                       return Column(
                         children: data?.map((item) {
-                              // Formatear la fecha usando DateFormat
                               DateTime fechaInicio =
                                   DateTime.parse(item['dataIni']);
                               String fechaFormateada =
@@ -242,20 +238,20 @@ class _MapaState extends State<MapScreen> {
                                 children: [
                                   Text(
                                     '${item['nom']}',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    '$fechaFormateada',
-                                    style: TextStyle(fontSize: 16),
+                                    fechaFormateada,
+                                    style: const TextStyle(fontSize: 16),
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
                                     'Dirección: ${item['adreca']}',
-                                    style: TextStyle(fontSize: 16),
+                                    style: const TextStyle(fontSize: 16),
                                   ),
                                   const Divider(),
                                 ],
@@ -336,14 +332,14 @@ class _MapaState extends State<MapScreen> {
                     chargerIsSelected = false;
                     setState(() {});
                   },
-                  child: const Text('Salir',
-                      style: TextStyle(color: Colors.black, fontSize: 16)),
+                  child: Text(AppLocalizations.of(context)!.exit,
+                      style: const TextStyle(color: Colors.black, fontSize: 16)),
                 ),
               ],
             ),
             const SizedBox(height: 10),
             Text(
-              coordSelected!.municipi + ", " + coordSelected!.provincia,
+              "${coordSelected!.municipi}, ${coordSelected!.provincia}",
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 10),
@@ -366,9 +362,9 @@ class _MapaState extends State<MapScreen> {
                     Icons.event,
                     color: Colors.white,
                   ),
-                  label: const Text(
-                    'Ver Eventos',
-                    style: TextStyle(
+                  label: Text(
+                    AppLocalizations.of(context)!.nearbyEvent,
+                    style: const TextStyle(
                       fontSize: 16,
                       color: Colors.white,
                     ),
@@ -525,9 +521,9 @@ class _MapaState extends State<MapScreen> {
             children: [
               buildRouteModeButtonsRow(),
               const SizedBox(height: 10),
-              buildRouteLocationRow(Icons.location_searching, "Your ubication"),
+              buildRouteLocationRow(Icons.location_searching, AppLocalizations.of(context)!.yourUbication),
               const SizedBox(height: 10),
-              buildRouteLocationRow(Icons.location_on, "Coordenadas Buscadas"),
+              buildRouteLocationRow(Icons.location_on, AppLocalizations.of(context)!.destination),
             ],
           ),
         ),
@@ -539,9 +535,9 @@ class _MapaState extends State<MapScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        buildRouteModeButton(Icons.directions_car, "Car", 0),
-        buildRouteModeButton(Icons.directions_bike, "Bicycle", 1),
-        buildRouteModeButton(Icons.directions_walk, "Walking", 2),
+        buildRouteModeButton(Icons.directions_car, AppLocalizations.of(context)!.car, 0),
+        buildRouteModeButton(Icons.directions_bike, AppLocalizations.of(context)!.bicycle, 1),
+        buildRouteModeButton(Icons.directions_walk, AppLocalizations.of(context)!.walk, 2),
       ],
     );
   }
@@ -631,9 +627,9 @@ class _MapaState extends State<MapScreen> {
                         .directions,
                     color: Colors.white,
                   ),
-                  label: const Text(
-                    'Ruta',
-                    style: TextStyle(
+                  label: Text(
+                    AppLocalizations.of(context)!.route,
+                    style: const TextStyle(
                       fontSize: 16,
                       color: Colors.white,
                     ),
@@ -652,8 +648,8 @@ class _MapaState extends State<MapScreen> {
                     placeIsSelected = false;
                     setState(() {});
                   },
-                  child: const Text('Salir',
-                      style: TextStyle(color: Colors.black, fontSize: 16)),
+                  child: Text(AppLocalizations.of(context)!.exit,
+                      style: const TextStyle(color: Colors.black, fontSize: 16)),
                 ),
               ],
             ),
@@ -737,9 +733,9 @@ class _MapaState extends State<MapScreen> {
                     Icons.directions,
                     color: Colors.white,
                   ),
-                  label: const Text(
-                    'Iniciar Ruta',
-                    style: TextStyle(
+                  label: Text(
+                    AppLocalizations.of(context)!.startRoute,
+                    style: const TextStyle(
                       fontSize: 16,
                       color: Colors.white,
                     ),
@@ -769,8 +765,8 @@ class _MapaState extends State<MapScreen> {
                       centerScreen();
                     });
                   },
-                  child: const Text('Salir',
-                      style: TextStyle(color: Colors.black, fontSize: 16)),
+                  child:  Text(AppLocalizations.of(context)!.exit,
+                      style: const TextStyle(color: Colors.black, fontSize: 16)),
                 ),
               ],
             ),
@@ -824,7 +820,7 @@ class _MapaState extends State<MapScreen> {
     return TextField(
       decoration: InputDecoration(
           hintText: AppLocalizations.of(context)!.searchYourRoute,
-          prefixIcon: Icon(Icons.location_on)),
+          prefixIcon: const Icon(Icons.location_on)),
       onChanged: (value) {
         valueChanged(value);
       },
@@ -881,16 +877,16 @@ class _MapaState extends State<MapScreen> {
                     color: Colors.white,
                   ),
                   label: !goToNearestChargerEnable
-                      ? const Text(
-                          'Buscar cargador cercano',
-                          style: TextStyle(
+                      ? Text(
+                          AppLocalizations.of(context)!.searchNearestCharger,
+                          style: const TextStyle(
                             fontSize: 16,
                             color: Colors.white,
                           ),
                         )
-                      : const Text(
-                          'Volver a destino original',
-                          style: TextStyle(
+                      : Text(
+                          AppLocalizations.of(context)!.returnToDestination,
+                          style: const TextStyle(
                             fontSize: 16,
                             color: Colors.white,
                           ),
@@ -909,8 +905,8 @@ class _MapaState extends State<MapScreen> {
                     await _changeCameraToRoutePreview();
                     setState(() {});
                   },
-                  child: const Text('Salir',
-                      style: TextStyle(color: Colors.black, fontSize: 16)),
+                  child: Text(AppLocalizations.of(context)!.exit,
+                      style: const TextStyle(color: Colors.black, fontSize: 16)),
                 ),
               ],
             ),
@@ -956,7 +952,7 @@ Widget getMapScreen() {
                               color: Colors.grey.withOpacity(0.5),
                               spreadRadius: 1,
                               blurRadius: 4,
-                              offset: Offset(0, 2),
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
@@ -978,7 +974,7 @@ Widget getMapScreen() {
                           ),
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Container(
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.7),
@@ -987,7 +983,7 @@ Widget getMapScreen() {
                               color: Colors.grey.withOpacity(0.5),
                               spreadRadius: 1,
                               blurRadius: 4,
-                              offset: Offset(0, 2), // Cambia el offset según necesites
+                              offset: const Offset(0, 2), 
                             ),
                           ],
                         ),

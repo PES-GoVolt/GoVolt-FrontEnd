@@ -30,7 +30,7 @@
     "lastName": "Apellido",
     "phoneNumber": "Número de telefono",
     "dateSelect": "Seleccionar fecha",
-    "apply": "Apply",
+    "apply": "Aplicar",
     "logInFacebook": "Inicia sesión con Facebook",
     "logInGoogle": "Iniciar sesión con Google",
     "alreadyAccount": "¿Ya tienes una cuenta?",
@@ -59,6 +59,30 @@
     "search_location_achievement": "Explorador",
     "search_location_achievement_description": "Has buscado una ubicación",
     "search_event_achievement": "¿Cuándo y dónde?",
-    "search_event_achievement_description": "Has buscado un evento"
-
+    "search_event_achievement_description": "Has buscado un evento",
+    "start": "Inicio",
+    "destination": "Destino",
+    "driver": "Conductor",
+    "numberOfSeats": "Plazas disponibles",
+    "approximatePrice": "Precio aproximado",
+    "cancelRoute": "Cancelar ruta",
+    "startRoute": "Empezar ruta",
+    "close": "Cerrar",
+    "deleteParticipant": "Eliminar participante",
+    "delete": "Eliminar",
+    "areYouSureDelete": "¿Estás seguro de que quieres eliminar a",
+    "routeParticipants": "Participants de la ruta. Conductor/a",
+    "exit": "Salir",
+    "returnToDestination": "Volver al destino inicial",
+    "searchNearestCharger": "Buscar cargador más cercano",
+    "noEvents": "No hay eventos cercanos la próxima semana",
+    "nearbyEvent": "Eventos cercanos",
+    "route": "Ruta",
+    "car": "Coche",
+    "bicycle": "Bicicleta",
+    "walk": "A pie",
+    "yourUbication": "Tu ubicación",
+    "noAchievements": "No tienes logros disponibles"
+    
+    
 }

@@ -17,8 +17,7 @@ class RoutesScreen extends StatefulWidget {
 TextField printSearchBar(Function(String) onSearch) {
   String query = '';
   return TextField(
-    decoration: InputDecoration(
-      //hintText: AppLocalizations.of(context)!.searchYourRoute,    ESTA NO VA?????????????????
+    decoration: const InputDecoration(
       prefixIcon: Icon(Icons.search),
     ),
     onChanged: (value) {
@@ -101,7 +100,7 @@ class _RoutesState extends State<RoutesScreen> {
                   const SizedBox(height: 20.0),
                   Text(
                     AppLocalizations.of(context)!.price,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
                   ),
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -119,7 +118,7 @@ class _RoutesState extends State<RoutesScreen> {
                     max: 100,
                     divisions: 100,
                     label: '${_currentPriceFilter.round().toString()}€',
-                    activeColor: Color.fromRGBO(125, 193, 165, 1),
+                    activeColor: const Color.fromRGBO(125, 193, 165, 1),
                     onChanged: (double value) {
                       setState(() {
                         _currentPriceFilter = value;
@@ -129,7 +128,7 @@ class _RoutesState extends State<RoutesScreen> {
                   const SizedBox(height: 20.0),
                   Text(
                     AppLocalizations.of(context)!.date,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
                   ),
                   const SizedBox(height: 10.0),
                   InkWell(
@@ -171,7 +170,7 @@ class _RoutesState extends State<RoutesScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xff4d5e6b),
                         ),
-                        child: Text(AppLocalizations.of(context)!.apply, style: TextStyle(color: Colors.white),),
+                        child: Text(AppLocalizations.of(context)!.apply, style: const TextStyle(color: Colors.white),),
                       ),
                       ElevatedButton(
                         onPressed: () {
@@ -181,7 +180,7 @@ class _RoutesState extends State<RoutesScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xff4d5e6b),
                         ),
-                        child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: Colors.white),),
+                        child: Text(AppLocalizations.of(context)!.cancel, style: const TextStyle(color: Colors.white),),
                       ),
                     ],
                   ),
@@ -269,7 +268,7 @@ class _RoutesState extends State<RoutesScreen> {
             child: TextField(
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context)!.searchYourRoute,
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
               ),
               onChanged: (value) {
                 query = value;
@@ -362,7 +361,7 @@ class _RoutesState extends State<RoutesScreen> {
             future: _filterRutas(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {

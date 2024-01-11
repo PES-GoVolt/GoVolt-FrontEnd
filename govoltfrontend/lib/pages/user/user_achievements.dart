@@ -13,7 +13,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
   final AchievementService _achievementService = AchievementService();
   Map<String, dynamic> _achievements = {};
 
-  Map<String, List<int>> _thresholds = {
+  final Map<String, List<int>> _thresholds = {
     'messages_achievement': [5, 10, 15],
     'nearest_charger_achievement': [20, 30, 50],
     'search_location_achievement': [5, 10, 15],
@@ -149,7 +149,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
               },
             )
           : Center(
-              child: Text('No achievements available'),
+              child: Text(AppLocalizations.of(context)!.noAchievements),
             ),
     );
   }

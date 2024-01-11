@@ -15,13 +15,11 @@ class CrearViajeScreen extends StatefulWidget {
 class _CrearViajeScreenState extends State<CrearViajeScreen> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   DateTime? _selectedDate;
-  //TimeOfDay? _selectedTime;
   final applicationBloc = AplicationBloc();
   List<PlaceSearch>? searchResults;
   String? _ubicacionInicial;
 
   void valueChanged(var value) async {
-    //await applicationBloc.searchCities(value);
     searchResults = applicationBloc.searchResults;
     setState(() {});
   }
@@ -87,16 +85,6 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                /*
-                BARRA DE BUSQUEDA BUENA
-                customSearchBar(),
-                if (applicationBloc.searchResults != null &&
-                    searchResults!.isNotEmpty)
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height,
-                    child: printListView(),
-                  ),
-                  */
                 const SizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'ubicacion_inicial',
@@ -135,23 +123,11 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
                   inputType: InputType.date,
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context)!.date,
-                    suffixIcon: Icon(Icons.calendar_today),
+                    suffixIcon: const Icon(Icons.calendar_today),
                   ),
                   onChanged: (dateTime) {
                     setState(() {
                       _selectedDate = dateTime;
-                      /*
-                      POR SI QUEREMOS PONER HORA AL CREAR
-                      if (_selectedTime != null) {
-                        _selectedDate = DateTime(
-                          _selectedDate!.year,
-                          _selectedDate!.month,
-                          _selectedDate!.day,
-                          _selectedTime!.hour,
-                          _selectedTime!.minute,
-                        );
-                      }
-                      */
                     });
                   },
                 ),
@@ -164,16 +140,15 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
                       await CreateRoutesService.createRuta(formData);
                       Navigator.of(context).pop();
                     }
-                    
                   },
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(const Color(0xff4d5e6b)),
                   ),
                   child: Padding(
-                    padding: EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Text(
                       AppLocalizations.of(context)!.createRoute,
-                      style: TextStyle(fontSize: 20.0, color: Colors.white),
+                      style: const TextStyle(fontSize: 20.0, color: Colors.white),
                     ),
                   ),
                 )
