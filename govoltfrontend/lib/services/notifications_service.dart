@@ -1,16 +1,13 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class LocalNotificationService {
-  
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
   Future<void> init() async {
-    // Initialize native android notification
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    // Initialize native Ios Notifications
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings();
 
@@ -37,8 +34,8 @@ class LocalNotificationService {
     const NotificationDetails notificationDetails =
         NotificationDetails(android: androidNotificationDetails);
 
-    await flutterLocalNotificationsPlugin
-        .show(notification_id, title, value, notificationDetails, payload: 'Not present');
+    await flutterLocalNotificationsPlugin.show(
+        notification_id, title, value, notificationDetails,
+        payload: 'Not present');
   }
 }
-

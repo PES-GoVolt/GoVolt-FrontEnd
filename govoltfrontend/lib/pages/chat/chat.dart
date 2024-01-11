@@ -8,7 +8,7 @@ import 'package:govoltfrontend/services/achievement_service.dart';
 import 'package:govoltfrontend/utils/chat_library/flutter_chat_ui.dart';
 import 'package:govoltfrontend/services/chat_service.dart';
 import 'package:uuid/uuid.dart';
-//import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage(
@@ -62,7 +62,7 @@ class _ChatPageState extends State<ChatPage> {
         await chatService.loadAllMessagesData(roomName);
     for (var element in messagesDataLoaded) {
         String messageUserId = element.userid;
-        String idMessage = Uuid().v4();
+        String idMessage = const Uuid().v4();
         final textMessage = types.TextMessage(
           author: (messageUserId == myUserId || (messageUserId == "DefaultUser" && !creador))
               ? types.User(id: myUserId)
@@ -105,7 +105,7 @@ class _ChatPageState extends State<ChatPage> {
       final textMessage = types.TextMessage(
         author: messageUserId == myUserId ? types.User(id: myUserId) : user2,
         createdAt: int.parse(ChatService.message.timestamp),
-        id: Uuid().v4(),
+        id: const Uuid().v4(),
         text: ChatService.message.content,
       );
       _addMessage(textMessage);
@@ -132,17 +132,12 @@ class _ChatPageState extends State<ChatPage> {
     final textMessage = types.TextMessage(
       author: types.User(id: myUserId),
       createdAt: DateTime.now().millisecondsSinceEpoch,
-      id: Uuid().v4(),
+      id: const Uuid().v4(),
       text: message.text,
     );
     chatService.sendMessage(roomName, myUserId, message.text);
     _addMessage(textMessage);
     achievementService.incrementAchievement("messages_achievement");  
-    print(achievementService.getAchievements());
-  }
-
-  void _handleAttachmentPressed() { 
-    //TODO send current Location
   }
 
   List<Widget> opcionesCreador()
@@ -153,12 +148,12 @@ class _ChatPageState extends State<ChatPage> {
           applicationBloc.addParticipant(idUserReciever, roomName.split("/")[1]);
           Navigator.of(context).pop();
         },
-        child: const Row(
+        child: Row(
           children: <Widget>[
-            Icon(Icons.person_add_alt_1,
+            const Icon(Icons.person_add_alt_1,
             color: Colors.blue,),
-            SizedBox(width: 11),
-            Text('Añadir Pasajero', style: TextStyle(color: Colors.black),),
+            const SizedBox(width: 11),
+            Text(AppLocalizations.of(context)!.addPas, style: const TextStyle(color: Colors.black),),
           ],
         ),
       ),
@@ -169,15 +164,32 @@ class _ChatPageState extends State<ChatPage> {
             Navigator.of(context).pop();
             Navigator.of(context).pop();
         },
-        child: const Row(
+        child: Row(
           children: <Widget>[
-            Icon(Icons.block,
+            const Icon(Icons.person_add_disabled,
             color: Colors.red,),
-            SizedBox(width: 11),
-            Text('Rechazar Pasajero', style: TextStyle(color: Colors.red),),
+            const SizedBox(width: 11),
+            Text(AppLocalizations.of(context)!.declinePas, style: const TextStyle(color: Colors.red),),
           ],
         ),
-      ),    
+      ),
+       const SizedBox(height: 10),
+      TextButton(
+        onPressed: () async {
+            await applicationBloc.deleteRequestParticipant(idUserReciever, roomName.split("/")[1], roomName);
+            applicationBloc.sendNotification(idUserReciever, myUserId);
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
+        },
+        child: Row(
+          children: <Widget>[
+            const Icon(Icons.block,
+            color: Colors.red,),
+            const SizedBox(width: 11),
+            Text(AppLocalizations.of(context)!.block, style: const TextStyle(color: Colors.red),),
+          ],
+        ),
+      ),  
     ];
   }
 
@@ -190,15 +202,32 @@ class _ChatPageState extends State<ChatPage> {
             Navigator.of(context).pop();
             Navigator.of(context).pop();
         },
-        child: const Row(
+        child: Row(
           children: <Widget>[
-            Icon(Icons.block,
+            const Icon(Icons.person_add_disabled,
             color: Colors.red,),
-            SizedBox(width: 11),
-            Text('Bloquear Usuario', style: TextStyle(color: Colors.red),),
+            const SizedBox(width: 11),
+            Text(AppLocalizations.of(context)!.declinePas, style: const TextStyle(color: Colors.red),),
           ],
         ),
-      ),    
+      ),
+      const SizedBox(height: 10),
+      TextButton(
+        onPressed: () async {
+            await applicationBloc.deleteRequestParticipant(idUserReciever, roomName.split("/")[1], roomName);
+            applicationBloc.sendNotification(idUserReciever, myUserId);
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
+        },
+        child: Row(
+          children: <Widget>[
+            const Icon(Icons.block,
+            color: Colors.red,),
+            const SizedBox(width: 11),
+            Text(AppLocalizations.of(context)!.block, style: const TextStyle(color: Colors.red),),
+          ],
+        ),
+      ),        
     ];
   }
 
@@ -207,7 +236,7 @@ class _ChatPageState extends State<ChatPage> {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('Opciones'),
+        title: Text(AppLocalizations.of(context)!.options),
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -224,6 +253,7 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(125, 193, 165, 1),
+        toolbarHeight: 100.0,
         title: Text(widget.userName, style: const TextStyle(color: Colors.black),),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -251,6 +281,5 @@ class _ChatPageState extends State<ChatPage> {
           lastReadMessageId: idLastMessageReaded,
           scrollOnOpen: true
           ): const ScrollToUnreadOptions(),
-          //onAttachmentPressed: _handleAttachmentPressed,
           showUserNames: true));
 }

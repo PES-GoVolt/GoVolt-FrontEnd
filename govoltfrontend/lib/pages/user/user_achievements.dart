@@ -20,10 +20,10 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
     'search_event_achievement': [20, 30, 50],
   };
 
-  Color goldColor = Color(0xFFFFD700);
-  Color silverColor = Color(0xFFC0C0C0);
-  Color bronzeColor = Color(0xFFCD7F32);
-  Color darkGreyColor = Color(0xFF303030); // Gris oscuro
+  Color goldColor = const Color(0xFFFFD700);
+  Color silverColor = const Color(0xFFC0C0C0);
+  Color bronzeColor = const Color(0xFFCD7F32);
+  Color darkGreyColor = const Color(0xFF303030); // Gris oscuro
 
   @override
   void initState() {
@@ -38,7 +38,6 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
         _achievements = achievements;
       });
     } catch (e) {
-      print('Error loading achievements: $e');
     }
   }
 
@@ -65,12 +64,12 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.achievements),
-        backgroundColor: Color.fromRGBO(125, 193, 165, 1),
+        backgroundColor: const Color.fromRGBO(125, 193, 165, 1),
       ),
       body: _achievements.isNotEmpty
           ? ListView.separated(
               itemCount: _achievements.length,
-              separatorBuilder: (context, index) => Divider(),
+              separatorBuilder: (context, index) => const Divider(),
               itemBuilder: (context, index) {
                 final achievementName = _achievements.keys.elementAt(index);
                 final progress = _achievements[achievementName];
@@ -149,7 +148,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
               },
             )
           : Center(
-              child: Text('No achievements available'),
+              child: Text(AppLocalizations.of(context)!.noAchievements),
             ),
     );
   }

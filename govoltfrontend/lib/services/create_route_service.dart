@@ -4,11 +4,12 @@ import 'package:govoltfrontend/config.dart';
 import 'package:govoltfrontend/services/token_service.dart';
 
 class CreateRoutesService {
-  
   static Future<String> createRuta(Map<String, dynamic> formData) async {
     final url = Uri.http(Config.apiURL, Config.allRutas);
-    final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
-    print(Token.token);
+    final headers = {
+      'Content-Type': 'application/json',
+      "Authorization": Token.token
+    };
     try {
       final response = await http.post(
         url,
@@ -16,13 +17,10 @@ class CreateRoutesService {
         body: jsonEncode(formData),
       );
 
-      print(response);
-
       if (response.statusCode == 200) {
         Map<String, dynamic> jsonMap = json.decode(response.body);
         String messageValue = jsonMap['message'];
         return messageValue;
-
       } else {
         return "";
       }

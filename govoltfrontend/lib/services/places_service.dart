@@ -18,7 +18,7 @@ class PlacesService {
   }
 
   Future<Place> getPlace(String placeId) async {
-     String apiKey = SecretKeys.googleApiKey;
+    String apiKey = SecretKeys.googleApiKey;
     Uri url = Uri.parse(
         'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$apiKey');
     var response = await http.get(url);

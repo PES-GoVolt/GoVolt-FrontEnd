@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:govoltfrontend/services/notification.dart';
 import 'package:govoltfrontend/services/notifications_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
 import 'package:govoltfrontend/models/markers_data.dart';
@@ -10,6 +11,7 @@ import 'dart:async';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:govoltfrontend/services/token_service.dart';
+import 'package:govoltfrontend/services/user_service.dart';
 import 'firebase_options.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -57,13 +59,11 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const Menu(),
         '/registro': (context) => RegisterScreen(),
         '/login': (context) => const Scaffold(
-              body:
-                  MyStatefulWidget(),
+              body: MyStatefulWidget(),
             ),
       },
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-
     );
   }
 }
@@ -76,15 +76,14 @@ class MyStatefulWidget extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
-
-
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
   //final urlobtenertoken = Uri.parse("http://192.168.1.108/api/api-token-auth/");
   final urllogin = Uri.parse(Config.loginFIREBASE);
   final applicationBloc = AplicationBloc();
-
+  EditUserService editUserService = EditUserService();
+  NotificationService notificationService = NotificationService();
   final headers = {"Content-Type": "application/json;charset=UTF-8"};
 
   @override
@@ -98,8 +97,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
     _googleSignIn.onCurrentUserChanged
         .listen((GoogleSignInAccount? account) async {
-      setState(() {
-      });
+      setState(() {});
     });
   }
 
@@ -113,10 +111,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         '/home',
       );
     } catch (error) {
-      print(error);
     }
-    setState(() {
-    });
+    setState(() {});
   }
 
   Future<void> _handleSignOut() => _googleSignIn.disconnect();
@@ -140,9 +136,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
                   child: TextField(
                     controller: emailController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Email',
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: AppLocalizations.of(context)!.email,
                     ),
                   ),
                 ),
@@ -151,9 +147,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   child: TextField(
                     obscureText: true,
                     controller: passwordController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Password',
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: AppLocalizations.of(context)!.password,
                     ),
                   ),
                 ),
@@ -179,16 +175,19 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                       login();
                     },
                     style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Color(0xff4d5e6b)),
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            const Color(0xff4d5e6b)),
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
                         ))),
-                    child: const Text('Log In', style: TextStyle(
-                      color: Colors.white,
-                      ),),
+                    child: Text(
+                      AppLocalizations.of(context)!.logIn,
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
                 Container(
@@ -204,16 +203,19 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                             (states) => Color(0xff4d5e6b)),
                         backgroundColor:
                             MaterialStateProperty.all<Color>(Colors.white),
-                        side: MaterialStateProperty.all(
-                            BorderSide(color: Color(0xff4d5e6b), width: 1.0)),
+                        side: MaterialStateProperty.all(const BorderSide(
+                            color: Color(0xff4d5e6b), width: 1.0)),
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
                         ))),
-                    child: const Text('Sign Up',style: TextStyle(
-                      color: Color(0xff4d5e6b),
-                      ),),
+                    child: Text(
+                      AppLocalizations.of(context)!.signUp,
+                      style: const TextStyle(
+                        color: Color(0xff4d5e6b),
+                      ),
+                    ),
                   ),
                 ),
                 Row(
@@ -226,7 +228,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                         color: Colors.grey,
                       ),
                     ),
-                    Text(" Or "),
+                    Text(AppLocalizations.of(context)!.or),
                     Expanded(
                       child: Container(
                         margin: const EdgeInsets.only(
@@ -247,14 +249,16 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
-                          minimumSize:
-                              const Size(double.infinity, 50),
+                          minimumSize: const Size(double.infinity, 50),
                         ),
                         icon: Image.asset(
                           'assets/images/google_logo_2.png',
                           height: 24,
                         ),
-                        label:  Text(AppLocalizations.of(context)!.logInGoogle, style: TextStyle(color: Colors.white),),
+                        label: Text(
+                          AppLocalizations.of(context)!.logInGoogle,
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
                     ],
                   ),
@@ -263,7 +267,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             )));
   }
 
-  
   void showSnackbar(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -290,9 +293,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       "returnSecureToken": true
     };
 
-    print(jsonEncode(datosdelposibleusuario));
-
-    dynamic res = await applicationBloc.login(jsonEncode(datosdelposibleusuario));
+    dynamic res =
+        await applicationBloc.login(jsonEncode(datosdelposibleusuario));
 
     if (res.statusCode != 200) {
       final data = json.decode(res.body);
@@ -301,14 +303,17 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       showSnackbar(message);
       return;
     }
+
+    dynamic id = await editUserService.getCurrentUserID();
+    notificationService.setupDatabaseSngleListener(id);
     //Navigator.push(context,MaterialPageRoute(builder: (context) => Home()),);
     // ignore: use_build_context_synchronously
     await Future.delayed(Duration.zero);
     Navigator.pushNamed(
       context,
       '/home',
-    ).then((result){
+    ).then((result) {
       Token.token = "";
-    });
+    }).then((value) => passwordController.clear());
   }
 }

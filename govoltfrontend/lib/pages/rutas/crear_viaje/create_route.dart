@@ -6,7 +6,6 @@ import 'package:govoltfrontend/models/place_search.dart';
 import 'package:govoltfrontend/services/create_route_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 class CrearViajeScreen extends StatefulWidget {
   @override
   _CrearViajeScreenState createState() => _CrearViajeScreenState();
@@ -15,20 +14,18 @@ class CrearViajeScreen extends StatefulWidget {
 class _CrearViajeScreenState extends State<CrearViajeScreen> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   DateTime? _selectedDate;
-  //TimeOfDay? _selectedTime;
   final applicationBloc = AplicationBloc();
   List<PlaceSearch>? searchResults;
   String? _ubicacionInicial;
 
   void valueChanged(var value) async {
-    //await applicationBloc.searchCities(value);
     searchResults = applicationBloc.searchResults;
     setState(() {});
   }
 
   Widget customSearchBar() {
     return TextField(
-      decoration:  InputDecoration(
+      decoration: InputDecoration(
         hintText: AppLocalizations.of(context)!.searchYourRoute,
       ),
       onChanged: (value) {
@@ -55,10 +52,9 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
         return ListTile(
           onTap: () {
             FocusScope.of(context).unfocus();
-            print(applicationBloc.searchResults?[index].description);
-
             setState(() {
-              _ubicacionInicial = applicationBloc.searchResults![index].description;
+              _ubicacionInicial =
+                  applicationBloc.searchResults![index].description;
               searchResults?.clear();
             });
           },
@@ -75,7 +71,7 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:  Text(AppLocalizations.of(context)!.routeCreation),
+        title: Text(AppLocalizations.of(context)!.routeCreation),
         backgroundColor: const Color.fromRGBO(125, 193, 165, 1),
       ),
       body: SingleChildScrollView(
@@ -87,43 +83,38 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                /*
-                BARRA DE BUSQUEDA BUENA
-                customSearchBar(),
-                if (applicationBloc.searchResults != null &&
-                    searchResults!.isNotEmpty)
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height,
-                    child: printListView(),
-                  ),
-                  */
                 const SizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'ubicacion_inicial',
-                  decoration: InputDecoration(labelText: AppLocalizations.of(context)!.initialCity),
+                  decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.initialCity),
                   validator: FormBuilderValidators.required(),
                 ),
                 const SizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'ubicacion_final',
-                  decoration: InputDecoration(labelText: AppLocalizations.of(context)!.finalCity),
+                  decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.finalCity),
                   validator: FormBuilderValidators.required(),
                 ),
                 const SizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'precio',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration:  InputDecoration(labelText: AppLocalizations.of(context)!.price),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.price),
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(),
                     FormBuilderValidators.numeric()
-                  ]),        
+                  ]),
                 ),
                 const SizedBox(height: 16.0),
                 FormBuilderTextField(
                   name: 'num_plazas',
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: AppLocalizations.of(context)!.seatsAvailable),
+                  decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.seatsAvailable),
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(),
                     FormBuilderValidators.numeric()
@@ -135,45 +126,37 @@ class _CrearViajeScreenState extends State<CrearViajeScreen> {
                   inputType: InputType.date,
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context)!.date,
-                    suffixIcon: Icon(Icons.calendar_today),
+                    suffixIcon: const Icon(Icons.calendar_today),
                   ),
                   onChanged: (dateTime) {
                     setState(() {
                       _selectedDate = dateTime;
-                      /*
-                      POR SI QUEREMOS PONER HORA AL CREAR
-                      if (_selectedTime != null) {
-                        _selectedDate = DateTime(
-                          _selectedDate!.year,
-                          _selectedDate!.month,
-                          _selectedDate!.day,
-                          _selectedTime!.hour,
-                          _selectedTime!.minute,
-                        );
-                      }
-                      */
                     });
                   },
                 ),
                 const SizedBox(height: 16.0),
                 ElevatedButton(
                   onPressed: () async {
-                    if (_formKey.currentState?.saveAndValidate() ?? false ) {
-                      var formData = Map<String, dynamic>.from(_formKey.currentState!.value);
-                      formData['fecha'] = (_selectedDate != null) ? _selectedDate!.toString().split(' ')[0] : null;
+                    if (_formKey.currentState?.saveAndValidate() ?? false) {
+                      var formData = Map<String, dynamic>.from(
+                          _formKey.currentState!.value);
+                      formData['fecha'] = (_selectedDate != null)
+                          ? _selectedDate!.toString().split(' ')[0]
+                          : null;
                       await CreateRoutesService.createRuta(formData);
                       Navigator.of(context).pop();
                     }
-                    
                   },
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(const Color(0xff4d5e6b)),
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        const Color(0xff4d5e6b)),
                   ),
                   child: Padding(
-                    padding: EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Text(
                       AppLocalizations.of(context)!.createRoute,
-                      style: TextStyle(fontSize: 20.0, color: Colors.white),
+                      style:
+                          const TextStyle(fontSize: 20.0, color: Colors.white),
                     ),
                   ),
                 )

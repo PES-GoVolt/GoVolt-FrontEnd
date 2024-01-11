@@ -4,6 +4,7 @@ import 'package:govoltfrontend/pages/chat/chat_list.dart';
 import 'package:govoltfrontend/pages/mapa/mapa.dart';
 import 'package:govoltfrontend/pages/user/volter.dart';
 import 'package:govoltfrontend/services/chat_service.dart';
+import 'package:govoltfrontend/services/notification.dart';
 import 'package:govoltfrontend/services/notifications_service.dart';
 import 'package:govoltfrontend/pages/rutas/main_routes.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -20,8 +21,10 @@ class MenuState extends State<Menu> {
   int _selectDrawerItem = 0;
   ChatService chatService = ChatService();
   late StreamSubscription<String> messageArrivedSubscription;
+  late StreamSubscription<String> reportArrivedSubscription;
   late StreamSubscription<bool> showAppbarSubscription;
   ChatListVolter chatList = ChatListVolter();
+  NotificationService notificationService = NotificationService();
   
   getDrawerItemWidget(int pos) {
     switch (pos) {
@@ -48,13 +51,29 @@ class MenuState extends State<Menu> {
     });
   }
 
+  Future<dynamic> getUSerID() async{
+    return ;
+  }
+
   @override
   void initState() {
     chatService.setupDatabaseAllListeners();
+
     messageArrivedSubscription =
         chatService.onMessageArrivedNotificationChanged.listen((messageArrived) {
           List<String> parts = messageArrived.split("_");
           LocalNotificationService.showNotificationAndroid(parts[0], parts[1]);
+        });
+    reportArrivedSubscription =
+        notificationService.onMessageArrivedNotificationChanged.listen((messageArrived) {
+          int numberOfReports = int.parse(messageArrived);
+          String numberOfReportsString = (5-numberOfReports).toString();
+          if (numberOfReports == 5)
+          {
+              Navigator.pop(context);
+              Navigator.pop(context);
+          }
+          LocalNotificationService.showNotificationAndroid("Report Warning", "You have, $numberOfReportsString reports until your account gets deleted");
         });
     super.initState();
   }
@@ -71,6 +90,7 @@ class MenuState extends State<Menu> {
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(125, 193, 165, 1),
         title: const Text(""),
+        toolbarHeight: 100.0,
       ),
       resizeToAvoidBottomInset: false,
       drawer: Drawer(

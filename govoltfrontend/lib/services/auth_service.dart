@@ -17,8 +17,8 @@ class AuthService {
   Future<dynamic> login(String encodedData) async {
     try {
       final urllogin = Uri.parse(Config.loginFIREBASE);
-      final res = await http.post(urllogin, headers: headers, body: encodedData);
-      print(res);
+      final res =
+          await http.post(urllogin, headers: headers, body: encodedData);
       final data = json.decode(res.body);
       final token = data['idToken'];
       Token.token = 'Bearer $token';
@@ -28,5 +28,4 @@ class AuthService {
       throw Exception('Network error: $e');
     }
   }
-  
 }

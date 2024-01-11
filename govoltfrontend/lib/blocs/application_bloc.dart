@@ -5,6 +5,7 @@ import 'package:govoltfrontend/models/place_search.dart';
 import 'package:govoltfrontend/models/route_list.dart';
 import 'package:govoltfrontend/services/auth_service.dart';
 import 'package:govoltfrontend/services/chat_service.dart';
+import 'package:govoltfrontend/services/notification.dart';
 import 'package:govoltfrontend/services/rutas_service.dart';
 import 'package:govoltfrontend/services/user_service.dart';
 import 'package:govoltfrontend/services/places_service.dart';
@@ -22,6 +23,7 @@ class AplicationBloc with ChangeNotifier {
   final rutasService = RutaService();
   RouteVoltList routevolt = RouteVoltList();
   final chatService = ChatService();
+  final notificationService = NotificationService();
   final authService = AuthService();
   List<PlaceSearch>? searchResults;
   Place? place;
@@ -48,14 +50,9 @@ class AplicationBloc with ChangeNotifier {
     notifyListeners();
   }
 
-  /*searchCities(String searchTerm) async {
-    if (searchTerm == "") {
-      searchResults!.clear();
-    } else {
-      searchResults = await placesService.getAutoComplete(searchTerm, );
-    }
-    notifyListeners();
-  }*/
+  Future<dynamic> getCurrentUserID() async{
+    return await editUser.getCurrentUserID();
+  }
 
   Future<List<Coordenada>> getChargers() async {
     try
@@ -110,7 +107,7 @@ class AplicationBloc with ChangeNotifier {
   }
 
   calculateRouteToCharger(List<LatLng> points) async {
-    await routeService.getRoute(points, routevolt.carRoute, "DRIVE");
+    await routeService.getRoute(points, routevolt.tempRouteToCharger, "DRIVE");
   }
 
   changePointer(int mode) {
@@ -127,6 +124,11 @@ class AplicationBloc with ChangeNotifier {
 
   createChat(String idRuta, String userUid, String creatorUid){
       chatService.createChat(idRuta, userUid, creatorUid);
+  }
+
+  sendNotification(String idUsuario, String idUserBlocked)
+  {
+      notificationService.sendReport(idUsuario, idUserBlocked);
   }
 
 }

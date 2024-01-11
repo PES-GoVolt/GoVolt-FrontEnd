@@ -57,7 +57,6 @@ class _MapaState extends State<MapScreen> {
   bool showChargers = true;
   bool showBikeStations = true;
 
-
   @override
   void initState() {
     geolocatiorService.getCurrentLocation().listen((position) {
@@ -73,15 +72,6 @@ class _MapaState extends State<MapScreen> {
   void dispose() {
     super.dispose();
   }
-
-/*
-  Future<BitmapDescriptor> createCustomMarkerIcon() async {
-  return BitmapDescriptor.fromAssetImage(
-    ImageConfiguration(size: Size(1000, 1000)),
-    'assets/images/bike_icon.png', 
-  );
-}
-*/
 
   void getMarkers() async {
     await cargarMarcadores();
@@ -106,9 +96,8 @@ class _MapaState extends State<MapScreen> {
             applicationBloc.place!.geometry.location.lng)));
     _myLocMarker = myMarkers.toSet();
     setState(() {});
-    await achievementService.incrementAchievement("search_location_achievement");
-    final Map<String, dynamic> achievementsMap = await achievementService.getAchievements();
-    print('Achievements Map: $achievementsMap');
+    await achievementService
+        .incrementAchievement("search_location_achievement");
   }
 
   void placeRandomSelected(double lat, double lng) {
@@ -160,42 +149,40 @@ class _MapaState extends State<MapScreen> {
   void chargerSelected(double lat, double lng) async {
     Location loc = Location(lat: lng, lng: lat);
     Geometry geo = Geometry(location: loc);
-    Place place = Place(geometry: geo, address: "address", name: "name", uri: "uri");
+    Place place =
+        Place(geometry: geo, address: "address", name: "name", uri: "uri");
     applicationBloc.chargerFinded(place);
     _goToPlace(place);
     setState(() {});
   }
 
   Future<List<Map<String, dynamic>>> fetchDataFromApi(
-        double? latitud, double? longitud) async {
-      DateTime now = DateTime.now();
-      DateTime maxDate = now.add(Duration(days: 7));
-      String formattedNow = DateFormat('dd-MM-yyyy').format(now);
-      String formattedMaxDate = DateFormat('dd-MM-yyyy').format(maxDate);
-      final Uri uri = Uri.https(
-        Config.eventsURL,
-        Config.eventosAPI,
-        {
-          'latitud': longitud.toString(),
-          'longitud': latitud.toString(),
-          'distancia': '2',
-          'data_min': formattedNow,
-          'data_max': formattedMaxDate,
-        },
-      );
+      double? latitud, double? longitud) async {
+    DateTime now = DateTime.now();
+    DateTime maxDate = now.add(const Duration(days: 7));
+    String formattedNow = DateFormat('dd-MM-yyyy').format(now);
+    String formattedMaxDate = DateFormat('dd-MM-yyyy').format(maxDate);
+    final Uri uri = Uri.https(
+      Config.eventsURL,
+      Config.eventosAPI,
+      {
+        'latitud': longitud.toString(),
+        'longitud': latitud.toString(),
+        'distancia': '2',
+        'data_min': formattedNow,
+        'data_max': formattedMaxDate,
+      },
+    );
 
-      try {
-        final response = await http.get(uri);
-        // Procesa la respuesta y devuelve una lista de objetos
-        final List<Map<String, dynamic>> data =
-            List<Map<String, dynamic>>.from(json.decode(utf8.decode(response.bodyBytes)));
-        return data;
-      } catch (e) {
-        // Maneja cualquier error que pueda ocurrir durante la solicitud
-        print("Error en la solicitud: $e");
-        return []; // Retorna una lista vacía en caso de error
-      }
+    try {
+      final response = await http.get(uri);
+      final List<Map<String, dynamic>> data = List<Map<String, dynamic>>.from(
+          json.decode(utf8.decode(response.bodyBytes)));
+      return data;
+    } catch (e) {
+      return [];
     }
+  }
 
   Future<void> _showEventBottomSheet() async {
     showModalBottomSheet<void>(
@@ -208,8 +195,9 @@ class _MapaState extends State<MapScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  'Eventos Cercanos',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context)!.nearbyEvent,
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
                 FutureBuilder(
@@ -219,18 +207,16 @@ class _MapaState extends State<MapScreen> {
                   ),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else {
-                      final data = snapshot.data as List<Map<String, dynamic>>?;
+                      final data = snapshot.data;
                       if (data?.isEmpty ?? true) {
-                        return Text(
-                            'No hay eventos cercanos en la próxima semana.');
+                        return Text(AppLocalizations.of(context)!.noEvents);
                       }
                       return Column(
                         children: data?.map((item) {
-                              // Formatear la fecha usando DateFormat
                               DateTime fechaInicio =
                                   DateTime.parse(item['dataIni']);
                               String fechaFormateada =
@@ -242,20 +228,20 @@ class _MapaState extends State<MapScreen> {
                                 children: [
                                   Text(
                                     '${item['nom']}',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    '$fechaFormateada',
-                                    style: TextStyle(fontSize: 16),
+                                    fechaFormateada,
+                                    style: const TextStyle(fontSize: 16),
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'Dirección: ${item['adreca']}',
-                                    style: TextStyle(fontSize: 16),
+                                    "${AppLocalizations.of(context)!.address}: + ${item['adreca']}",
+                                    style: const TextStyle(fontSize: 16),
                                   ),
                                   const Divider(),
                                 ],
@@ -273,9 +259,8 @@ class _MapaState extends State<MapScreen> {
       },
     );
   }
-  
-  Container ChargerInfoDisplay()
-  {
+
+  Container ChargerInfoDisplay() {
     return Container(
       height: MediaQuery.of(context).size.height * 0.25,
       padding: const EdgeInsets.all(16),
@@ -311,8 +296,7 @@ class _MapaState extends State<MapScreen> {
                     setState(() {});
                   },
                   icon: const Icon(
-                    Icons
-                        .directions,
+                    Icons.directions,
                     color: Colors.white,
                   ),
                   label: const Text(
@@ -336,14 +320,15 @@ class _MapaState extends State<MapScreen> {
                     chargerIsSelected = false;
                     setState(() {});
                   },
-                  child: const Text('Salir',
-                      style: TextStyle(color: Colors.black, fontSize: 16)),
+                  child: Text(AppLocalizations.of(context)!.exit,
+                      style:
+                          const TextStyle(color: Colors.black, fontSize: 16)),
                 ),
               ],
             ),
             const SizedBox(height: 10),
             Text(
-              coordSelected!.municipi + ", " + coordSelected!.provincia,
+              "${coordSelected!.municipi}, ${coordSelected!.provincia}",
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 10),
@@ -356,28 +341,31 @@ class _MapaState extends State<MapScreen> {
               "${coordSelected!.tipus_connexi}, ${coordSelected!.ac_dc}",
               style: const TextStyle(fontSize: 16),
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(
+              height: 10,
+            ),
             ElevatedButton.icon(
-                  onPressed: () async {
-                    achievementService.incrementAchievement("search_event_achievement");
-                    await _showEventBottomSheet();
-                  },
-                  icon: const Icon(
-                    Icons.event,
-                    color: Colors.white,
-                  ),
-                  label: const Text(
-                    'Ver Eventos',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.orange,
-                  ),
+              onPressed: () async {
+                achievementService
+                    .incrementAchievement("search_event_achievement");
+                await _showEventBottomSheet();
+              },
+              icon: const Icon(
+                Icons.event,
+                color: Colors.white,
+              ),
+              label: Text(
+                AppLocalizations.of(context)!.nearbyEvent,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
                 ),
+              ),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.orange,
+              ),
+            ),
           ],
         ),
       ),
@@ -388,23 +376,21 @@ class _MapaState extends State<MapScreen> {
     try {
       final nuevosMarcadores = MarkersData.chargers.map((punto) {
         return Marker(
-          markerId: MarkerId(punto.chargerId),
-          position: LatLng(punto.longitud, punto.latitud),
-          icon:
-              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-          onTap: () {
-            coordSelected = punto;
-            chargerIsSelected = true;
-            chargerSelected(punto.latitud, punto.longitud);
-            setState(() {});
-          }
-        );
+            markerId: MarkerId(punto.chargerId),
+            position: LatLng(punto.longitud, punto.latitud),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueGreen),
+            onTap: () {
+              coordSelected = punto;
+              chargerIsSelected = true;
+              chargerSelected(punto.latitud, punto.longitud);
+              setState(() {});
+            });
       }).toSet();
       setState(() {
         _chargers = nuevosMarcadores;
       });
     } catch (e) {
-      print('Error al cargar marcadores: $e');
     }
   }
 
@@ -412,21 +398,19 @@ class _MapaState extends State<MapScreen> {
     try {
       final newMarkers = MarkersData.bikeStation.map((station) {
         return Marker(
-          markerId:
-              MarkerId(station.stationId),
-          position: LatLng(station.latitude, station.longitude),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-          onTap: () {
-            chargerIsSelected = false;
-            setState(() {});
-          }
-        );
-      }).toSet(); 
+            markerId: MarkerId(station.stationId),
+            position: LatLng(station.latitude, station.longitude),
+            icon:
+                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+            onTap: () {
+              chargerIsSelected = false;
+              setState(() {});
+            });
+      }).toSet();
       setState(() {
         _bikeStations = newMarkers;
       });
     } catch (e) {
-      print('Error loading markers: $e');
     }
   }
 
@@ -474,11 +458,7 @@ class _MapaState extends State<MapScreen> {
   }
 
   Future<void> _calculateRouteCharger(double lat, double lng) async {
-    List<LatLng> points = [
-      userPosition,
-      LatLng(lat,
-          lng)
-    ];
+    List<LatLng> points = [userPosition, LatLng(lat, lng)];
     await applicationBloc.calculateRoute(points);
   }
 
@@ -525,9 +505,11 @@ class _MapaState extends State<MapScreen> {
             children: [
               buildRouteModeButtonsRow(),
               const SizedBox(height: 10),
-              buildRouteLocationRow(Icons.location_searching, "Your ubication"),
+              buildRouteLocationRow(Icons.location_searching,
+                  AppLocalizations.of(context)!.yourUbication),
               const SizedBox(height: 10),
-              buildRouteLocationRow(Icons.location_on, "Coordenadas Buscadas"),
+              buildRouteLocationRow(
+                  Icons.location_on, AppLocalizations.of(context)!.destination),
             ],
           ),
         ),
@@ -539,13 +521,15 @@ class _MapaState extends State<MapScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        buildRouteModeButton(Icons.directions_car, "Car", 0),
-        buildRouteModeButton(Icons.directions_bike, "Bicycle", 1),
-        buildRouteModeButton(Icons.directions_walk, "Walking", 2),
+        buildRouteModeButton(
+            Icons.directions_car, AppLocalizations.of(context)!.car, 0),
+        buildRouteModeButton(
+            Icons.directions_bike, AppLocalizations.of(context)!.car, 1),
+        buildRouteModeButton(
+            Icons.directions_walk, AppLocalizations.of(context)!.car, 2),
       ],
     );
   }
-
 
   Widget buildRouteModeButton(IconData icon, String label, int mode) {
     return ElevatedButton(
@@ -627,13 +611,12 @@ class _MapaState extends State<MapScreen> {
                     setState(() {});
                   },
                   icon: const Icon(
-                    Icons
-                        .directions,
+                    Icons.directions,
                     color: Colors.white,
                   ),
-                  label: const Text(
-                    'Ruta',
-                    style: TextStyle(
+                  label: Text(
+                    AppLocalizations.of(context)!.route,
+                    style: const TextStyle(
                       fontSize: 16,
                       color: Colors.white,
                     ),
@@ -650,10 +633,13 @@ class _MapaState extends State<MapScreen> {
                           MaterialStateProperty.all<Color>(Colors.red)),
                   onPressed: () {
                     placeIsSelected = false;
+                    showBikeStations = true;
+                    showChargers = true;
                     setState(() {});
                   },
-                  child: const Text('Salir',
-                      style: TextStyle(color: Colors.black, fontSize: 16)),
+                  child: Text(AppLocalizations.of(context)!.exit,
+                      style:
+                          const TextStyle(color: Colors.black, fontSize: 16)),
                 ),
               ],
             ),
@@ -668,9 +654,9 @@ class _MapaState extends State<MapScreen> {
                   Uri url = Uri.parse(applicationBloc.place!.uri!);
                   launchUrl(url);
                 },
-                child: const Text(
-                  'Web Page',
-                  style: TextStyle(
+                child: Text(
+                  AppLocalizations.of(context)!.webPage,
+                  style: const TextStyle(
                     fontSize: 16,
                     color: Colors.blue,
                     decoration: TextDecoration.underline,
@@ -681,8 +667,8 @@ class _MapaState extends State<MapScreen> {
             if (applicationBloc.place!.openingHours != null)
               Text(
                 applicationBloc.place!.openingHours!.open
-                    ? 'Abierto'
-                    : 'Cerrado',
+                    ? AppLocalizations.of(context)!.open
+                    : AppLocalizations.of(context)!.closed,
                 style: TextStyle(
                   color: applicationBloc.place!.openingHours!.open
                       ? Colors.green
@@ -737,9 +723,9 @@ class _MapaState extends State<MapScreen> {
                     Icons.directions,
                     color: Colors.white,
                   ),
-                  label: const Text(
-                    'Iniciar Ruta',
-                    style: TextStyle(
+                  label: Text(
+                    AppLocalizations.of(context)!.startRoute,
+                    style: const TextStyle(
                       fontSize: 16,
                       color: Colors.white,
                     ),
@@ -756,21 +742,23 @@ class _MapaState extends State<MapScreen> {
                           MaterialStateProperty.all<Color>(Colors.red)),
                   onPressed: () {
                     placeIsSelected = false;
+                    showBikeStations = true;
+                    showChargers = true;
                     setState(() {
                       showRouteDetails = false;
-                      if (rutaChargerBike){
+                      if (rutaChargerBike) {
                         chargerIsSelected = true;
-                          rutaChargerBike = false;
-                      }
-                      else{
+                        rutaChargerBike = false;
+                      } else {
                         placeIsSelected = true;
-                        }
+                      }
                       applicationBloc.cleanRoute();
                       centerScreen();
                     });
                   },
-                  child: const Text('Salir',
-                      style: TextStyle(color: Colors.black, fontSize: 16)),
+                  child: Text(AppLocalizations.of(context)!.exit,
+                      style:
+                          const TextStyle(color: Colors.black, fontSize: 16)),
                 ),
               ],
             ),
@@ -795,7 +783,6 @@ class _MapaState extends State<MapScreen> {
         cargarMarcadores();
       },
       myLocationEnabled: true,
-
       markers: {
         if (showChargers) ..._chargers,
         if (showBikeStations) ..._bikeStations,
@@ -824,7 +811,7 @@ class _MapaState extends State<MapScreen> {
     return TextField(
       decoration: InputDecoration(
           hintText: AppLocalizations.of(context)!.searchYourRoute,
-          prefixIcon: Icon(Icons.location_on)),
+          prefixIcon: const Icon(Icons.location_on)),
       onChanged: (value) {
         valueChanged(value);
       },
@@ -869,7 +856,8 @@ class _MapaState extends State<MapScreen> {
               children: [
                 ElevatedButton.icon(
                   onPressed: () async {
-                    achievementService.incrementAchievement("nearest_charger_achievement");
+                    achievementService
+                        .incrementAchievement("nearest_charger_achievement");
                     goToNearestChargerEnable
                         ? applicationBloc.changePointer(0)
                         : await _goToNearestCharger();
@@ -881,16 +869,16 @@ class _MapaState extends State<MapScreen> {
                     color: Colors.white,
                   ),
                   label: !goToNearestChargerEnable
-                      ? const Text(
-                          'Buscar cargador cercano',
-                          style: TextStyle(
+                      ? Text(
+                          AppLocalizations.of(context)!.searchNearestCharger,
+                          style: const TextStyle(
                             fontSize: 16,
                             color: Colors.white,
                           ),
                         )
-                      : const Text(
-                          'Volver a destino original',
-                          style: TextStyle(
+                      : Text(
+                          AppLocalizations.of(context)!.returnToDestination,
+                          style: const TextStyle(
                             fontSize: 16,
                             color: Colors.white,
                           ),
@@ -907,10 +895,13 @@ class _MapaState extends State<MapScreen> {
                           MaterialStateProperty.all<Color>(Colors.red)),
                   onPressed: () async {
                     await _changeCameraToRoutePreview();
+                    showBikeStations = true;
+                    showChargers = true;
                     setState(() {});
                   },
-                  child: const Text('Salir',
-                      style: TextStyle(color: Colors.black, fontSize: 16)),
+                  child: Text(AppLocalizations.of(context)!.exit,
+                      style:
+                          const TextStyle(color: Colors.black, fontSize: 16)),
                 ),
               ],
             ),
@@ -920,116 +911,122 @@ class _MapaState extends State<MapScreen> {
     );
   }
 
-Widget getMapScreen() {
-  return Scaffold(
-    bottomSheet: (placeIsSelected || showRouteDetails || routeStarted || chargerIsSelected)
-        ? bottomSheetInfo()
-        : null,
-    resizeToAvoidBottomInset: false,
-    body: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: _chooseSearchBarOrRouteDetails(),
-        ),
-        Expanded(
-          child: Stack(
-            children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height - 100,
-                child: mapWidget(),
-              ),
-              Positioned(
-                top: 0,
-                right: 0,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 60, right: 11),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.7),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 1,
-                              blurRadius: 4,
-                              offset: Offset(0, 2),
+  Widget getMapScreen() {
+    return Scaffold(
+      bottomSheet: (placeIsSelected ||
+              showRouteDetails ||
+              routeStarted ||
+              chargerIsSelected)
+          ? bottomSheetInfo()
+          : null,
+      resizeToAvoidBottomInset: false,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: _chooseSearchBarOrRouteDetails(),
+          ),
+          Expanded(
+            child: Stack(
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height - 100,
+                  child: mapWidget(),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 60, right: 11),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.7),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 1,
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          width: 39,
+                          height: 40,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  showChargers = !showChargers;
+                                });
+                              },
+                              icon: Icon(
+                                Icons.ev_station,
+                                color: showChargers
+                                    ? Colors.green
+                                    : const Color(0xff4d5e6b),
+                              ),
+                              iconSize: 26,
                             ),
-                          ],
-                        ),
-                        width: 39,
-                        height: 40,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                showChargers = !showChargers;
-                              });
-                            },
-                            icon: Icon(
-                              Icons.ev_station,
-                              color: showChargers ? Colors.green : const Color(0xff4d5e6b),
-                            ),
-                            iconSize: 26,
                           ),
                         ),
-                      ),
-                      SizedBox(height: 10),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.7),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 1,
-                              blurRadius: 4,
-                              offset: Offset(0, 2), // Cambia el offset según necesites
+                        const SizedBox(height: 10),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.7),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 1,
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          width: 39,
+                          height: 40,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  showBikeStations = !showBikeStations;
+                                });
+                              },
+                              icon: Icon(
+                                Icons.directions_bike,
+                                color: showBikeStations
+                                    ? Colors.blue
+                                    : const Color(0xff4d5e6b),
+                              ),
+                              iconSize: 26,
                             ),
-                          ],
-                        ),
-                        width: 39,
-                        height: 40,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                showBikeStations = !showBikeStations;
-                              });
-                            },
-                            icon: Icon(
-                              Icons.directions_bike,
-                              color: showBikeStations ? Colors.blue : const Color(0xff4d5e6b),
-                            ),
-                            iconSize: 26,
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              if (applicationBloc.searchResults != null &&
-                  applicationBloc.searchResults!.isNotEmpty)
-                blackPageForSearch(),
-              if (applicationBloc.searchResults != null &&
-                  searchResults!.isNotEmpty)
-                SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  child: printListView(),
-                ),
-            ],
+                if (applicationBloc.searchResults != null &&
+                    applicationBloc.searchResults!.isNotEmpty)
+                  blackPageForSearch(),
+                if (applicationBloc.searchResults != null &&
+                    searchResults!.isNotEmpty)
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: printListView(),
+                  ),
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
-
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

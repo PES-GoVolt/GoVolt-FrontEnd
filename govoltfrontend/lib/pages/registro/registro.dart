@@ -7,7 +7,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 final GoogleSignIn googleSignIn = GoogleSignIn();
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -57,7 +56,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       showSnackbar(AppLocalizations.of(context)!.passDontMatch);
       return;
     }
-      
+
     final url = Uri.parse(Config.singupFIREBASE);
     final headers = {"Content-Type": "application/json;charset=UTF-8"};
 
@@ -81,7 +80,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       showSnackbar(message);
       return;
     } else {
-      
       String token = json.decode(response.body)["idToken"];
 
       final userStored = {
@@ -91,7 +89,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       };
 
       final urlStoreUser = Uri.http(Config.apiURL, Config.registroAPI);
-      final headersStoredUser = { 'Content-Type': 'application/json',"Authorization": "Bearer $token"};
+      final headersStoredUser = {
+        'Content-Type': 'application/json',
+        "Authorization": "Bearer $token"
+      };
 
       final responseStoreUser = await http.post(
         urlStoreUser,
@@ -107,62 +108,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         final errorMessage = data['message'];
         showSnackbar(errorMessage);
       }
-
-      
-    }
-  }
-
-  Future<void> signUpWithGoogle() async {
-    try {
-      // Obtener credenciales de Google
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      
-      if (googleUser == null) {
-        return null;
-      }
-
-      print("SIGN IN ACCOUNT: ");
-      print(googleUser);
-
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
-      String? idToken = googleAuth.accessToken;
-      // Registro con Google en Firebase
-      await signUpWithGoogleFirebase(idToken!);
-
-    } catch (error) {
-      print("Error en el signup con Google: $error");
-    }
-  }
-
-  Future<void> signUpWithGoogleFirebase(String idToken) async {
-    try {
-      final url = Uri.parse(Config.singupGoogleFIREBASE);
-      final headers = {'Content-Type': 'application/json'};
-      
-      print(idToken);
-
-      final requestData = {
-        "id_token": idToken,
-        "providerId": "google.com",
-        "requestUri": "http://localhost",
-        "returnIdpCredential": true,
-        "returnSecureToken": true,
-      };
-
-      final response = await http.post(
-        url,
-        headers: headers,
-        body: jsonEncode(requestData),
-      );
-
-      final data = json.decode(response.body);
-      print("Respuesta de signup con Google en Firebase:");
-      print(data);
-
-      // Aquí puedes manejar la respuesta y extraer el token de autenticación si el signup fue exitoso.
-    } catch (error) {
-      print("Error en el signup con Google en Firebase: $error");
     }
   }
 
@@ -178,132 +123,140 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: ListView(
-          children: <Widget>[
-            Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
-                child: Image.asset(
-                  'assets/images/logo-govolt.png',
-                  height: 50,
+        body: Padding(
+            padding: const EdgeInsets.all(10),
+            child: ListView(
+              children: <Widget>[
+                Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+                  child: Image.asset(
+                    'assets/images/logo-govolt.png',
+                    height: 50,
+                  ),
                 ),
-            ),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  child: Text(
-                    AppLocalizations.of(context)!.signUp,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      child: Text(
+                        AppLocalizations.of(context)!.signUp,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
-              child: TextField(
-                controller: usernameController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: AppLocalizations.of(context)!.username,
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
-              child: TextField(
-                controller: emailController,
-                decoration:  InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: AppLocalizations.of(context)!.email,
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-              child: TextField(
-                obscureText: true,
-                controller: passwordController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: AppLocalizations.of(context)!.password,
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-              child: TextField(
-                obscureText: true,
-                controller: confirmPasswordController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: AppLocalizations.of(context)!.confirmPassword,
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.fromLTRB(20, 5, 10, 0),
-              child: InternationalPhoneNumberInput(
-              onInputChanged: (PhoneNumber number) {
-                phoneNumber = number;
-              },
-              initialValue: PhoneNumber(isoCode: 'ES'), // Establecer España (código ISO 'ES') como valor predeterminado
-              selectorConfig: const SelectorConfig(
-                selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-              ),
-              ignoreBlank: false,
-              autoValidateMode: AutovalidateMode.disabled,
-              inputDecoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: AppLocalizations.of(context)!.phoneNumber,
-              ),
-            ),
-
-            ),
-            Container(
-                height: 50,
-                margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                child: ElevatedButton(
-                  child: Text(AppLocalizations.of(context)!.signUp, style: TextStyle(color: Colors.white),),
-                  onPressed: () {
-                    register();
-                  },
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Color(0xff4d5e6b)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ))),
-                ),
-            ),
-            Row(
-              // ignore: sort_child_properties_last
-              children: <Widget>[
-                 Text(AppLocalizations.of(context)!.alreadyAccount, style: TextStyle(
-                      color: Colors.black,
-                      ),),
-                TextButton(
-                  child: Text(
-                    AppLocalizations.of(context)!.logIn,
-                    style: TextStyle(color: Color(0xff4d5e6b), decoration: TextDecoration.underline),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
+                  child: TextField(
+                    controller: usernameController,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: AppLocalizations.of(context)!.username,
+                    ),
                   ),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/login');
-                  },
-                )
+                ),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
+                  child: TextField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: AppLocalizations.of(context)!.email,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                  child: TextField(
+                    obscureText: true,
+                    controller: passwordController,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: AppLocalizations.of(context)!.password,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                  child: TextField(
+                    obscureText: true,
+                    controller: confirmPasswordController,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: AppLocalizations.of(context)!.confirmPassword,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(20, 5, 10, 0),
+                  child: InternationalPhoneNumberInput(
+                    onInputChanged: (PhoneNumber number) {
+                      phoneNumber = number;
+                    },
+                    initialValue: PhoneNumber(isoCode: 'ES'),
+                    selectorConfig: const SelectorConfig(
+                      selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+                    ),
+                    ignoreBlank: false,
+                    autoValidateMode: AutovalidateMode.disabled,
+                    inputDecoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: AppLocalizations.of(context)!.phoneNumber,
+                    ),
+                  ),
+                ),
+                Container(
+                  height: 50,
+                  margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      register();
+                    },
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            const Color(0xff4d5e6b)),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ))),
+                    child: Text(
+                      AppLocalizations.of(context)!.signUp,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+                Row(
+                  // ignore: sort_child_properties_last
+                  children: <Widget>[
+                    Text(
+                      AppLocalizations.of(context)!.alreadyAccount,
+                      style: const TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
+                    TextButton(
+                      child: Text(
+                        AppLocalizations.of(context)!.logIn,
+                        style: const TextStyle(
+                            color: Color(0xff4d5e6b),
+                            decoration: TextDecoration.underline),
+                      ),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/login');
+                      },
+                    )
+                  ],
+                  mainAxisAlignment: MainAxisAlignment.center,
+                ),
               ],
-              mainAxisAlignment: MainAxisAlignment.center,
-            ),
-          ],
-        )));
+            )));
   }
 }

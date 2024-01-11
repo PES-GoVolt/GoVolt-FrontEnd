@@ -6,7 +6,6 @@ import 'package:govoltfrontend/pages/rutas/route_card.dart';
 import 'package:govoltfrontend/services/rutas_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 class RoutesScreen extends StatefulWidget {
   const RoutesScreen({super.key});
 
@@ -17,8 +16,7 @@ class RoutesScreen extends StatefulWidget {
 TextField printSearchBar(Function(String) onSearch) {
   String query = '';
   return TextField(
-    decoration: InputDecoration(
-      //hintText: AppLocalizations.of(context)!.searchYourRoute,    ESTA NO VA?????????????????
+    decoration: const InputDecoration(
       prefixIcon: Icon(Icons.search),
     ),
     onChanged: (value) {
@@ -29,20 +27,20 @@ TextField printSearchBar(Function(String) onSearch) {
 }
 
 class _RoutesState extends State<RoutesScreen> {
-    int _selectedIndex = 0;
-    final RutaService rutaService = RutaService();
-    List<Ruta> _routes = [];
-    List<Ruta> filteredRoutes = [];
-    String query = '';
-    DateTime? _selectedDateFilter;
-    double _currentPriceFilter = 50.0;
-    DateTime _selectedDay = DateTime(0);
-    DateTime _focusedDay = DateTime.now();
-    CalendarFormat _calendarFormat = CalendarFormat.month;
-    List<DateTime> _events = [];
-    List<Ruta> combinedRutas=[];
-    List<Ruta> filteredRutas=[];
-    List<Ruta> myRutas=[];
+  int _selectedIndex = 0;
+  final RutaService rutaService = RutaService();
+  List<Ruta> _routes = [];
+  List<Ruta> filteredRoutes = [];
+  String query = '';
+  DateTime? _selectedDateFilter;
+  double _currentPriceFilter = 50.0;
+  DateTime _selectedDay = DateTime(0);
+  DateTime _focusedDay = DateTime.now();
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  List<DateTime> _events = [];
+  List<Ruta> combinedRutas = [];
+  List<Ruta> filteredRutas = [];
+  List<Ruta> myRutas = [];
 
   @override
   void initState() {
@@ -63,9 +61,12 @@ class _RoutesState extends State<RoutesScreen> {
     });
   }
 
-  void filterRoutes(String query, {DateTime? selectedDateFilter, double? selectedPriceFilter}) {
+  void filterRoutes(String query,
+      {DateTime? selectedDateFilter, double? selectedPriceFilter}) {
     setState(() {
-      if (query.isNotEmpty || selectedDateFilter != null || selectedPriceFilter != null) {
+      if (query.isNotEmpty ||
+          selectedDateFilter != null ||
+          selectedPriceFilter != null) {
         filteredRoutes = _routes.where((ruta) {
           bool matchesQuery = query.isEmpty ||
               ruta.beginning.toLowerCase().contains(query.toLowerCase()) ||
@@ -101,17 +102,18 @@ class _RoutesState extends State<RoutesScreen> {
                   const SizedBox(height: 20.0),
                   Text(
                     AppLocalizations.of(context)!.price,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 18.0),
                   ),
                   Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          '0€ - ${_currentPriceFilter.round().toString()}€',
-                          style: const TextStyle(fontSize: 18.0),
-                        ),
-                      ],
-                    ),
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        '0€ - ${_currentPriceFilter.round().toString()}€',
+                        style: const TextStyle(fontSize: 18.0),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 10.0),
                   Slider(
                     value: _currentPriceFilter,
@@ -119,7 +121,7 @@ class _RoutesState extends State<RoutesScreen> {
                     max: 100,
                     divisions: 100,
                     label: '${_currentPriceFilter.round().toString()}€',
-                    activeColor: Color.fromRGBO(125, 193, 165, 1),
+                    activeColor: const Color.fromRGBO(125, 193, 165, 1),
                     onChanged: (double value) {
                       setState(() {
                         _currentPriceFilter = value;
@@ -129,7 +131,8 @@ class _RoutesState extends State<RoutesScreen> {
                   const SizedBox(height: 20.0),
                   Text(
                     AppLocalizations.of(context)!.date,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 18.0),
                   ),
                   const SizedBox(height: 10.0),
                   InkWell(
@@ -165,13 +168,18 @@ class _RoutesState extends State<RoutesScreen> {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          filterRoutes(query, selectedDateFilter: _selectedDateFilter, selectedPriceFilter: _currentPriceFilter);
+                          filterRoutes(query,
+                              selectedDateFilter: _selectedDateFilter,
+                              selectedPriceFilter: _currentPriceFilter);
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xff4d5e6b),
                         ),
-                        child: Text(AppLocalizations.of(context)!.apply, style: TextStyle(color: Colors.white),),
+                        child: Text(
+                          AppLocalizations.of(context)!.apply,
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
                       ElevatedButton(
                         onPressed: () {
@@ -181,7 +189,10 @@ class _RoutesState extends State<RoutesScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xff4d5e6b),
                         ),
-                        child: Text(AppLocalizations.of(context)!.cancel, style: TextStyle(color: Colors.white),),
+                        child: Text(
+                          AppLocalizations.of(context)!.cancel,
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
                     ],
                   ),
@@ -200,11 +211,10 @@ class _RoutesState extends State<RoutesScreen> {
       resizeToAvoidBottomInset: false,
       body: Column(
         children: [
-          if(_selectedIndex == 1)...{
+          if (_selectedIndex == 1) ...{
             _buildSearchBar(filterRoutes),
             _buildRouteCards(),
-          }
-          else...{
+          } else ...{
             _buildCalendar(),
             _buildMyRouteCards(),
           }
@@ -230,11 +240,13 @@ class _RoutesState extends State<RoutesScreen> {
             ),
             _buildCircleButton(
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => CrearViajeScreen()))
-                .then((value) {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(
+                        builder: (context) => CrearViajeScreen()))
+                    .then((value) {
                   _loadRoutes();
                   setState(() {
-                    _selectedIndex = 1; 
+                    _selectedIndex = 1;
                   });
                 });
               },
@@ -269,7 +281,7 @@ class _RoutesState extends State<RoutesScreen> {
             child: TextField(
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context)!.searchYourRoute,
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
               ),
               onChanged: (value) {
                 query = value;
@@ -286,7 +298,10 @@ class _RoutesState extends State<RoutesScreen> {
               fixedSize: const Size.fromHeight(50),
               backgroundColor: const Color(0xff4d5e6b),
             ),
-            child: const Icon(Icons.filter_list, color: Colors.white,),
+            child: const Icon(
+              Icons.filter_list,
+              color: Colors.white,
+            ),
           ),
         ],
       ),
@@ -315,7 +330,6 @@ class _RoutesState extends State<RoutesScreen> {
   }
 
   Future<List<Ruta>> _filterRutas() async {
-
     filteredRutas = combinedRutas
         .where((ruta) =>
             _selectedDay.isAtSameMomentAs(DateTime(0)) ||
@@ -336,53 +350,52 @@ class _RoutesState extends State<RoutesScreen> {
   Future<List<Ruta>> _loadMyCreatedRutas() async {
     List<Ruta> myRutas = await rutaService.getMyRutas();
     return myRutas;
-    
   }
 
   Future<List<Ruta>> _loadMyPartRutas() async {
     List<Ruta> partRutas = await rutaService.getPartRutas();
     return partRutas;
-    
   }
 
-   Widget _buildRouteCards() {
-      return Expanded(
-        child: ListView.builder(
-          itemCount: filteredRoutes.length,
-          itemBuilder: (context, index) {
-            return _buildRouteCard(ruta: filteredRoutes[index]);
-          },
-        ),
-      );
-    }
+  Widget _buildRouteCards() {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: filteredRoutes.length,
+        itemBuilder: (context, index) {
+          return _buildRouteCard(ruta: filteredRoutes[index]);
+        },
+      ),
+    );
+  }
 
-    Widget _buildMyRouteCards() {
-        return Expanded(
-          child: FutureBuilder<List<Ruta>>(
-            future: _filterRutas(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Center(child: Text(AppLocalizations.of(context)!.noRoutes));
-              } else {
-                return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    return _buildRouteCard(ruta: snapshot.data![index]);
-                  },
-                );
-              }
-            },
-          ),
-        );
-      }
+  Widget _buildMyRouteCards() {
+    return Expanded(
+      child: FutureBuilder<List<Ruta>>(
+        future: _filterRutas(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text(AppLocalizations.of(context)!.noRoutes));
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                return _buildRouteCard(ruta: snapshot.data![index]);
+              },
+            );
+          }
+        },
+      ),
+    );
+  }
 
   Widget _buildRouteCard({required Ruta ruta}) {
     final bool showCancel = _selectedIndex == 0 && myRutas.contains(ruta);
-    return RouteCard(ruta: ruta, showJoin: _selectedIndex == 1, showCancel: showCancel);
+    return RouteCard(
+        ruta: ruta, showJoin: _selectedIndex == 1, showCancel: showCancel);
   }
 
   Widget _buildBottomButton({required String text, required bool selected}) {
@@ -392,7 +405,9 @@ class _RoutesState extends State<RoutesScreen> {
         border: Border(
           bottom: BorderSide(
             width: 4,
-            color: selected ? const Color(0xff4d5e6b) : const Color.fromARGB(0, 255, 255, 255),
+            color: selected
+                ? const Color(0xff4d5e6b)
+                : const Color.fromARGB(0, 255, 255, 255),
           ),
         ),
       ),
@@ -400,13 +415,14 @@ class _RoutesState extends State<RoutesScreen> {
         text,
         style: TextStyle(
           color: selected ? const Color(0xff4d5e6b) : Colors.white,
-          fontWeight: selected ? FontWeight.bold : FontWeight.normal, 
+          fontWeight: selected ? FontWeight.bold : FontWeight.normal,
         ),
       ),
     );
   }
 
-  Widget _buildCircleButton({required VoidCallback onPressed, required IconData icon}) {
+  Widget _buildCircleButton(
+      {required VoidCallback onPressed, required IconData icon}) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
@@ -455,7 +471,6 @@ class _RoutesState extends State<RoutesScreen> {
               }
               _focusedDay = focusedDay;
             });
-            print(_selectedDay);
           },
           calendarStyle: const CalendarStyle(
             selectedDecoration: BoxDecoration(

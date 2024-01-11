@@ -26,6 +26,7 @@ class Config {
   static const requestToRoute = "api/routes/requests";
 
   static const chatAddMessage = "api/messages/";
+  static const report = "api/notifications";
   static const chats = "api/messages/chats/";
 
  static const achievementsAPI = "api/users/achievement/";

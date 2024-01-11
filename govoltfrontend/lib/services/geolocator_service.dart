@@ -11,20 +11,21 @@ class GeolocatiorService {
   }
 
   Future<LocationPermission> askForPermissions() async {
-    try{
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever ||
-        permission == LocationPermission.unableToDetermine) {
-      permission = await Geolocator.requestPermission();
+    try {
+      LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
-        Geolocator.openLocationSettings();
-        exit(0);
+          permission == LocationPermission.deniedForever ||
+          permission == LocationPermission.unableToDetermine) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied ||
+            permission == LocationPermission.deniedForever) {
+          Geolocator.openLocationSettings();
+          exit(0);
+        }
       }
+      return permission;
+    } catch (error) {
+      return LocationPermission.denied;
     }
-    return permission;
-    }
-    catch(error){return LocationPermission.denied;}
   }
 }
