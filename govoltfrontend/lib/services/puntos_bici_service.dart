@@ -9,7 +9,7 @@ class BikeStationsService {
 
   Future<List<BikeStation>> getBikeStations() async {
     try {
-      final url = Uri.http(Config.apiURL, Config.allBikeStations);
+      final url = Uri.https(Config.apiURL, Config.allBikeStations);
       final headers = {
         'Content-Type': 'application/json',
         "Authorization": Token.token

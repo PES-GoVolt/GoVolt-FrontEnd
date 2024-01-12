@@ -1,29 +1,33 @@
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:http/http.dart' as httpsend;
+import 'package:flutter/material.dart';
 import 'package:govoltfrontend/config.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:govoltfrontend/services/token_service.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
+class GoogleUserScreen extends StatefulWidget {
 
-class RegisterScreen extends StatefulWidget {
+  final String email;
+  final String? username;
+  final String ?phone;
+
+  const GoogleUserScreen({ required this.email, this.username, this.phone});
+
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  _GoogleUserScreenState createState() => _GoogleUserScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController confirmPasswordController = TextEditingController();
+class _GoogleUserScreenState extends State<GoogleUserScreen> {
+  
   TextEditingController emailController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   PhoneNumber? phoneNumber;
+  
+  get http => null;
 
   Future<void> register() async {
-    final password = passwordController.text;
-    final confirmPassword = confirmPasswordController.text;
 
     if (usernameController.text.isEmpty) {
       showSnackbar(AppLocalizations.of(context)!.usernameReq);
@@ -35,50 +39,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    if (passwordController.text.isEmpty) {
-      showSnackbar(AppLocalizations.of(context)!.passwordReq);
-      return;
-    }
-
-    if (confirmPasswordController.text.isEmpty) {
-      showSnackbar(AppLocalizations.of(context)!.confirmPassReq);
-      return;
-    }
 
     if (phoneNumber?.phoneNumber == null) {
       showSnackbar(AppLocalizations.of(context)!.phoneReq);
       return;
     }
 
-    if (password != confirmPassword) {
-      showSnackbar(AppLocalizations.of(context)!.passDontMatch);
-      return;
-    }
 
-    final url = Uri.parse(Config.singupFIREBASE);
-    final headers = {"Content-Type": "application/json;charset=UTF-8"};
-
-    final userData = {
-      "password": passwordController.text,
-      "email": emailController.text,
-      "username": usernameController.text,
-      "phone": phoneNumber?.phoneNumber ?? "",
-      "returnSecureToken": true
-    };
-
-    final response = await http.post(
-      url,
-      headers: headers,
-      body: jsonEncode(userData),
-    );
-
-    if (response.statusCode != 200) {
-      final data = json.decode(response.body);
-      final message = data['error']['message'];
-      showSnackbar(message);
-      return;
-    } else {
-      String token = json.decode(response.body)["idToken"];
+      String token = Token.token;
 
       final userStored = {
         "email": emailController.text,
@@ -89,24 +57,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
       final urlStoreUser = Uri.https(Config.apiURL, Config.registroAPI);
       final headersStoredUser = {
         'Content-Type': 'application/json',
-        "Authorization": "Bearer $token"
+        "Authorization": token
       };
-
-      final responseStoreUser = await http.post(
+      final response = await httpsend.post(
         urlStoreUser,
         headers: headersStoredUser,
         body: jsonEncode(userStored),
       );
 
-      if (responseStoreUser.statusCode == 200) {
+      if (response.statusCode == 200) {
         await Future.delayed(Duration.zero);
-        Navigator.pushNamed(context, '/login');
+        Navigator.pop(context);
       } else {
         final data = jsonDecode(response.body);
         final errorMessage = data['message'];
         showSnackbar(errorMessage);
+        Navigator.pop(context);
       }
-    }
   }
 
   void showSnackbar(String msg) {
@@ -116,6 +83,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
         backgroundColor: Colors.red,
       ),
     );
+  }
+
+  @override
+  void initState() {
+    emailController.text = widget.email;
+    if (widget.username != null)
+    {
+      usernameController.text = widget.username!;
+    }
+    else if (widget.phone != null)
+    {
+      phoneController.text = widget.username!;
+    }
+    super.initState();
   }
 
   @override
@@ -170,28 +151,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                  child: TextField(
-                    obscureText: true,
-                    controller: passwordController,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: AppLocalizations.of(context)!.password,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                  child: TextField(
-                    obscureText: true,
-                    controller: confirmPasswordController,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: AppLocalizations.of(context)!.confirmPassword,
-                    ),
-                  ),
-                ),
-                Container(
                   padding: const EdgeInsets.fromLTRB(20, 5, 10, 0),
                   child: InternationalPhoneNumberInput(
                     onInputChanged: (PhoneNumber number) {
@@ -231,28 +190,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
-                Row(
-                  // ignore: sort_child_properties_last
-                  children: <Widget>[
-                    Text(
-                      AppLocalizations.of(context)!.alreadyAccount,
-                      style: const TextStyle(
-                        color: Colors.black,
-                      ),
+                Container(
+                  height: 50,
+                  margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Token.token = "";
+                      Navigator.pop(context);
+                    },
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            const Color.fromARGB(255, 238, 52, 52)),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ))),
+                    child: Text(
+                      AppLocalizations.of(context)!.cancel,
+                      style: const TextStyle(color: Colors.white),
                     ),
-                    TextButton(
-                      child: Text(
-                        AppLocalizations.of(context)!.logIn,
-                        style: const TextStyle(
-                            color: Color(0xff4d5e6b),
-                            decoration: TextDecoration.underline),
-                      ),
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/login');
-                      },
-                    )
-                  ],
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  ),
                 ),
               ],
             )));

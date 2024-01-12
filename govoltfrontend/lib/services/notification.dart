@@ -17,7 +17,7 @@ class NotificationService {
       "content": "Usuario que lo reporto: $idUserBlocked",
       "user_id": idUsuario,
     };
-    final url = Uri.http(Config.apiURL, Config.report);
+    final url = Uri.https(Config.apiURL, Config.report);
     final headers = {"Authorization": Token.token};
     try {
       await http.post(url, body: body, headers: headers);
@@ -31,7 +31,7 @@ class NotificationService {
     messagesRefSingle.onChildAdded.listen((event) async {
       if (event.snapshot.value is! Map) {
         final headers = {"Authorization": Token.token};
-        final url = Uri.http(Config.apiURL, Config.report);
+        final url = Uri.https(Config.apiURL, Config.report);
         final response = await http.get(url, headers: headers);
         if (response.statusCode == 200) {
           Map<String, dynamic> parsedJson = json.decode(response.body);

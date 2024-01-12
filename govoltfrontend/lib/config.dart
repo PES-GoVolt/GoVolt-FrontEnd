@@ -2,7 +2,7 @@ import "package:govoltfrontend/api_keys.dart";
 
 class Config {
   static const String appName = "Go Volt";
-  static const String apiURL = '10.0.2.2:8000'; // api de cada ordenador
+  static const String apiURL = 'govolt3.fly.dev'; // api de cada ordenador
   static const String eventsURL = 'cultucat.hemanuelpc.es';
 
   static const eventosAPI = "events";

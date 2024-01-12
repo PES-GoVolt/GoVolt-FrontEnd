@@ -34,7 +34,7 @@ class ChatService {
   }
 
   void createChat(String idRuta, String userUid, String creatorUid) async {
-    final url = Uri.http(Config.apiURL, Config.chats);
+    final url = Uri.https(Config.apiURL, Config.chats);
     final body = {
       "user_uid": userUid,
       "creator_uid": creatorUid,
@@ -57,7 +57,7 @@ class ChatService {
       "room_name": roomName,
       "sender": idUsuario
     };
-    final url = Uri.http(Config.apiURL, Config.chatAddMessage);
+    final url = Uri.https(Config.apiURL, Config.chatAddMessage);
     final headers = {"Authorization": Token.token};
     try {
       await http.post(url, body: body, headers: headers);
@@ -72,7 +72,7 @@ class ChatService {
       "room_name": idRuta,
       "sender": "Default"
     };
-    final url = Uri.http(Config.apiURL, Config.chatAddMessage);
+    final url = Uri.https(Config.apiURL, Config.chatAddMessage);
     final headers = {
       'Content-Type': 'application/json',
       "Authorization": Token.token
@@ -83,7 +83,7 @@ class ChatService {
   }
 
   Future<dynamic> getChats() async {
-    final url = Uri.http(Config.apiURL, Config.chats);
+    final url = Uri.https(Config.apiURL, Config.chats);
     final headers = {
       'Content-Type': 'application/json',
       "Authorization": Token.token
@@ -97,7 +97,7 @@ class ChatService {
 
   Future<void> getLastMessage(String idRoom) async {
     final url =
-        Uri.http(Config.apiURL, Config.chatAddMessage, {'room_name': idRoom});
+        Uri.https(Config.apiURL, Config.chatAddMessage, {'room_name': idRoom});
     final headers = {
       'Content-Type': 'application/json',
       "Authorization": Token.token
@@ -124,7 +124,7 @@ class ChatService {
   }
 
   Future<List<MessageVolt>> loadAllMessagesData(String room_name) async {
-    final url = Uri.http(
+    final url = Uri.https(
         Config.apiURL, Config.chatAddMessage, {'room_name': room_name});
     final headers = {
       'Content-Type': 'application/json',
@@ -141,7 +141,7 @@ class ChatService {
   }
 
   void updateLastConnection(String roomName) {
-    final url = Uri.http(Config.apiURL, Config.chats);
+    final url = Uri.https(Config.apiURL, Config.chats);
     final body = {
       "id_chat": roomName,
     };

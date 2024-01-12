@@ -7,7 +7,7 @@ import 'package:govoltfrontend/services/token_service.dart';
 class RutaService {
   Future<List<Ruta>> getRutasFromEndpoint(String endpoint) async {
     try {
-      final url = Uri.http(Config.apiURL, endpoint);
+      final url = Uri.https(Config.apiURL, endpoint);
 
       final headers = {
         'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ class RutaService {
       "route_id": idRuta,
       "participant_id": userId,
     });
-    final url = Uri.http(Config.apiURL, Config.myRutas);
+    final url = Uri.https(Config.apiURL, Config.myRutas);
     await http.post(url, headers: headers, body: body);
   }
 
@@ -66,7 +66,7 @@ class RutaService {
     };
     final body = jsonEncode(
         {"route_id": idRuta, "participant_id": userId, "room_name": roomName});
-    final url = Uri.http(Config.apiURL, Config.requestToRoute);
+    final url = Uri.https(Config.apiURL, Config.requestToRoute);
     await http.delete(url, headers: headers, body: body);
   }
 
@@ -82,7 +82,7 @@ class RutaService {
 
   Future<void> cancelRoute(String rutaId) async {
     try {
-      final url = Uri.http(Config.apiURL, Config.allRutas);
+      final url = Uri.https(Config.apiURL, Config.allRutas);
       final bodyRoute = {"route_id": rutaId};
       final headers = {"Authorization": Token.token};
       final response =
@@ -98,7 +98,7 @@ class RutaService {
   Future<void> deleteParticipant(
       String rutaId, String participantId, String participantName) async {
     try {
-      final url = Uri.http(Config.apiURL, Config.myRutas);
+      final url = Uri.https(Config.apiURL, Config.myRutas);
       final bodyRoute = {
         "route_id": rutaId,
         "participant_id": participantId,

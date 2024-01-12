@@ -14,7 +14,7 @@ class EditUserService {
         "Authorization": Token.token
       };
       final response = await http.get(
-          Uri.http(Config.apiURL, Config.seeMyProfileAPI),
+          Uri.https(Config.apiURL, Config.seeMyProfileAPI),
           headers: headers);
 
       if (response.statusCode == 200) {
@@ -40,7 +40,9 @@ class EditUserService {
         }
         return user;
       }
-      return null;
+      else{
+          return null;
+      }
     } catch (error) {
       return null;
     }
@@ -53,7 +55,7 @@ class EditUserService {
         "Authorization": Token.token
       };
       final response = await http.get(
-          Uri.http(Config.apiURL, Config.seeMyProfileAPI),
+          Uri.https(Config.apiURL, Config.seeMyProfileAPI),
           headers: headers);
 
       if (response.statusCode == 200) {
@@ -81,7 +83,7 @@ class EditUserService {
         "Authorization": Token.token
       };
       await http.post(
-        Uri.http(Config.apiURL, Config.editMyProfileAPI),
+        Uri.https(Config.apiURL, Config.editMyProfileAPI),
         headers: headers,
         body: jsonEncode(requestBody),
       );
@@ -91,7 +93,7 @@ class EditUserService {
   Future<bool> logOut() async {
     try {
       final response = await http.post(
-        Uri.http(Config.apiURL, Config.logoutAPI),
+        Uri.https(Config.apiURL, Config.logoutAPI),
         headers: {
           'Content-Type': 'application/json',
         },

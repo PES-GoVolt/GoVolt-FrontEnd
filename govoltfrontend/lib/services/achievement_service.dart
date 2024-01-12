@@ -7,7 +7,7 @@ class AchievementService {
   static const String baseUrl = Config.apiURL;
 
   Future<Map<String, dynamic>> getAchievements() async {
-    final url = Uri.http(Config.apiURL, Config.achievementsAPI);
+    final url = Uri.https(Config.apiURL, Config.achievementsAPI);
     final headers = {
       'Content-Type': 'application/json',
       "Authorization": Token.token
@@ -23,7 +23,7 @@ class AchievementService {
   }
 
   Future<void> incrementAchievement(String achievementName) async {
-    final url = Uri.http(Config.apiURL, Config.achievementsAPI);
+    final url = Uri.https(Config.apiURL, Config.achievementsAPI);
     final response = await http.post(
       url,
       body: json.encode({'achievement': achievementName}),

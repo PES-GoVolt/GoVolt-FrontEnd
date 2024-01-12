@@ -10,7 +10,7 @@ class ChargersService {
 
   Future<List<Coordenada>> obtenerPuntosDeCarga() async {
     try {
-      final url = Uri.http(Config.apiURL, Config.allChargers);
+      final url = Uri.https(Config.apiURL, Config.allChargers);
       final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
       final response = await http.get(url, headers: headers);
 
@@ -37,7 +37,7 @@ class ChargersService {
       "latitud": coordenada.latitude,
     };
 
-    final url = Uri.http(Config.apiURL, Config.chargersNearest);
+    final url = Uri.https(Config.apiURL, Config.chargersNearest);
     final headers = { 'Content-Type': 'application/json',"Authorization": Token.token};
     String jsonData = json.encode(data);
     try {

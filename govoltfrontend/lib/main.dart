@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:govoltfrontend/pages/user/google_login.dart';
 import 'package:govoltfrontend/services/notification.dart';
 import 'package:govoltfrontend/services/notifications_service.dart';
 import 'package:govoltfrontend/blocs/application_bloc.dart';
@@ -19,7 +21,10 @@ const List<String> scopes = <String>[
   'email',
   'https://www.googleapis.com/auth/contacts.readonly',
 ];
-
+String email = "";
+String username = "";
+String phone = "";
+EditUserService editUserService = EditUserService();
 GoogleSignIn _googleSignIn = GoogleSignIn(
   scopes: scopes,
 );
@@ -29,7 +34,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  loadData();
+  //loadData();
   await LocalNotificationService().init();
   runApp(const MyApp());
 }
@@ -44,7 +49,6 @@ void loadData() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
   static const String _title = Config.appName;
 
   @override
@@ -58,6 +62,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/home': (context) => const Menu(),
         '/registro': (context) => RegisterScreen(),
+        '/registroGoogle': (context) => GoogleUserScreen(email: email),
         '/login': (context) => const Scaffold(
               body: MyStatefulWidget(),
             ),
@@ -78,6 +83,7 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   //final urlobtenertoken = Uri.parse("http://192.168.1.108/api/api-token-auth/");
   final urllogin = Uri.parse(Config.loginFIREBASE);
@@ -105,13 +111,41 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     try {
       final googleUser = await _googleSignIn.signIn();
       if (googleUser == null) return;
-      await Future.delayed(Duration.zero);
-      Navigator.pushNamed(
-        context,
-        '/home',
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken
       );
-    } catch (error) {
-    }
+      await _auth.signInWithCredential(credential);
+      User? mUser = _auth.currentUser;
+      String? token = await mUser?.getIdToken();
+      Token.token = 'Bearer $token';
+        email = googleUser.email;
+        username = googleUser.displayName!;
+        dynamic user = await editUserService.getCurrentUserData();
+        if (user == null){
+        // ignore: use_build_context_synchronously
+        Navigator.pushNamed(
+          context,
+          '/registroGoogle',
+        ).then((value) => {
+            if (Token.token != "")
+            {
+              Navigator.pushNamed(
+                context,
+                '/home',
+              )
+            }
+        } )
+        ;}
+        else{
+          Navigator.pushNamed(
+                context,
+                '/home',
+              );
+        }
+
+    } catch (error) {}
     setState(() {});
   }
 
