@@ -1,3 +1,5 @@
+.gitig
+
 # Archivos y directorios generados automáticamente por Android Studio y el proceso de construcción
 build/
 app/build/
@@ -34,3 +36,4 @@ govoltfrontend/android/app/src/main/res/values/strings.xml
 govoltfrontend/android/app/src/main/res/values/strings.xml
 govoltfrontend/lib/services/api.json
 govoltfrontend/lib/api_keys.dart
+
